@@ -22,6 +22,7 @@
 	},
 	"homepage": "https://github.com/UltimateBrent/discord-rod#readme",
 	"devDependencies": {
+		"@types/async": "^3.2.3",
 		"@types/lodash": "^4.14.157",
 		"@types/mongoose": "^5.7.27",
 		"@types/node": "^14.0.13",
@@ -34,8 +35,9 @@
 		"typescript": "^3.9.5"
 	},
 	"dependencies": {
+		"async": "^3.2.0",
 		"discord.js": "^12.3.1",
 		"lodash": "^4.17.15",
-		"mongoose": "^5.9.20"
+		"mongoose": "^5.10.5"
 	}
 }

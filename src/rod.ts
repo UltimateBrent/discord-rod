@@ -1,10 +1,22 @@
 import Secrets from './secrets.json';
 import Discord from 'discord.js';
+import mongoose from 'mongoose';
+import async from 'async';
 
 
+
+/**
+ * The new rod structure is loosely based on Express.js
+ * Each message can be handled by "middleware", and ultimately ends up routed to a specific handler (or none at all)
+ * Each middleware or handler is sent the original message object, and a response object, which is built up by the handlers.
+ */
 class Rod {
 
+	/**
+	 * Connects to discord, parses input flags, set up event handlers
+	 */
 	constructor() {
+		const self = this;
 		console.log('- hello from rod');
 
 		// parse argument flags i.e. "node rod.js key=value"
@@ -15,6 +27,16 @@ class Rod {
 		}
 		console.log('- flags:', flags);
 
+		self.connectToMongo();
+		self.connectToDiscord();
+	}
+
+	/**
+	 * Connects to discord using the token from `secrets.json` and adds message handler
+	 */
+	public connectToDiscord() {
+		const self = this;
+
 		const client = new Discord.Client();
 		console.log('- connecting bot - shard: ', client.shard ? client.shard.ids : 'unsharded');
 
@@ -23,12 +45,40 @@ class Rod {
 		});
 
 		client.on('message', msg => {
-			if (msg.content === 'ping') {
-				msg.reply('pong');
-			}
+			self.handleMessage(msg);
 		});
 
-		client.login( Secrets.discordToken );
+		client.login(Secrets.discordToken);
+	}
+
+	/**
+	 * Connects to mongo using mongoose
+	 */
+	public connectToMongo() {
+		// @ts-ignore
+		// ^ Secrets file json strucutre might be different depending on install type
+		mongoose.connect(Secrets.mongo.connectionString || `mongodb://${Secrets.mongo.user}:${Secrets.mongo.password}@${Secrets.mongo.host}/${Secrets.mongo.db}`, {
+			useNewUrlParser: true,
+			useUnifiedTopology: true
+		}).then(() => {
+			console.log('- connected to mongo');
+		}).catch(err => {
+			console.error('- mongo connection err:', err);
+		});
+	}
+
+	/**
+	 * Overall handler for messages. Creates response object, runs middleware, and runs handler
+	 * @param msg - The discord message object
+	 */
+	public async handleMessage( msg: Discord.Message ) {
+		if (msg.author.bot && !msg.content.startsWith('/rod-bot/')) return; // ignore bots unless they specifically bypass that to talk to us
+		if (msg.content.startsWith('/rod-bot/')) msg.content = msg.content.replace('/rod-bot/', ''); // if bypass bot check, then remove that from content
+
+		if (msg.content === 'ping') {
+			console.log(msg);
+			msg.reply('pong');
+		}
 	}
 
 }
