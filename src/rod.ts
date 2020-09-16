@@ -1,5 +1,5 @@
 import Secrets from './secrets.json';
-import Discord from 'discord.js';
+import Discord, {Message} from 'discord.js';
 import mongoose from 'mongoose';
 import async from 'async';
 
@@ -8,6 +8,7 @@ import async from 'async';
 /**
  * The new rod structure is loosely based on Express.js
  * Each message can be handled by "middleware", and ultimately ends up routed to a specific handler (or none at all)
+ * For example, aliasing would be handled by middleware, and a roll would be handled by the roll handler
  * Each middleware or handler is sent the original message object, and a response object, which is built up by the handlers.
  */
 class Rod {
@@ -71,7 +72,7 @@ class Rod {
 	 * Overall handler for messages. Creates response object, runs middleware, and runs handler
 	 * @param msg - The discord message object
 	 */
-	public async handleMessage( msg: Discord.Message ) {
+	public async handleMessage( msg: Message ) {
 		if (msg.author.bot && !msg.content.startsWith('/rod-bot/')) return; // ignore bots unless they specifically bypass that to talk to us
 		if (msg.content.startsWith('/rod-bot/')) msg.content = msg.content.replace('/rod-bot/', ''); // if bypass bot check, then remove that from content
 
