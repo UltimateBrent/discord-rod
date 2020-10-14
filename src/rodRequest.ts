@@ -1,0 +1,64 @@
+import Discord, { Message } from 'discord.js';
+import User, { IUser } from './models/user.model';
+import Server, { IServer } from './models/server.model';
+import _ from 'lodash';
+
+/**
+ * The request object that's built upon by rod middleware and handlers
+ */
+class RodRequest {
+
+	public message: Message;
+	public user: IUser;
+	public guser: Discord.GuildMember;
+	public server: IServer;
+
+	/**
+	 * creates a basic RodRequest from a discord message
+	 */
+	constructor(message: Message) {
+		const self = this;
+
+		self.message = message;
+		self.guser = message.member;
+
+		self.parseMessage();
+	}
+
+	/**
+	 * Parses a message to get the correct command and parameters out
+	 * turns `/addnpc bob "Robert Bobby"` to `{command: 'addnpc', params: [bob, 'Robert Bobby']}`
+	 */
+	parseMessage() {
+		const self = this;
+
+		// clean smart quotes
+		self.message.content = self.message.content.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"');
+
+		// split the message, minding quotes (like a csv)
+		let parts = self.message.content.match(/(?=\S)[^"\s]*(?:"[^\\"]*(?:\\[\s\S][^\\"]*)*"[^"\s]*)*/g);
+		if (!parts || !parts.length) return;
+
+		// remove quotes from quoted params
+		parts = _.map(parts, function (p) { return p.replace(/^"|"$/g, ''); });
+
+		console.log('- parts:', parts);
+	}
+
+	/**
+	 * load stored values/settings from Rod's database
+	 */
+	async loadRodData() {
+		const self = this;
+
+		
+		const u = User.GetFromID( self.message.author, self.message.guild ? self.message.guild.id : null );
+		const s = Server.GetFromGuild( self.message.guild );
+
+		[self.user, self.server] = await Promise.all([u, s]);
+
+		return;
+	}
+}
+
+export default RodRequest;

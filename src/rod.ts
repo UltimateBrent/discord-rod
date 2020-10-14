@@ -2,11 +2,10 @@ import Secrets from './secrets.json';
 import Discord, {Message} from 'discord.js';
 import mongoose from 'mongoose';
 import async from 'async';
-
-
+import RodRequest from './rodRequest';
 
 /**
- * The new rod structure is loosely based on Express.js
+ * The new Rod structure is loosely based on Express.js
  * Each message can be handled by "middleware", and ultimately ends up routed to a specific handler (or none at all)
  * For example, aliasing would be handled by middleware, and a roll would be handled by the roll handler
  * Each middleware or handler is sent the original message object, and a response object, which is built up by the handlers.
@@ -46,7 +45,14 @@ class Rod {
 		});
 
 		client.on('message', msg => {
-			self.handleMessage(msg);
+			try {
+				self.handleMessage(msg);
+			} catch(e) {
+				console.error('- handle message error:', e);
+			}
+		});
+		client.on('error', e => {
+			console.error('- discord error:', e);
 		});
 
 		client.login(Secrets.discordToken);
@@ -57,7 +63,7 @@ class Rod {
 	 */
 	public connectToMongo() {
 		// @ts-ignore
-		// ^ Secrets file json strucutre might be different depending on install type
+		// ^ Secrets file json structure might be different depending on install type
 		mongoose.connect(Secrets.mongo.connectionString || `mongodb://${Secrets.mongo.user}:${Secrets.mongo.password}@${Secrets.mongo.host}/${Secrets.mongo.db}`, {
 			useNewUrlParser: true,
 			useUnifiedTopology: true
@@ -74,14 +80,20 @@ class Rod {
 	 */
 	public async handleMessage( msg: Message ) {
 		if (msg.author.bot && !msg.content.startsWith('/rod-bot/')) return; // ignore bots unless they specifically bypass that to talk to us
+		if (msg.content.startsWith('(') && msg.content.endsWith(')')) return; // ignore parenthetical messages
 		if (msg.content.startsWith('/rod-bot/')) msg.content = msg.content.replace('/rod-bot/', ''); // if bypass bot check, then remove that from content
 
-		if (msg.content === 'ping') {
+		if (msg.content === '/ping') {
 			console.log(msg);
 			msg.reply('pong');
 		}
+
+		const req = new RodRequest( msg );
+		await req.loadRodData();
 	}
 
 }
 
 const rod = new Rod();
+
+export default rod;
