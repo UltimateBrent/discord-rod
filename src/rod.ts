@@ -90,6 +90,7 @@ class Rod {
 
 		const req = new RodRequest( msg );
 		await req.loadRodData();
+		req.parseMessage();
 	}
 
 }

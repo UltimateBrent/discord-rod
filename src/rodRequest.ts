@@ -14,6 +14,8 @@ class RodRequest {
 	public server: IServer;
 
 	public hasCommand: boolean = false;
+	public command: string;
+	public params: string[];
 
 	/**
 	 * creates a basic RodRequest from a discord message
@@ -24,7 +26,6 @@ class RodRequest {
 		self.message = message;
 		self.guser = message.member;
 
-		self.parseMessage();
 	}
 
 	/**
@@ -47,6 +48,18 @@ class RodRequest {
 		parts = _.map(parts, function (p) { return p.replace(/^"|"$/g, ''); });
 
 		console.log('- parts:', parts);
+
+		if (parts[0]?.startsWith( self.server.esc )) {
+			self.hasCommand = true;
+			self.command = parts.shift().slice( self.server.esc.length );
+
+			if (self.command == 'rod') { // for instances like `/rod command param1 param2`
+				self.command = parts.shift(); 
+			}
+		}
+
+		console.log('- command + params:', self.command, parts);
+		self.params = parts;
 	}
 
 	/**
