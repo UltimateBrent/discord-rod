@@ -1,5 +1,5 @@
 import Secrets from './secrets.json';
-import Discord, {Message} from 'discord.js';
+import Discord from 'discord.js';
 import mongoose from 'mongoose';
 import async from 'async';
 import RodRequest from './rodRequest';
@@ -78,7 +78,7 @@ class Rod {
 	 * Overall handler for messages. Creates response object, runs middleware, and runs handler
 	 * @param msg - The discord message object
 	 */
-	public async handleMessage( msg: Message ) {
+	public async handleMessage( msg: Discord.Message ) {
 		if (msg.author.bot && !msg.content.startsWith('/rod-bot/')) return; // ignore bots unless they specifically bypass that to talk to us
 		if (msg.content.startsWith('(') && msg.content.endsWith(')')) return; // ignore parenthetical messages
 		if (msg.content.startsWith('/rod-bot/')) msg.content = msg.content.replace('/rod-bot/', ''); // if bypass bot check, then remove that from content

@@ -1,4 +1,4 @@
-import Discord, { Message } from 'discord.js';
+import Discord from 'discord.js';
 import User, { IUser } from './models/user.model';
 import Server, { IServer } from './models/server.model';
 import _ from 'lodash';
@@ -8,15 +8,17 @@ import _ from 'lodash';
  */
 class RodRequest {
 
-	public message: Message;
+	public message: Discord.Message;
 	public user: IUser;
 	public guser: Discord.GuildMember;
 	public server: IServer;
 
+	public hasCommand: boolean = false;
+
 	/**
 	 * creates a basic RodRequest from a discord message
 	 */
-	constructor(message: Message) {
+	constructor(message: Discord.Message) {
 		const self = this;
 
 		self.message = message;
@@ -31,6 +33,8 @@ class RodRequest {
 	 */
 	parseMessage() {
 		const self = this;
+
+		if (!self.server.esc) self.server.esc = '.';
 
 		// clean smart quotes
 		self.message.content = self.message.content.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"');
