@@ -1,8 +1,9 @@
 import Secrets from './secrets.json';
 import Discord from 'discord.js';
 import mongoose from 'mongoose';
-import async from 'async';
 import RodRequest from './lib/rodRequest';
+import RodResponse from './lib/rodResponse';
+import Handler from './handlers/handler';
 
 /**
  * The new Rod structure is loosely based on Express.js
@@ -11,6 +12,9 @@ import RodRequest from './lib/rodRequest';
  * Each middleware or handler is sent the original message object, and a response object, which is built up by the handlers.
  */
 class Rod {
+
+	handlers: Handler[] = [];
+	// middleware: Middleware[] = [];
 
 	/**
 	 * Connects to discord, parses input flags, set up event handlers
@@ -83,14 +87,16 @@ class Rod {
 		if (msg.content.startsWith('(') && msg.content.endsWith(')')) return; // ignore parenthetical messages
 		if (msg.content.startsWith('/rod-bot/')) msg.content = msg.content.replace('/rod-bot/', ''); // if bypass bot check, then remove that from content
 
-		if (msg.content === '/ping') {
-			console.log(msg);
-			msg.reply('pong');
-		}
-
 		const req = new RodRequest( msg );
 		await req.loadRodData();
 		req.parseMessage();
+		const res = new RodResponse( req );
+
+		// run middlewares
+
+		// run handler (if any)
+
+		// send it
 	}
 
 }
