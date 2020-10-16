@@ -13,6 +13,7 @@ class Roll {
 	parts: string[];
 	expressions: string[];
 	title: string;
+	multi?: Roll[];
 
 	/**
 	 * Parses a roll string, under the context of the requesting user/server for macros etc.
@@ -80,24 +81,24 @@ class Roll {
 		});
 
 		// is this a multiple roll?
-		// REWRITE THIS WITH ROLL OBJECTS
-		/*let rolls = m.split(/[,;]/);
+		let rolls = m.split(/[,;]/);
 		if (rolls.length > 1) {
 			let sep = m.match(/([,;])/)[0];
-			rolls = _.map(rolls, function (r) {
+			const rs = _.map(rolls, function (r) {
 				return Roll.parseRoll(req, r);
 			});
 
-			let combined = _.map(rolls, function (r) {
-				return r.error || r.text;
+			let combined = _.map(rs, function (r) {
+				return r.errors.length ? r.errors.join('; ') : r.text;
 			});
 
-			return {
-				raw: m,
-				multi: rolls,
-				text: combined.join(sep == ';' ? '\n' : ', ')
-			};
-		}*/
+			const multiRoll = new Roll();
+			multiRoll.multi = rs;
+			multiRoll.raw = m;
+			multiRoll.text = combined.join(sep == ';' ? '\n' : ', ')
+			
+			return multiRoll;
+		}
 
 		// find title if any
 		let title: any = m.match(/#(.*)/);
