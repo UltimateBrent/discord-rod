@@ -3,15 +3,15 @@ import Discord, { Message } from 'discord.js';
 import _ from 'lodash';
 
 export interface IUser extends Document {
-	_id: String,
-	name: String,
+	_id: string,
+	name: string,
 	serverSettings: any,
 	settings: { // overwritten by server settings on load, these are defaults only
 		macros?: [{
-			name: String,
-			roll: String
+			name: string,
+			roll: string
 		}],
-		autoAlias?: String // npc.id
+		autoAlias?: string // npc.id
 	},
 	empty: boolean
 }

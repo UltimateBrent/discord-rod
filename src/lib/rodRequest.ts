@@ -1,6 +1,6 @@
 import Discord from 'discord.js';
-import User, { IUser } from './models/user.model';
-import Server, { IServer } from './models/server.model';
+import User, { IUser } from '../models/user.model';
+import Server, { IServer } from '../models/server.model';
 import _ from 'lodash';
 
 /**

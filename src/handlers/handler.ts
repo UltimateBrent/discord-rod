@@ -1,9 +1,9 @@
-import RodRequest from "../rodRequest";
+import RodRequest from "../lib/rodRequest";
 
 
-class Handler {
+abstract class Handler {
 
-	
+	abstract process( req: RodRequest ): void;
 
 }
 

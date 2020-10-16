@@ -2,7 +2,7 @@ import Secrets from './secrets.json';
 import Discord from 'discord.js';
 import mongoose from 'mongoose';
 import async from 'async';
-import RodRequest from './rodRequest';
+import RodRequest from './lib/rodRequest';
 
 /**
  * The new Rod structure is loosely based on Express.js
