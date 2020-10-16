@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import RodRequest from './lib/rodRequest';
 import RodResponse from './lib/rodResponse';
 import Handler from './handlers/handler';
+import _ from 'lodash';
+import fs from 'fs';
 
 /**
  * The new Rod structure is loosely based on Express.js
@@ -13,7 +15,7 @@ import Handler from './handlers/handler';
  */
 class Rod {
 
-	handlers: Handler[] = [];
+	handlers: Map<string, typeof Handler> = new Map();
 	// middleware: Middleware[] = [];
 
 	/**
@@ -33,6 +35,7 @@ class Rod {
 
 		self.connectToMongo();
 		self.connectToDiscord();
+		self.loadHandlers();
 	}
 
 	/**
@@ -79,10 +82,41 @@ class Rod {
 	}
 
 	/**
+	 * Loads the handlers
+	 */
+	public async loadHandlers() {
+		const self = this;
+
+		let files: any = fs.readdirSync( './src/handlers' );
+		files = _.filter( files, function(f) {
+			return f.match(/(.*)\.handler\.ts/);
+		});
+		console.log('- handlers found:', files);
+
+		_.each(files, async function(f) {
+			const name = f.replace('.handler.ts', '');
+			const h: any = await import( './handlers/' + name + '.handler.ts' );
+			const commands: string[] = h.default.commands;
+			_.each( commands, function(c) {
+				self.handlers.set( c, h.default );
+			});
+
+			if (name == 'roll') {
+				console.log('- testing roll handler...', h);
+				h.default.test();
+			}
+		});
+
+
+	}
+
+	/**
 	 * Overall handler for messages. Creates response object, runs middleware, and runs handler
 	 * @param msg - The discord message object
 	 */
 	public async handleMessage( msg: Discord.Message ) {
+		const self = this;
+
 		if (msg.author.bot && !msg.content.startsWith('/rod-bot/')) return; // ignore bots unless they specifically bypass that to talk to us
 		if (msg.content.startsWith('(') && msg.content.endsWith(')')) return; // ignore parenthetical messages
 		if (msg.content.startsWith('/rod-bot/')) msg.content = msg.content.replace('/rod-bot/', ''); // if bypass bot check, then remove that from content
@@ -95,7 +129,17 @@ class Rod {
 		// run middlewares
 
 		// run handler (if any)
+		if (req.command) {
 
+			// do we have a handler for this command?
+			const h: typeof Handler = self.handlers.get(req.command);
+			if (h) {
+				h.process( req, res );
+			} else {
+				console.log('- no handler for command:', req.command);
+			}
+
+		}
 		// send it
 	}
 

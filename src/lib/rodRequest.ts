@@ -13,7 +13,6 @@ class RodRequest {
 	public guser: Discord.GuildMember;
 	public server: IServer;
 
-	public hasCommand: boolean = false;
 	public command: string;
 	public params: string[];
 
@@ -50,7 +49,6 @@ class RodRequest {
 		console.log('- parts:', parts);
 
 		if (parts[0]?.startsWith( self.server.esc )) {
-			self.hasCommand = true;
 			self.command = parts.shift().slice( self.server.esc.length );
 
 			if (self.command == 'rod') { // for instances like `/rod command param1 param2`
