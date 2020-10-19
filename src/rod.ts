@@ -93,21 +93,18 @@ class Rod {
 		});
 		console.log('- handlers found:', files);
 
-		_.each(files, async function(f) {
+		for (const f of files) {
 			const name = f.replace('.handler.ts', '');
 			const h: any = await import( './handlers/' + name + '.handler.ts' );
+
 			const commands: string[] = h.default.commands;
-			_.each( commands, function(c) {
+			for( const c of commands) {
 				self.handlers.set( c, h.default );
-			});
-
-			if (name == 'roll') {
-				console.log('- testing roll handler...', h);
-				h.default.test();
 			}
-		});
 
+		}
 
+		console.log('- loaded commands:', Array.from( self.handlers.keys() ) );
 	}
 
 	/**
@@ -140,7 +137,9 @@ class Rod {
 			}
 
 		}
+
 		// send it
+		if (!res.sent) res.send();
 	}
 
 }

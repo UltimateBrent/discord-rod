@@ -11,10 +11,11 @@ class RollHandler extends Handler {
 	static process( req: RodRequest, res: RodResponse ): void {
 		const roll: Roll = Roll.parseRoll( req, req.params.join(' ') );
 		console.log('- process roll:', roll);
-	}
 
-	static test() {
-		console.log('- static test on roll handler worked');
+		if (roll.errors.length) {
+			res.errors = res.errors.concat( roll.errors );
+		}
+		res.embedContent = roll.text;
 	}
 }
 
