@@ -18,10 +18,20 @@ class RodResponse {
 		this.req = req;
 	}
 
+	/**
+	 * Sends a message without trying to use webhooks
+	 * @param content - the message content to send
+	 * @param embeds - array of discord embeds
+	 * @return message response promise for catching/awaiting
+	 */
 	sendSimple( content: string, embeds: Discord.MessageEmbed[] = [] ): Promise<any> {
 		return this.req.message.channel.send( content, embeds );
 	}
 
+	/**
+	 * Sends the current response object
+	 * @param content - specific content to send as the message beyond what's already stored here
+	 */
 	async send( content: string = null ) {
 		const self = this;
 
