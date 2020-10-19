@@ -98,6 +98,7 @@ class RodRequest {
 						});
 						hooks.set( 'new' + i, h);
 					} catch(e) {
+						// unlikely we'll get here if we could fetchWebhooks, but let's be sure
 						console.error('- webhook creation error:', e);
 						throw new Error( 'Error creating webhooks. Most likely reason is insufficient permissions. Please make sure Rod has the `Manage Webhooks` permssion. ' );
 					}
@@ -106,7 +107,7 @@ class RodRequest {
 			}
 
 			return hooks;
-			
+
 		} catch(e) {
 			console.error('- webhook fetching error:', e);
 			throw new Error('Error fetching webhooks. Most likely reason is insufficient permissions. Please make sure Rod has the `Manage Webhooks` permssion. ');
