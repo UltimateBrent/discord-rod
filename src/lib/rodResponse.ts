@@ -18,6 +18,10 @@ class RodResponse {
 		this.req = req;
 	}
 
+	sendSimple( content: string, embeds: Discord.MessageEmbed[] = [] ): Promise<any> {
+		return this.req.message.channel.send( content, embeds );
+	}
+
 	async send( content: string = null ) {
 		const self = this;
 
@@ -42,24 +46,24 @@ class RodResponse {
 				content = ' ';
 			}
 
-			return self.req.message.channel.send(content || '', embed).catch(console.log);
+			return self.sendSimple(content || '', embed).catch(console.log);
 		}
 
 		const hooks = await self.req.getWebhooks( true );
 
 		// let's see if we're in a fail state
 		if (!hooks.size && self.postAs) {
-			self.req.message.channel.send( 'You just tried to alias yourself as `' + self.postAs.name + '` in a channel with no webhooks. We already tried to create them and failed, so this is most likely a permissions issue. Please make sure Rod has the `Manage Webhooks` permission.' );
+			self.sendSimple( 'You just tried to alias yourself as `' + self.postAs.name + '` in a channel with no webhooks. We already tried to create them and failed, so this is most likely a permissions issue. Please make sure Rod has the `Manage Webhooks` permission.' );
 			return;
 		}
 
 		if (!hooks.size && self.errors.length) {
-			self.req.message.channel.send( self.errors.join('; ') );
+			self.sendSimple( self.errors.join('; ') );
 			return;
 		}
 
 		if (!hooks.size) {
-			self.req.message.channel.send( self.embed?.description || self.embedContent || content || 'Error: You somehow have sent a message with no content and Rod didn\'t figure out why before now. Not great.' );
+			self.sendSimple( self.embed?.description || self.embedContent || content || 'Error: You somehow have sent a message with no content and Rod didn\'t figure out why before now. Not great.' );
 			return;
 		}
 
@@ -110,7 +114,7 @@ class RodResponse {
 
 		// send it!
 		try {
-			await hook.send(content || self.req.message.content, {
+			await hook.send(content || '', {
 				username: username,
 				avatarURL: avatar,
 				embeds: embeds

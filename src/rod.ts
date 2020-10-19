@@ -139,7 +139,11 @@ class Rod {
 		}
 
 		// send it
-		if (!res.sent) res.send();
+		try {
+			if (!res.sent && req.command) await res.send();
+		} catch(e) {
+			res.sendSimple( e );
+		}
 	}
 
 }
