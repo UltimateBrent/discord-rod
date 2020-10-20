@@ -21,12 +21,21 @@ class RodResponse {
 	/**
 	 * Sends a message without trying to use webhooks
 	 * @param content - the message content to send
-	 * @param embeds - array of discord embeds
+	 * @param embeds - array of discord embeds, or embed content string
 	 * @return message response promise for catching/awaiting
 	 */
-	sendSimple( content: string, embeds: Discord.MessageEmbed[] = [] ): Promise<any> {
+	sendSimple( content: string, embedContent: string = null ): Promise<any> {
 		this.sent = true;
-		return this.req.message.channel.send( content, embeds );
+
+		let embeds: Discord.MessageEmbed[] = [];
+		if (embedContent) {
+			const em = new Discord.MessageEmbed();
+			em.setDescription( embedContent );
+			em.setColor( '#FFFF00' );
+			embeds = [ em ];
+		}
+
+		return this.req.message.channel.send(content, embeds );
 	}
 
 	/**

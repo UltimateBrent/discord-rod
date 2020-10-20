@@ -9,8 +9,12 @@ import _ from 'lodash';
 class ListAliases extends Handler {
 	static commands = ['listaliases', 'listnpcs', 'list'];
 
+	/**
+	 * Lists aliases that the user has access to
+	 * @param req - the request
+	 * @param res - the response
+	 */
 	static async process(req: RodRequest, res: RodResponse): Promise<void> {
-		const self = this;
 
 		// are we in a DM?
 		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
@@ -19,11 +23,23 @@ class ListAliases extends Handler {
 		const perm = req.getPermissions();
 		if (!perm) return await res.sendSimple('You do not have permission to list aliases.');
 
+		// are we filtering by a role or user grant?
+		let checkUser = null;
+		let checkRole = null;
+		if (req.params.grants && (req.message.mentions.users.size || req.message.mentions.roles.size)) {
+			if (req.message.mentions.users.size) checkUser = req.message.mentions.users.first();
+			if (req.message.mentions.roles.size) checkRole = req.message.mentions.roles.first();
+		}
+
 		// get npcs and filter if we're a channel admin
 		let ms = req.server.npcs ? req.server.npcs.concat([]) : [];
 		ms = _.filter(ms, function (npc) {
 			const a = new Alias(npc);
-			return a.checkGrant( req );
+			if (checkUser || checkRole) {
+				return a.checkGrant( req ) && a.checkGrant(req, checkUser, checkRole);
+			} else {
+				return a.checkGrant( req );
+			}
 		});
 
 		if (!ms.length) return await res.sendSimple(perm ? 'You have no saved aliases.' : 'You do not have access to any aliases.');
