@@ -16,7 +16,8 @@ class RodRequest {
 	public server: IServer;
 
 	public command: string;
-	public params: string[];
+	public parts: string[];
+	public params: any = {};
 
 	/**
 	 * creates a basic RodRequest from a discord message
@@ -59,8 +60,16 @@ class RodRequest {
 			}
 		}
 
-		console.log('- command + params:', self.command, parts);
-		self.params = parts;
+		// parse params
+		const params = {};
+		for (const p of parts) {
+			const a = p.split('=');
+			params[a[0]] = a[1]?.replace(/^"|"$/g, '') || true;
+		}
+
+		console.log('- command + params:', self.command, parts, params);
+		self.parts = parts;
+		self.params = params;
 	}
 
 	/**

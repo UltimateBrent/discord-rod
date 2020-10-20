@@ -2,8 +2,8 @@ import Discord from 'discord.js';
 import RodRequest from '../lib/rodRequest';
 import RodResponse from '../lib/rodResponse';
 import Handler from './handler';
+import Alias from '../lib/alias';
 import _ from 'lodash';
-import async from 'async';
 
 
 class ListAliases extends Handler {
@@ -22,16 +22,17 @@ class ListAliases extends Handler {
 		// get npcs and filter if we're a channel admin
 		let ms = req.server.npcs ? req.server.npcs.concat([]) : [];
 		ms = _.filter(ms, function (npc) {
-			return !(perm == 'channeladmin') || npc.createdBy == req.message.author.id;
+			const a = new Alias(npc);
+			return a.checkGrant( req );
 		});
 
-		if (!ms.length) return await res.sendSimple('You have no saved npcs.');
+		if (!ms.length) return await res.sendSimple(perm ? 'You have no saved aliases.' : 'You do not have access to any aliases.');
 
 		const texts = [];
 		for (const m of ms) {
 
 			// do we need to look up grants?
-			if (req.params.indexOf('grants') == -1 || (!m.grant?.length && !m.grantRoles?.length)) {
+			if (!req.params.grants || (!m.grant?.length && !m.grantRoles?.length)) {
 
 				texts.push( '`' + m.id.toLowerCase() + '`: **' + m.name + '**' );
 
@@ -70,7 +71,7 @@ class ListAliases extends Handler {
 
 		}
 		
-		return await res.sendSimple( '```css\n## NPCs ##\n```\n' + texts.join('\n') );
+		return await res.sendSimple( '```css\n## Aliases ##\n```\n' + texts.join('\n') );
 	}
 }
 
