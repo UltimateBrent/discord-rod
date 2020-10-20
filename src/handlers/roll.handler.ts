@@ -8,7 +8,7 @@ class RollHandler extends Handler {
 
 	static commands: string[] = ['roll', 'r'];
 
-	static process( req: RodRequest, res: RodResponse ): void {
+	static async process(req: RodRequest, res: RodResponse): Promise<void> {
 		const roll: Roll = Roll.parseRoll( req, req.params.join(' ') );
 		console.log('- process roll:', roll);
 

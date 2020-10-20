@@ -25,6 +25,7 @@ class RodResponse {
 	 * @return message response promise for catching/awaiting
 	 */
 	sendSimple( content: string, embeds: Discord.MessageEmbed[] = [] ): Promise<any> {
+		this.sent = true;
 		return this.req.message.channel.send( content, embeds );
 	}
 

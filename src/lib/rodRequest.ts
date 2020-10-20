@@ -10,6 +10,7 @@ import async from 'async';
 class RodRequest {
 
 	public message: Discord.Message;
+	public channel: Discord.TextChannel;
 	public user: IUser;
 	public guser: Discord.GuildMember;
 	public server: IServer;
@@ -24,6 +25,7 @@ class RodRequest {
 		const self = this;
 
 		self.message = message;
+		self.channel = message.channel as Discord.TextChannel;
 		self.guser = message.member;
 
 	}
@@ -74,6 +76,22 @@ class RodRequest {
 		[self.user, self.server] = await Promise.all([u, s]);
 
 		return;
+	}
+
+	/**
+	 * Determines permission level of user on this channel.
+	 * @return 'admin' | 'channeladmin' | null
+	 */
+	getPermissions(): string {
+		const self = this;
+
+		// guild-level admin, can do everything
+		if (self.guser.hasPermission('ADMINISTRATOR')) return 'admin';
+
+		// channel-level admin, can create/edit only their own npcs
+		if (self.channel.permissionsFor(self.message.member).has('MANAGE_MESSAGES')) return 'channeladmin';
+		
+		return null;
 	}
 
 	/**

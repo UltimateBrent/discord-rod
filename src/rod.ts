@@ -131,7 +131,7 @@ class Rod {
 			// do we have a handler for this command?
 			const h: typeof Handler = self.handlers.get(req.command);
 			if (h) {
-				h.process( req, res );
+				await h.process( req, res );
 			} else {
 				console.log('- no handler for command:', req.command);
 			}

@@ -6,7 +6,7 @@ class Handler {
 
 	static commands: string[];
 
-	static process( req: RodRequest, res: RodResponse ): void {};
+	static async process( req: RodRequest, res: RodResponse ): Promise<void> {};
 
 }
 
