@@ -1,9 +1,11 @@
 import Discord from 'discord.js';
 import RodRequest from './rodRequest';
+import Alias from '../lib/alias';
 
 class RodResponse {
 	req: RodRequest;
 	sent: boolean = false;
+	alias: Alias;
 	postAs?: {
 		name: string,
 		avatar: string
@@ -47,6 +49,15 @@ class RodResponse {
 
 		// mark this as sent so we don't try again
 		self.sent = true;
+
+		// if alias is set, overwrite postas
+		if (self.alias) {
+			//console.log('- setting postas from:', self.alias.name, self.alias.avatar);
+			self.postAs = {
+				name: self.alias.name,
+				avatar: self.alias.avatar
+			};
+		}
 
 		// is this a pm?
 		if (typeof self.req.message.channel['fetchWebhooks'] !== 'function') { // direct messages don't have webhooks
@@ -117,7 +128,7 @@ class RodResponse {
 		if (self.embedContent) {
 			const em = new Discord.MessageEmbed();
 			em.setDescription( self.embedContent);
-			em.setColor( self.embedColor || RodResponse.colorFromString(username || self.req.message.author.id));
+			em.setColor( self.embedColor || RodResponse.ColorFromString(username || self.req.message.author.id));
 			if (self.embedFooter) {
 				em.setFooter( self.embedFooter );
 			}
@@ -170,7 +181,7 @@ class RodResponse {
 	 * @param str - the seed string
 	 * @return the color string
 	 */
-	static colorFromString(str: string): string {
+	static ColorFromString(str: string): string {
 		let hash = 0;
 		for (var i = 0; i < str.length; i++) {
 			hash = str.charCodeAt(i) + ((hash << 5) - hash);

@@ -14,7 +14,7 @@ class Alias {
 		const self = this;
 
 		for (const key in data) {
-			if (self.hasOwnProperty( key )) self[key] = data[key];
+			self[key] = data[key];
 		}
 	}
 
@@ -62,6 +62,23 @@ class Alias {
 
 		// not conditions met
 		return false;
+	}
+
+	/**
+	 * Searches the saved npcs for a particular npc id
+	 * @param id - the NPC's id
+	 * @return the found alias
+	 */
+	public static FindAlias( req: RodRequest, id: string ): Alias {
+		if (req.server.npcs) {
+			const npcData = _.find( req.server.npcs, function(n) {
+				return n.id.toLowerCase() == id.toLowerCase();
+			});
+
+			if (npcData) return new Alias( npcData );
+		}
+
+		return null;
 	}
 }
 

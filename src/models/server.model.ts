@@ -23,17 +23,18 @@ export interface IServer extends Document { // Typescript definition
 			source: string,
 			author: string,
 			data: any
-		}
+		}?
 	],
-	npcs: [{
-		id: string,
-		name: string,
-		avatar: string,
-		createdBy: string,
-		grant: [string],
-		grantRoles: [string],
-		avraeId: string
-	}],
+	npcs: [
+		{
+			id: string,
+			name: string,
+			avatar: string,
+			createdBy: string,
+			grant?: [string],
+			grantRoles?: [string],
+		}?
+	],
 	rollCalls: [
 		{
 			message: string,
@@ -56,14 +57,14 @@ export interface IServer extends Document { // Typescript definition
 				count: number
 			}],
 			logs: [string]
-		}
+		}?
 	],
 	dones: [
 		{
 			message: string,
 			channel: string,
 			author: string
-		}
+		}?
 	],
 	pings: [
 		{
@@ -75,7 +76,7 @@ export interface IServer extends Document { // Typescript definition
 				id: string,
 				name: string
 			}]
-		}
+		}?
 	],
 	raw: any
 }
