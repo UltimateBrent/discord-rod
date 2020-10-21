@@ -10,12 +10,63 @@ class Alias {
 	public grant: string[];
 	public grantRoles: string[];
 
-	constructor(data: any) {
+	constructor(npc: any) {
 		const self = this;
 
-		for (const key in data) {
-			self[key] = data[key];
+		self.id = npc.id;
+		self.name = npc.name;
+		self.createdBy = npc.createdBy;
+		self.grant = npc.grant || [];
+		self.grantRoles = npc.grantRoles || [];
+	}
+
+	/**
+	 * Saves this alias into the server data from the request
+	 * @param req - the request to get the server from
+	 */
+	public async save( req: RodRequest ): Promise<void> {
+		const self = this;
+
+		// get the object data out
+		const npc = {
+			id: self.id,
+			name: self.name,
+			avatar: self.avatar,
+			createdBy: self.createdBy
+		};
+
+		if (!req.server.npcs) req.server.npcs = [];
+
+		// remove this one if it's there
+		_.remove( req.server.npcs, function(n) { return n.id == self.id; });
+
+		// now add it
+		req.server.npcs.push( npc );
+		req.server.markModified('npcs');
+		await req.server.save();
+		return;
+	}
+
+	/**
+	 * checks whether the current user can edit the alias, which is slightly different han being able to use it
+	 * @param req - the request to use as context
+	 * @return whether they can edit or not
+	 */
+	public checkEdit( req: RodRequest ): boolean {
+		const self = this;
+
+		// check permissions
+		const perm = req.getPermissions();
+
+		// what are we checking against?
+		const checkId = req.message.author.id;
+
+		// are we admins?
+		if (perm == 'admin' || (perm == 'channeladmin' && self.createdBy == checkId)) {
+			return true;
 		}
+
+		return false;
 	}
 
 	/**

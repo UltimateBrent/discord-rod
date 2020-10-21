@@ -7,7 +7,7 @@ export interface IServer extends Document { // Typescript definition
 	name: string,
 	owner: string,
 	esc: string,
-	members: [string],
+	members: string[],
 	created: Date,
 	settings: {
 		botName: string,
@@ -15,69 +15,59 @@ export interface IServer extends Document { // Typescript definition
 		npcPermission: string,
 		tagAliases: string
 	},
-	ignorePrefixes: [string],
+	ignorePrefixes: string[],
 	lastMessages: any,
-	tables: [
-		{
-			name: string,
-			source: string,
-			author: string,
-			data: any
-		}?
-	],
-	npcs: [
-		{
+	tables: {
+		name: string,
+		source: string,
+		author: string,
+		data: any
+	}[],
+	npcs: {
+		id: string,
+		name: string,
+		avatar: string,
+		createdBy: string,
+		grant?: string[],
+		grantRoles?: string[],
+	}[],
+	rollCalls: {
+		message: string,
+		channel: string,
+		name: string,
+		text: string,
+		start: Date,
+		completed: boolean,
+		mentions: {
 			id: string,
-			name: string,
-			avatar: string,
-			createdBy: string,
-			grant?: [string],
-			grantRoles?: [string],
-		}?
-	],
-	rollCalls: [
-		{
-			message: string,
-			channel: string,
+			name: string
+		}[],
+		npcs: string[],
+		rolls: [{
+			key: string,
 			name: string,
 			text: string,
-			start: Date,
-			completed: boolean,
-			mentions: [{
-				id: string,
-				name: string
-			}],
-			npcs: [string],
-			rolls: [{
-				key: string,
-				name: string,
-				text: string,
-				roll: number,
-				from: string,
-				count: number
-			}],
-			logs: [string]
-		}?
-	],
-	dones: [
-		{
-			message: string,
-			channel: string,
-			author: string
-		}?
-	],
-	pings: [
-		{
-			message: string,
-			channel: string,
-			author: string,
-			text: string,
-			mentions: [{
-				id: string,
-				name: string
-			}]
-		}?
-	],
+			roll: number,
+			from: string,
+			count: number
+		}],
+		logs: [string]
+	}[],
+	dones: {
+		message: string,
+		channel: string,
+		author: string
+	}[],
+	pings: {
+		message: string,
+		channel: string,
+		author: string,
+		text: string,
+		mentions: {
+			id: string,
+			name: string
+		}[]
+	}[],
 	raw: any
 }
 
