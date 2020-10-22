@@ -2,6 +2,9 @@ import RodRequest from "./rodRequest";
 import Discord from 'discord.js';
 import _ from 'lodash';
 
+/**
+ * An alias, formorly known as "npcs", is a persona that users can speak through using webhooks.
+ */
 class Alias {
 	public id: string;
 	public name: string;
@@ -10,11 +13,17 @@ class Alias {
 	public grant: string[];
 	public grantRoles: string[];
 
+	/**
+	 * Creates an Alias given an "npc" entry from the server object.
+	 * @param npc - basic object containing alias values
+	 * @return the alias
+	 */
 	constructor(npc: any) {
 		const self = this;
 
 		self.id = npc.id;
 		self.name = npc.name;
+		self.avatar = npc.avatar;
 		self.createdBy = npc.createdBy;
 		self.grant = npc.grant || [];
 		self.grantRoles = npc.grantRoles || [];
@@ -63,7 +72,6 @@ class Alias {
 
 		// now add it
 		req.server.npcs.push( npc );
-		console.log('finally', req.server.npcs);
 		req.server.markModified('npcs');
 		await req.server.save();
 		return;

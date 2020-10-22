@@ -5,12 +5,14 @@ import Alias from '../lib/alias';
 class RodResponse {
 	req: RodRequest;
 	sent: boolean = false;
+	shouldSend: boolean = false;
 	alias: Alias;
 	postAs?: {
 		name: string,
 		avatar: string
 	};
 	errors: string[] = [];
+	content?: string;
 	embedContent?: string;
 	embedColor?: string;
 	embedFooter?: string;
@@ -145,7 +147,7 @@ class RodResponse {
 
 		// send it!
 		try {
-			await hook.send(content || '', {
+			await hook.send(content || self.content || '', {
 				username: username,
 				avatarURL: avatar,
 				embeds: embeds

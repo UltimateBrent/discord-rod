@@ -1,6 +1,8 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 import Discord, { Message } from 'discord.js';
 import _ from 'lodash';
+import RodRequest from '../lib/rodRequest';
+import Alias from '../lib/alias';
 
 export interface IUser extends Document {
 	_id: string,
@@ -13,7 +15,9 @@ export interface IUser extends Document {
 		}],
 		autoAlias?: string // npc.id
 	},
-	empty: boolean
+	empty: boolean,
+	saveSetting(req: RodRequest, key: string, val: any): Promise<IUser>,
+	getCurrentAlias(req: RodRequest): Alias
 }
 
 export interface IUserModel extends Model<IUser> {
@@ -26,15 +30,6 @@ export interface IUserModel extends Model<IUser> {
 	 */
 	GetFromID(u: Discord.User, gid: string): Promise<any>;
 
-	/**
-	 * Saves a user setting
-	 * @param u - the discord user object
-	 * @param gid - the guild id
-	 * @param key - the setting key
-	 * @param value - the setting value
-	 * @return the resulting rod user
-	 */
-	SaveSetting(u: Discord.User, gid: string, key: string, value: any): Promise<IUser>;
 }
 
 const s = new Schema({
@@ -65,35 +60,61 @@ s.statics.GetFromID = async function (u: Discord.User, gid: string): Promise<IUs
 		return s;
 	}
 
-	s = { empty: true, _id: u.id, settings: {} };
+	s = new User({ _id: u.id, name: u.username, settings: {}, serverSettings: {} });
 
 	return s;
 };
 
-s.statics.SaveSetting = async function (u: Discord.User, gid: string, key: string, value: any): Promise<IUser> {
-	let gu: IUser = await this.GetFromID(u, gid);
-
-	// do we have a real user?
-	if (!gu || gu.empty) {
-		gu = new User();
-		gu._id = u.id;
-		gu.name = u.username;
-		gu.serverSettings = {};
-	}
+/**
+ * Saves a setting for the user, using the current guild as context
+ * @param req - the request to get the guild
+ * @param key - setting name
+ * @param val - setting value
+ * @return resulting user object
+ */
+s.methods.saveSetting = async function (req: RodRequest, key: string, val: any): Promise<IUser> {
+	
+	const gu = this;
+	const gid = req.channel.guild.id;
 
 	if (!gu.serverSettings[gid]) gu.serverSettings[gid] = {};
 
-	gu.serverSettings[gid][key] = value;
+	gu.serverSettings[gid][key] = val;
 	gu.settings = {};
 	gu.markModified('serverSettings');
 	gu.markModified('settings');
-	gu = await gu.save();
+	await gu.save();
 	
 	// let's apply server settings over defaults
 	if (gu.serverSettings && gu.serverSettings[gid]) gu.settings = _.extend(gu.settings, gu.serverSettings[gid]);
 
 	return gu;
 };
+
+/**
+ * Calculates current alias that would be used in this channel
+ */
+s.methods.getCurrentAlias = function(req: RodRequest): Alias {
+	const u = this;
+
+	// get server-level alias
+	const sKey = u.settings?.autoAlias;
+
+	// get channel alias
+	const channelAliases: any = u.settings?.channelAliases || {};
+	const caKey = channelAliases[ req.message.channel.id ];
+
+	// if channel alias is set to none, we don't want any alias at all
+	if (caKey == 'none') return null;
+
+	// if we have a channel alias, let's return that
+	if (caKey && caKey != 'auto') return Alias.FindAlias(req, caKey);
+
+	// if we have a server alias, return that
+	if (sKey) return Alias.FindAlias(req, sKey);
+
+	return null;
+}
 
 const User = mongoose.model<IUser, IUserModel>('User', s);
 export default User;

@@ -6,6 +6,7 @@ import RodResponse from './lib/rodResponse';
 import Handler from './handlers/handler';
 import _ from 'lodash';
 import fs from 'fs';
+import Middleware from './middleware/middleware';
 
 /**
  * The new Rod structure is loosely based on Express.js
@@ -16,7 +17,7 @@ import fs from 'fs';
 class Rod {
 
 	handlers: Map<string, typeof Handler> = new Map();
-	// middleware: Middleware[] = [];
+	middleware: (typeof Middleware)[] = [];
 
 	/**
 	 * Connects to discord, parses input flags, set up event handlers
@@ -36,6 +37,7 @@ class Rod {
 		self.connectToMongo();
 		self.connectToDiscord();
 		self.loadHandlers();
+		self.loadMiddleware();
 	}
 
 	/**
@@ -95,7 +97,7 @@ class Rod {
 
 		for (const f of files) {
 			const name = f.replace('.handler.ts', '');
-			const h: any = await import( './handlers/' + name + '.handler.ts' );
+			const h: any = await import( './handlers/' + name + '.handler' );
 
 			const commands: string[] = h.default.commands;
 			for( const c of commands) {
@@ -105,6 +107,27 @@ class Rod {
 		}
 
 		console.log('- loaded commands:', Array.from( self.handlers.keys() ) );
+	}
+
+	/**
+	 * Loads the middleware
+	 */
+	public async loadMiddleware() {
+		const self = this;
+
+		let files: any = fs.readdirSync('./src/middleware');
+		files = _.filter(files, function (f) {
+			return f.match(/(.*)\.middleware\.ts/);
+		});
+		console.log('- middleware found:', files);
+
+		for (const f of files) {
+			const name = f.replace('.middleware.ts', '');
+			const h: any = await import('./middleware/' + name + '.middleware');
+
+			self.middleware.push( h.default );
+		}
+
 	}
 
 	/**
@@ -124,6 +147,11 @@ class Rod {
 		const res = new RodResponse( req );
 
 		// run middlewares
+		if (self.middleware.length) {
+			for( const mware of self.middleware) {
+				await mware.process( req, res );
+			}
+		}
 
 		// run handler (if any)
 		if (req.command) {
@@ -134,14 +162,14 @@ class Rod {
 				await h.process( req, res );
 			} else {
 				console.log('- no handler for command:', req.command);
-				req.command = null;
+				res.sendSimple('No such command: `' + req.command + '`');
 			}
 
 		}
 
 		// send it
 		try {
-			if (!res.sent && req.command) await res.send();
+			if (!res.sent && (res.shouldSend || req.command)) await res.send();
 		} catch(e) {
 			res.sendSimple( e );
 		}

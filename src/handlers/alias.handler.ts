@@ -1,18 +1,18 @@
-import Discord from 'discord.js';
 import RodRequest from '../lib/rodRequest';
 import RodResponse from '../lib/rodResponse';
 import Handler from './handler';
 import Alias from '../lib/alias';
 import _ from 'lodash';
 
-
+/**
+ * Multi-command class handling all alias creation and management
+ */
 class ManageAlias extends Handler {
 	static addCommands = ['addalias', 'addnpc', 'add'];
 	static editCommands = ['editalias', 'editnpc', 'edit'];
 	static removeCommands = ['removealias', 'remnpc', 'rem', 'remove'];
 	static removeAllCommands = ['remallnpc', 'removeallaliases'];
 
-	//static commands = ManageAlias.addCommands.concat( ManageAlias.editCommands ).concat( ManageAlias.removeCommands );
 	static commands = _.union(
 		ManageAlias.addCommands,
 		ManageAlias.editCommands,
@@ -20,6 +20,11 @@ class ManageAlias extends Handler {
 		ManageAlias.removeAllCommands
 	);
 
+	/**
+	 * Handles all alias management commands and routes according to the `req.command` used.
+	 * @param req
+	 * @param res
+	 */
 	static async process(req: RodRequest, res: RodResponse): Promise<void> {
 		const self = this;
 
@@ -82,6 +87,11 @@ class ManageAlias extends Handler {
 		res.send('I am alive!');
 	}
 
+	/**
+	 * Edits an alias
+	 * @param req
+	 * @param res
+	 */
 	static async edit(req: RodRequest, res: RodResponse): Promise<void> {
 		// are we in a DM?
 		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
@@ -115,6 +125,11 @@ class ManageAlias extends Handler {
 		await res.send('I am new an improved!');
 	}
 
+	/**
+	 * Removes an alias from the server
+	 * @param req
+	 * @param res
+	 */
 	static async remove(req: RodRequest, res: RodResponse): Promise<void> {
 		// are we in a DM?
 		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
@@ -137,6 +152,11 @@ class ManageAlias extends Handler {
 		await res.send('Alias `' + alias.name + '` has been deleted.');
 	}
 
+	/**
+	 * Removes all aliases on the server. (Admin only)
+	 * @param req
+	 * @param res
+	 */
 	static async removeAll(req: RodRequest, res: RodResponse): Promise<void> {
 		// are we in a DM?
 		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
