@@ -100,7 +100,7 @@ class RodResponse {
 
 		// prep postAs
 		const username = self.postAs?.name || self.req.message.member?.nickname || self.req.message.author.username;
-		const avatar = self.postAs?.avatar || self.req.message.author.avatarURL({dynamic: true});
+		const avatar = self.postAs ? self.postAs.avatar || '' : self.req.message.author.avatarURL({ dynamic: true });
 
 
 		// get the hook
