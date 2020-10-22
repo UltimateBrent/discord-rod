@@ -9,8 +9,9 @@ import _ from 'lodash';
 class ManageAlias extends Handler {
 	static addCommands = ['addalias', 'addnpc', 'add'];
 	static editCommands = ['editalias', 'editnpc', 'edit'];
+	static removeCommands = ['removealias', 'remnpc', 'rem', 'remove'];
 
-	static commands = ManageAlias.addCommands.concat( ManageAlias.editCommands );
+	static commands = ManageAlias.addCommands.concat( ManageAlias.editCommands ).concat( ManageAlias.removeCommands );
 
 	static async process(req: RodRequest, res: RodResponse): Promise<void> {
 		const self = this;
@@ -18,6 +19,7 @@ class ManageAlias extends Handler {
 		// which command type did we get?
 		if (ManageAlias.addCommands.includes( req.command )) return self.add(req, res);
 		if (ManageAlias.editCommands.includes( req.command )) return self.edit(req, res);
+		if (ManageAlias.removeCommands.includes( req.command )) return self.remove(req, res);
 	}
 
 
@@ -103,6 +105,28 @@ class ManageAlias extends Handler {
 		// let's say something as our new alias
 		res.alias = alias;
 		res.send('I am new an improved!');
+	}
+
+	static async remove(req: RodRequest, res: RodResponse): Promise<void> {
+		// are we in a DM?
+		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
+
+		// do we have permission?
+		const perm = req.getPermissions();
+		if (!perm) return await res.sendSimple('You do not have permission to edit aliases.');
+
+		// check data
+		if (!req.parts[0]) return await res.sendSimple('You must include the id of the alias you wish to edit.', '`' + req.server.esc + 'editalias id NewName https://imagedomain.com/newimage.jpg`');
+
+		// get the alias
+		const alias = Alias.FindAlias(req, req.parts[0]);
+		if (!alias) return await res.sendSimple('No such alias: `' + req.parts[0] + '`', 'Check your list: `' + req.server.esc + 'listaliases`');
+
+		// if we're a channel admin, let's make sure we have access to it
+		if (!alias.checkEdit(req)) return await res.sendSimple('As a channel admin, you can only edit aliases that you created.');
+
+		await alias.remove( req );
+		res.send('Alias `' + alias.name + '` has been deleted.');
 	}
 
 }

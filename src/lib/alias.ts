@@ -21,6 +21,25 @@ class Alias {
 	}
 
 	/**
+	 * Removes the alias from the server data
+	 * @param req - the request to get the server from
+	 */
+	public async remove( req: RodRequest ): Promise<void> {
+		const self = this;
+
+		
+		if (!req.server.npcs) return; // paranoia
+
+		// remove this one if it's there
+		_.remove(req.server.npcs, function (n) { return n.id == self.id; });
+
+		// save
+		req.server.markModified('npcs');
+		await req.server.save();
+		return;
+	}
+
+	/**
 	 * Saves this alias into the server data from the request
 	 * @param req - the request to get the server from
 	 */
@@ -38,10 +57,13 @@ class Alias {
 		if (!req.server.npcs) req.server.npcs = [];
 
 		// remove this one if it's there
-		_.remove( req.server.npcs, function(n) { return n.id == self.id; });
+		const old: any = _.find( req.server.npcs, function(n) { return n.id == self.id; });
+		if (old) old.remove(); // mongoose subdocs get finicky if you replace with similar contents so we can't just remove from array
+		req.server.markModified('npcs');
 
 		// now add it
 		req.server.npcs.push( npc );
+		console.log('finally', req.server.npcs);
 		req.server.markModified('npcs');
 		await req.server.save();
 		return;
