@@ -11,20 +11,26 @@ class MyAlias extends Handler {
 	static setCommands = ['setalias', 'setserveralias'];
 	static setChannelCommands = ['setchannelalias'];
 	static myAliasCommands = ['myalias', 'alias'];
+	static resetCommands = ['resetalias'];
 
 	static commands = _.union(
 		MyAlias.setCommands,
 		MyAlias.setChannelCommands,
-		MyAlias.myAliasCommands
+		MyAlias.myAliasCommands,
+		MyAlias.resetCommands
 	);
 
 	static async process(req: RodRequest, res: RodResponse): Promise<void> {
 		const self = this;
 
+		// are we in a DM?
+		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
+
 		// which command type did we get?
 		if (MyAlias.setCommands.includes(req.command)) return self.set(req, res);
 		if (MyAlias.setChannelCommands.includes(req.command)) return self.setForChannel(req, res);
 		if (MyAlias.myAliasCommands.includes(req.command)) return self.myAlias(req, res);
+		if (MyAlias.resetCommands.includes(req.command)) return self.reset(req, res);
 		
 	}
 
@@ -34,11 +40,9 @@ class MyAlias extends Handler {
 	 * @param res
 	 */
 	static async myAlias(req: RodRequest, res: RodResponse): Promise<void> {
-		// are we in a DM?
-		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
-
-		const sKey = req.user.settings?.autoAlias;
-		const caKey = req.user.settings?.channelAliases[ req.message.channel.id ];
+		
+		const sKey = req.user.settings?.autoAlias || 'none';
+		const caKey = req.user.settings?.channelAliases[ req.message.channel.id ] || 'auto';
 
 		let text = 'Your server alias is set to: `' + sKey + '`\nYour channel alias is set to: `' + caKey + '`\n\n';
 
@@ -55,9 +59,6 @@ class MyAlias extends Handler {
 	 * @param res
 	 */
 	static async set(req: RodRequest, res: RodResponse): Promise<void> {
-
-		// are we in a DM?
-		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
 
 		let alias: Alias = null;
 		if (req.parts[0] != 'off') {
@@ -80,9 +81,7 @@ class MyAlias extends Handler {
 	 * @param res
 	 */
 	static async setForChannel( req: RodRequest, res: RodResponse): Promise<void> {
-		// are we in a DM?
-		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
-
+		
 		let alias = null;
 		if (req.parts[0] == 'none') req.parts[0] = 'off'; // confusing, so adding alias
 		if (req.parts[0] != 'off' && req.parts[0] != 'auto') {
@@ -100,6 +99,19 @@ class MyAlias extends Handler {
 		const current: Alias = req.user.getCurrentAlias(req);
 
 		res.sendSimple('You set your alias for this channel to `' + (alias?.id || (req.parts[0] == 'off' ? 'off' : 'auto (use server setting)')) + '`. If you posted in this channel, you would post as `' + (current?.name || 'no alias') + '`.');
+	}
+
+	/**
+	 * Resets the user's alias settings to off/auto everywhere
+	 * @param req
+	 * @param res
+	 */
+	static async reset( req: RodRequest, res: RodResponse): Promise<void> {
+		
+		req.user = await req.user.saveSetting( req, 'channelAliases', {} );
+		req.user = await req.user.saveSetting( req, 'autoAlias', null );
+
+		res.sendSimple('Your alias settings for this server have been reset.');
 	}
 }
 
