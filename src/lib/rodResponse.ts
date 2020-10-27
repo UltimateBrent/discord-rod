@@ -170,7 +170,8 @@ class RodResponse {
 		self.req.server.markModified('lastMessages');
 		self.req.server.save();
 
-		// delete the original message that sent this
+		// delete the original message that sent this as long as target channel is this channel
+		if (self.req.channel.id != self.req.message.channel.id) return;
 		self.req.message.delete({
 			timeout: 1200,
 			reason: 'Rod deletes commands after responding to them.'
