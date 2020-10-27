@@ -13,7 +13,8 @@ export interface IUser extends Document {
 			name: string,
 			roll: string
 		}],
-		autoAlias?: string // npc.id
+		autoAlias?: string, // npc.id
+		channelAliases?: any
 	},
 	empty: boolean,
 	saveSetting(req: RodRequest, key: string, val: any): Promise<IUser>,
@@ -95,13 +96,12 @@ s.methods.saveSetting = async function (req: RodRequest, key: string, val: any):
  * Calculates current alias that would be used in this channel
  */
 s.methods.getCurrentAlias = function(req: RodRequest): Alias {
-	const u = this;
 
 	// get server-level alias
-	const sKey = u.settings?.autoAlias;
+	const sKey = req.user.settings?.autoAlias;
 
 	// get channel alias
-	const channelAliases: any = u.settings?.channelAliases || {};
+	const channelAliases: any = req.user.settings?.channelAliases || {};
 	const caKey = channelAliases[ req.message.channel.id ];
 
 	// if channel alias is set to none, we don't want any alias at all

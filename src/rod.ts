@@ -148,7 +148,7 @@ class Rod {
 
 		// run middlewares
 		if (self.middleware.length) {
-			for( const mware of self.middleware) {
+			for (const mware of self.middleware) {
 				await mware.process( req, res );
 			}
 		}
