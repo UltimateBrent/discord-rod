@@ -17,6 +17,7 @@ export interface IServer extends Document { // Typescript definition
 	},
 	ignorePrefixes: string[],
 	lastMessages: any,
+	channelAliasTargets: any,
 	tables: {
 		name: string,
 		source: string,
@@ -97,6 +98,7 @@ const s = new Schema({
 	},
 	ignorePrefixes: [String],
 	lastMessages: Schema.Types.Mixed,
+	channelAliasTargets: Schema.Types.Mixed,
 	tables: [
 		{
 			name: String,

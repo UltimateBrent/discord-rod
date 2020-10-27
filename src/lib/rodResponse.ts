@@ -39,7 +39,7 @@ class RodResponse {
 			embeds = [ em ];
 		}
 
-		return this.req.channel.send(content, embeds );
+		return this.req.message.channel.send(content, embeds );
 	}
 
 	/**

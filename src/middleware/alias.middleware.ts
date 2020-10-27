@@ -1,3 +1,4 @@
+import { TextChannel } from 'discord.js';
 import Alias from '../lib/alias';
 import RodRequest from '../lib/rodRequest';
 import RodResponse from '../lib/rodResponse';
@@ -16,6 +17,15 @@ class AliasMiddleware extends Middleware {
 			res.alias = alias;
 			res.shouldSend = true;
 			if (!req.command) res.content = req.message.content;
+
+			// if target channel, let's set it
+			const target = req.server.channelAliasTargets[ req.message.channel.id ];
+			if (target) {
+				req.channel = req.message.guild.channels.resolve( target ) as TextChannel;
+				
+				// paranoia
+				if (!req.channel) req.channel = req.message.channel as TextChannel;
+			}
 		}
 	}
 
