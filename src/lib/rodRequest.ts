@@ -113,13 +113,13 @@ class RodRequest {
 		const self = this;
 
 		try {
-			const hooks = await (self.message.channel as Discord.TextChannel).fetchWebhooks();
+			const hooks = await (self.channel as Discord.TextChannel).fetchWebhooks();
 			if (!hooks.size && create) {
 				console.log('- no hooks found, creating...');
 
 				for (let i = hooks.size; i < 2; i++) {
 					try {
-						const h = await (self.message.channel as Discord.TextChannel).createWebhook('RoD Hook', {
+						const h = await (self.channel as Discord.TextChannel).createWebhook('RoD Hook', {
 							avatar: 'https://cdn.discordapp.com/attachments/366690245820940314/438103869600563200/rod-head.png',
 							reason: 'Rodbot creating webhook for use with aliasing.'
 						});

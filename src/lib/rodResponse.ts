@@ -39,7 +39,7 @@ class RodResponse {
 			embeds = [ em ];
 		}
 
-		return this.req.message.channel.send(content, embeds );
+		return this.req.channel.send(content, embeds );
 	}
 
 	/**
@@ -62,7 +62,7 @@ class RodResponse {
 		}
 
 		// is this a pm?
-		if (typeof self.req.message.channel['fetchWebhooks'] !== 'function') { // direct messages don't have webhooks
+		if (typeof self.req.channel['fetchWebhooks'] !== 'function') { // direct messages don't have webhooks
 			content = self.embedContent || content || self.req.message.content;
 			let embed = null;
 
@@ -109,7 +109,7 @@ class RodResponse {
 		let hook = hooks.first(); // by default, take the first one
 		
 		// due to weird android bugs, we want to alternate the webhook if this message is from a different author, otherwise they get merged
-		if (hooks.size > 1 && self.req.server.lastMessages && self.req.server.lastMessages[self.req.message.channel.id]) {
+		if (hooks.size > 1 && self.req.server.lastMessages && self.req.server.lastMessages[self.req.channel.id]) {
 			const lm = self.req.server.lastMessages[self.req.message.channel.id];
 			//console.log('- checking last message', lm, hook.id);
 
@@ -154,13 +154,13 @@ class RodResponse {
 			});
 		} catch(e) {
 			console.log('- hook.send error:', e);
-			self.req.message.channel.send( 'Got an error trying to post to webhook: ' + e );
+			self.req.channel.send( 'Got an error trying to post to webhook: ' + e );
 		}
 
 		// update the last messages check on the server object
 		if (!self.req.server.lastMessages) self.req.server.lastMessages = {};
 
-		self.req.server.lastMessages[self.req.message.channel.id] = {
+		self.req.server.lastMessages[self.req.channel.id] = {
 			author: self.req.message.author.id,
 			name: username,
 			avatar: avatar,
