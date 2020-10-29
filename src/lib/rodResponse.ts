@@ -172,10 +172,14 @@ class RodResponse {
 
 		// delete the original message that sent this as long as target channel is this channel
 		if (self.req.channel.id != self.req.message.channel.id) return;
-		self.req.message.delete({
-			timeout: 1200,
-			reason: 'Rod deletes commands after responding to them.'
-		});
+		try {
+			self.req.message.delete({
+				timeout: 1200,
+				reason: 'Rod deletes commands after responding to them.'
+			});
+		} catch(e) {
+			console.log('- message delete failed:', e);
+		}
 
 	}
 
