@@ -60,7 +60,9 @@ class Alias {
 			id: self.id,
 			name: self.name,
 			avatar: self.avatar,
-			createdBy: self.createdBy
+			createdBy: self.createdBy,
+			grant: self.grant,
+			grantRoles: self.grantRoles
 		};
 
 		if (!req.server.npcs) req.server.npcs = [];
@@ -73,7 +75,7 @@ class Alias {
 		// now add it
 		req.server.npcs.push( npc );
 		req.server.markModified('npcs');
-		await req.server.save();
+		req.server = await req.server.save();
 		return;
 	}
 

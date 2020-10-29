@@ -75,7 +75,37 @@ class GrantAlias extends Handler {
 	 * @param res
 	 */
 	static async remgrant(req: RodRequest, res: RodResponse): Promise<void> {
-		
+		// do we have permission?
+		const perm = req.getPermissions();
+		if (!perm) return await res.sendSimple('You do not have permission to grant aliases.');
+
+		// check data
+		if (!req.parts[0] || !(req.message.mentions.users.size || req.message.mentions.roles.size)) return await res.sendSimple('You must include the id of the alias you wish to ungrant and mention a person or role to remove the grant from.', '`' + req.server.esc + 'remgrantalias id @name`');
+
+		// get the alias
+		const alias = Alias.FindAlias(req, req.parts[0]);
+		if (!alias) return await res.sendSimple('No such alias: `' + req.parts[0] + '`', 'Check your list: `' + req.server.esc + 'listaliases` then try again: `' + req.server.esc + 'remgrantalias id @name`');
+
+		// if we're a channel admin, let's make sure we have access to it
+		if (!alias.checkEdit(req)) return await res.sendSimple('As a channel admin, you can only edit aliases that you created.');
+
+		const users = req.message.mentions.users.size ? _.map(req.message.mentions.users.array(), function (m) { return m.id; }) : [];
+		const roles = req.message.mentions.roles.size ? _.map(req.message.mentions.roles.array(), function (m) { return m.id; }) : [];
+
+		alias.grant = _.without(alias.grant, ...users);
+		alias.grantRoles = _.without(alias.grantRoles, ...roles);
+
+		await alias.save( req );
+
+		let granted = [];
+		if (users) granted = granted.concat(_.map(users, function (m) { return '<@' + m + '>'; }));
+		if (roles) granted = granted.concat(_.map(roles, function (m) { return '<@&' + m + '>'; }));
+		const mentionText = granted.join(', ');
+
+		res.content = 'I am now free of ' + mentionText + '! Please remind them to check their aliases with `' + req.server.esc + 'alias` to make sure they aren\'t set to use this anymore.';
+		res.alias = alias;
+
+		return;
 	}
 
 	
