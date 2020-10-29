@@ -36,6 +36,7 @@ class InlineRollsMiddleware extends Middleware {
 				req.parseMessage();
 
 				// this might've already been replaced by an alias, so let's make sure the updated message is there
+				// it'd be neat if I could set middleware priority or something, but this will have to do in the meantime
 				if (!req.command && res.alias) res.content = req.message.content;
 			}
 
