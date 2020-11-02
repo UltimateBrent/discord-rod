@@ -41,14 +41,25 @@ class MyAlias extends Handler {
 	 */
 	static async myAlias(req: RodRequest, res: RodResponse): Promise<void> {
 		
+		let user = req.user;
+
+		if (req.message.mentions.users.size) {
+			// they mentioned someone, let's see if they have permission to do this
+			const perm = req.getPermissions();
+			if (!perm) return await res.sendSimple('You do not have permission to check aliases.');
+
+			const du: Discord.User = req.message.mentions.users.first();
+			user = await User.GetFromID(du, req.channel.guild.id);
+		}
+
 		const sKey = req.user.settings?.autoAlias || 'none';
 		const caKey = req.user.settings?.channelAliases[ req.message.channel.id ] || 'auto';
 
-		let text = 'Your server alias is set to: `' + sKey + '`\nYour channel alias is set to: `' + caKey + '`\n\n';
+		let text = '<@' + user._id + '>\'s server alias is set to: `' + sKey + '`\nTheir channel alias is set to: `' + caKey + '`\n\n';
 
 		const current = req.user.getCurrentAlias( req );
 
-		text += 'You would post here as: `' + (current?.name || 'no alias') + '`';
+		text += '<@' + user._id + '> would post here as: `' + (current?.name || 'no alias') + '`';
 
 		res.embedContent = text;
 	}
