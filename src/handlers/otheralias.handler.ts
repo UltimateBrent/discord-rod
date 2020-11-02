@@ -38,8 +38,12 @@ class MyAlias extends Handler {
 	 */
 	static async setFor(req: RodRequest, res: RodResponse): Promise<void> {
 
+		// do we have permission?
+		const perm = req.getPermissions();
+		if (!perm) return await res.sendSimple('You do not have permission to set aliases for other people.');
+
 		// get the first mentioned user
-		if (!req.message.mentions.users.size) return await res.sendSimple('You must @mention the user you want to set the alias for.', '`' + req.server.esc + req.command + ' id @name`');
+		if (!req.message.mentions.users.size) return await res.sendSimple('You must @mention the user you want to set the alias for.', '`' + req.server.esc + req.command + ' @name id`');
 
 		// it's not reasonable to assume they'd follow a parameter order for this one, so let's figure out which one is the alias id
 		const aliasId = req.parts[0].slice(0, 1) == '<' ? req.parts[1] : req.parts[0];
@@ -67,8 +71,12 @@ class MyAlias extends Handler {
 	 */
 	static async setForChannelFor( req: RodRequest, res: RodResponse): Promise<void> {
 
+		// do we have permission?
+		const perm = req.getPermissions();
+		if (!perm) return await res.sendSimple('You do not have permission to set aliases for other people.');
+
 		// get the first mentioned user
-		if (!req.message.mentions.users.size) return await res.sendSimple('You must @mention the user you want to set the alias for.', '`' + req.server.esc + req.command + ' id @name`');
+		if (!req.message.mentions.users.size) return await res.sendSimple('You must @mention the user you want to set the alias for.', '`' + req.server.esc + req.command + ' @name id`');
 
 		// it's not reasonable to assume they'd follow a parameter order for this one, so let's figure out which one is the alias id
 		let aliasId = req.parts[0].slice(0, 1) == '<' ? req.parts[1] : req.parts[0];
@@ -101,11 +109,21 @@ class MyAlias extends Handler {
 	 * @param res
 	 */
 	static async resetFor( req: RodRequest, res: RodResponse): Promise<void> {
-		
-		req.user = await req.user.saveSetting( req, 'channelAliases', {} );
-		req.user = await req.user.saveSetting( req, 'autoAlias', null );
 
-		res.sendSimple('Your alias settings for this server have been reset.');
+		// do we have permission?
+		const perm = req.getPermissions();
+		if (!perm) return await res.sendSimple('You do not have permission to set aliases for other people.');
+
+		// get the first mentioned user
+		if (!req.message.mentions.users.size) return await res.sendSimple('You must @mention the user you want to set the alias for.', '`' + req.server.esc + req.command + ' @name`');
+
+		const du: Discord.User = req.message.mentions.users.first();
+		const user: IUser = await User.GetFromID(du, req.channel.guild.id);
+		
+		await user.saveSetting( req, 'channelAliases', {} );
+		await user.saveSetting( req, 'autoAlias', null );
+
+		res.sendSimple('<@' + user._id + '>\'s alias settings for this server have been reset.');
 	}
 }
 
