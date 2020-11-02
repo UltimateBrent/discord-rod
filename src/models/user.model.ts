@@ -29,7 +29,7 @@ export interface IUserModel extends Model<IUser> {
 	 * @param gid - the guild id
 	 * @return the rod user object
 	 */
-	GetFromID(u: Discord.User, gid: string): Promise<any>;
+	GetFromID(u: Discord.User, gid: string): Promise<IUser>;
 
 }
 
