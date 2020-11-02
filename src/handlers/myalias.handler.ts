@@ -52,12 +52,12 @@ class MyAlias extends Handler {
 			user = await User.GetFromID(du, req.channel.guild.id);
 		}
 
-		const sKey = req.user.settings?.autoAlias || 'none';
-		const caKey = req.user.settings?.channelAliases[ req.message.channel.id ] || 'auto';
+		const sKey = user.settings?.autoAlias || 'none';
+		const caKey = user.settings?.channelAliases[ req.message.channel.id ] || 'auto';
 
 		let text = '<@' + user._id + '>\'s server alias is set to: `' + sKey + '`\nTheir channel alias is set to: `' + caKey + '`\n\n';
 
-		const current = req.user.getCurrentAlias( req );
+		const current = user.getCurrentAlias( req );
 
 		text += '<@' + user._id + '> would post here as: `' + (current?.name || 'no alias') + '`';
 

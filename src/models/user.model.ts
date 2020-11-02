@@ -98,10 +98,10 @@ s.methods.saveSetting = async function (req: RodRequest, key: string, val: any):
 s.methods.getCurrentAlias = function(req: RodRequest): Alias {
 
 	// get server-level alias
-	const sKey = req.user.settings?.autoAlias;
+	const sKey = this.settings?.autoAlias;
 
 	// get channel alias
-	const channelAliases: any = req.user.settings?.channelAliases || {};
+	const channelAliases: any = this.settings?.channelAliases || {};
 	const caKey = channelAliases[ req.message.channel.id ];
 
 	// if channel alias is set to none, we don't want any alias at all

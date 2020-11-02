@@ -48,10 +48,10 @@ class MyAlias extends Handler {
 		const user: IUser = await User.GetFromID( du, req.channel.guild.id );
 
 		let alias: Alias = null;
-		if (req.parts[0] != 'off') {
-			alias = Alias.FindAlias(req, req.parts[0]);
-			if (!alias) return await res.sendSimple('No such alias exists: `' + req.parts[0] + '`');
-			if (!alias.checkGrant(req)) return await res.sendSimple('You don\'t have permission to use that alias. Have an admin use `' + req.server.esc + 'grantalias` for you.');
+		if (aliasId != 'off') {
+			alias = Alias.FindAlias(req, aliasId);
+			if (!alias) return await res.sendSimple('No such alias exists: `' + aliasId + '`');
+			if (!alias.checkGrant(req)) return await res.sendSimple('That user desn\'t have permission to use that alias. Please use `' + req.server.esc + 'grantalias` to grant it first.');
 		}
 
 		await user.saveSetting( req, 'autoAlias', alias?.id);
@@ -66,24 +66,33 @@ class MyAlias extends Handler {
 	 * @param res
 	 */
 	static async setForChannelFor( req: RodRequest, res: RodResponse): Promise<void> {
+
+		// get the first mentioned user
+		if (!req.message.mentions.users.size) return await res.sendSimple('You must @mention the user you want to set the alias for.', '`' + req.server.esc + req.command + ' id @name`');
+
+		// it's not reasonable to assume they'd follow a parameter order for this one, so let's figure out which one is the alias id
+		let aliasId = req.parts[0].slice(0, 1) == '<' ? req.parts[1] : req.parts[0];
+
+		const du: Discord.User = req.message.mentions.users.first();
+		const user: IUser = await User.GetFromID(du, req.channel.guild.id);
 		
 		let alias = null;
-		if (req.parts[0] == 'none') req.parts[0] = 'off'; // confusing, so adding alias
-		if (req.parts[0] != 'off' && req.parts[0] != 'auto') {
-			alias = Alias.FindAlias(req, req.parts[0]);
-			if (!alias) return await res.sendSimple('No such alias exists: `' + req.parts[0] + '`');
-			if (!alias.checkGrant(req)) return await res.sendSimple('You don\'t have permission to use that alias. Have an admin use `' + req.server.esc + 'grantalias` for you.');
+		if (aliasId == 'none') aliasId = 'off'; // confusing, so adding alias
+		if (aliasId != 'off' && aliasId != 'auto') {
+			alias = Alias.FindAlias(req, aliasId);
+			if (!alias) return await res.sendSimple('No such alias exists: `' + aliasId + '`');
+			if (!alias.checkGrant(req)) return await res.sendSimple('That user desn\'t have permission to use that alias. Please use `' + req.server.esc + 'grantalias` to grant it first.');
 		}
 
 		// put this alias into the current channel aliases
-		const channelAliases = req.user.settings.channelAliases || {};
-		channelAliases[ req.channel.id ] = alias?.id || (req.parts[0] == 'off' ? 'none' : null);
+		const channelAliases = user.settings.channelAliases || {};
+		channelAliases[req.channel.id] = alias?.id || (aliasId == 'off' ? 'none' : null);
 
-		req.user = await req.user.saveSetting( req, 'channelAliases', channelAliases );
+		await user.saveSetting( req, 'channelAliases', channelAliases );
 
-		const current: Alias = req.user.getCurrentAlias(req);
+		const current: Alias = user.getCurrentAlias(req);
 
-		res.sendSimple('You set your alias for this channel to `' + (alias?.id || (req.parts[0] == 'off' ? 'off' : 'auto (use server setting)')) + '`. If you posted in this channel, you would post as `' + (current?.name || 'no alias') + '`.');
+		res.sendSimple('You set the alias for this channel for <@' + user._id + '> to `' + (alias?.id || (aliasId == 'off' ? 'off' : 'auto (use server setting)')) + '`. If they posted in this channel, they would post as `' + (current?.name || 'no alias') + '`.');
 	}
 
 	/**
