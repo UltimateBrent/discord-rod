@@ -9,6 +9,8 @@ import Middleware from '../middleware/middleware';
  */
 class AliasMiddleware extends Middleware {
 
+	static priority = 1; // last
+
 	static async process(req: RodRequest, res: RodResponse): Promise<void> {
 
 		// get current alias, if any

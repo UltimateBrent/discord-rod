@@ -10,6 +10,8 @@ import Roll from '../lib/roll';
  */
 class InlineRollsMiddleware extends Middleware {
 
+	static priority = 20;
+
 	static async process(req: RodRequest, res: RodResponse): Promise<void> {
 
 		// did `(/roll` or `(/r` appear in our message?

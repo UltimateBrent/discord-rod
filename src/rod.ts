@@ -128,6 +128,11 @@ class Rod {
 			self.middleware.push( h.default );
 		}
 
+		// sort by priority
+		self.middleware = _.sortBy(self.middleware, function(m) {
+			return -1 * m.priority;
+		});
+
 	}
 
 	/**
