@@ -5,6 +5,7 @@ import Handler from './handler';
 import Alias from '../lib/alias';
 import _ from 'lodash';
 import User from '../models/user.model';
+import Call from '../lib/call';
 
 
 class CallHandler extends Handler {
@@ -60,7 +61,7 @@ class CallHandler extends Handler {
 		}
 
 		// any monster mentions? ex. `+Goblin`
-		let monsters = [];
+		let npcs = [];
 		for (let p of req.parts) {
 			if (p.charAt(0) == '+') {
 				p = p.slice(1);
@@ -68,16 +69,29 @@ class CallHandler extends Handler {
 				// remove quote if it's there
 				if (p.charAt(0) == '"') p = p.slice(1);
 
-				monsters.push( p );
+				npcs.push( p );
 			}
 		}
-		monsters = _.uniq( monsters );
+		npcs = _.uniq(npcs );
 		
-		console.log('- found in call:', {mentions, monsters});
+		console.log('- found in call:', { mentions, npcs });
 
 		// insert the call
-		// TODO
+		const call = new Call({
+			channel: req.channel.id,
+			name: title,
+			text: text,
+			start: new Date(),
+			mentions: mentions,
+			npcs: npcs
+		});
+
+		const em = call.generateEmbed( req );
+		res.embed = em;
+		const message: Discord.Message = await res.send();
 		
+		call.message = message.id;
+		return call.save( req );
 	}
 
 	

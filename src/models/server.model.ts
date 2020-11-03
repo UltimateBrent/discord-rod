@@ -44,15 +44,15 @@ export interface IServer extends Document { // Typescript definition
 			name: string
 		}[],
 		npcs: string[],
-		rolls: [{
+		rolls: {
 			key: string,
 			name: string,
 			text: string,
 			roll: number,
 			from: string,
 			count: number
-		}],
-		logs: [string]
+		}[],
+		logs: string[]
 	}[],
 	dones: {
 		message: string,

@@ -28,7 +28,7 @@ class RodResponse {
 	 * @param embeds - array of discord embeds, or embed content string
 	 * @return message response promise for catching/awaiting
 	 */
-	sendSimple( content: string, embedContent: string = null ): Promise<any> {
+	sendSimple( content: string, embedContent: string = null ): Promise<Discord.Message|any> {
 		this.sent = true;
 
 		let embeds: Discord.MessageEmbed[] = [];
@@ -46,7 +46,7 @@ class RodResponse {
 	 * Sends the current response object
 	 * @param content - specific content to send as the message beyond what's already stored here
 	 */
-	async send( content: string = null ) {
+	async send( content: string = null ): Promise<Discord.Message|any> {
 		const self = this;
 
 		// mark this as sent so we don't try again
@@ -86,8 +86,7 @@ class RodResponse {
 
 		// let's see if we're in a fail state
 		if (!hooks.size && self.postAs) {
-			self.sendSimple( 'You just tried to alias yourself as `' + self.postAs.name + '` in a channel with no webhooks. We already tried to create them and failed, so this is most likely a permissions issue. Please make sure Rod has the `Manage Webhooks` permission.' );
-			return;
+			return await self.sendSimple( 'You just tried to alias yourself as `' + self.postAs.name + '` in a channel with no webhooks. We already tried to create them and failed, so this is most likely a permissions issue. Please make sure Rod has the `Manage Webhooks` permission.' );
 		}
 
 		if (!hooks.size && self.errors.length) {
@@ -96,8 +95,7 @@ class RodResponse {
 		}
 
 		if (!hooks.size) {
-			self.sendSimple( self.embed?.description || self.embedContent || content || 'Error: You somehow have sent a message with no content and Rod didn\'t figure out why before now. Not great.' );
-			return;
+			return self.sendSimple( self.embed?.description || self.embedContent || content || 'Error: You somehow have sent a message with no content and Rod didn\'t figure out why before now. Not great.' );
 		}
 
 		// prep postAs
@@ -146,8 +144,9 @@ class RodResponse {
 		}
 
 		// send it!
+		let m: Promise<Discord.Message>;
 		try {
-			await hook.send(content || self.content || '', {
+			m = hook.send(content || self.content || '', {
 				username: username,
 				avatarURL: avatar,
 				embeds: embeds
@@ -165,7 +164,7 @@ class RodResponse {
 			name: username,
 			avatar: avatar,
 			webhook: hook.id,
-			content: content
+			content: content || self.content || ''
 		};
 		self.req.server.markModified('lastMessages');
 		self.req.server.save();
@@ -181,6 +180,7 @@ class RodResponse {
 			console.log('- message delete failed:', e);
 		}
 
+		return m;
 	}
 
 	/**
