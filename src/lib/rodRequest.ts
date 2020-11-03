@@ -19,6 +19,8 @@ class RodRequest {
 	public parts: string[];
 	public params: any = {};
 
+	public rollFor: string;
+
 	/**
 	 * creates a basic RodRequest from a discord message
 	 */
@@ -35,7 +37,7 @@ class RodRequest {
 	 * Parses a message to get the correct command and parameters out
 	 * turns `/addnpc bob "Robert Bobby"` to `{command: 'addnpc', params: [bob, 'Robert Bobby']}`
 	 */
-	parseMessage() {
+	public parseMessage() {
 		const self = this;
 
 		if (!self.server.esc) self.server.esc = '.';
