@@ -17,12 +17,16 @@ class RollForHandler extends Handler {
 		const perm = req.getPermissions();
 		if (!perm) return await res.sendSimple('You do not have permission to roll for other people.');
 
+		// let's set the rollfor values
 		req.rollFor = req.parts[0];
 		res.alias = null;
 		res.postAs = {
 			name: req.rollFor,
 			avatar: 'https://cdn.discordapp.com/attachments/368510638160347148/369222455673225217/d20.png'
 		};
+
+		// check roll calls
+		// TODO call the roll call check
 
 		const roll: Roll = Roll.parseRoll( req, req.parts.slice(1).join(' ') );
 		console.log('- process roll:', roll);
