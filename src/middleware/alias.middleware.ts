@@ -11,7 +11,30 @@ class AliasMiddleware extends Middleware {
 
 	static priority = 1; // last
 
+	static sayCommands = ['usealias', 'use', 'npc', 'say'];
+
 	static async process(req: RodRequest, res: RodResponse): Promise<void> {
+
+		// are we using a say command?
+		if (AliasMiddleware.sayCommands.includes( req.command )) {
+			// are we in a DM?
+			if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
+
+			const alias = Alias.FindAlias(req, req.parts[0]);
+			if (!alias) return await res.sendSimple('No such alias exists: `' + req.parts[0] + '`');
+
+			if (!alias.checkGrant(req)) return await res.sendSimple('You don\'t have permission to use that alias. Have an admin use `' + req.server.esc + 'grantalias` for you.');
+
+			// we're good
+			res.alias = alias;
+			req.command = null;
+			res.shouldSend = true;
+			req.message.content = req.parts.slice(1).join(' ');
+			req.parseMessage();
+			if (!req.command) res.content = req.message.content;
+			AliasMiddleware.setTargetChannel(req, res);
+			return;
+		}
 
 		// get current alias, if any
 		const alias: Alias = req.user.getCurrentAlias( req );
@@ -20,14 +43,18 @@ class AliasMiddleware extends Middleware {
 			res.shouldSend = true;
 			if (!req.command) res.content = req.message.content;
 
-			// if target channel, let's set it
-			const target = req.server.channelAliasTargets[ req.message.channel.id ];
-			if (target) {
-				req.channel = req.message.guild.channels.resolve( target ) as TextChannel;
-				
-				// paranoia
-				if (!req.channel) req.channel = req.message.channel as TextChannel;
-			}
+			AliasMiddleware.setTargetChannel(req, res);
+		}
+	}
+
+	static setTargetChannel(req: RodRequest, res: RodResponse) {
+		// if target channel, let's set it
+		const target = req.server.channelAliasTargets[req.message.channel.id];
+		if (target) {
+			req.channel = req.message.guild.channels.resolve(target) as TextChannel;
+
+			// paranoia
+			if (!req.channel) req.channel = req.message.channel as TextChannel;
 		}
 	}
 

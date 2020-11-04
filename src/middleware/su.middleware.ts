@@ -32,9 +32,7 @@ class SwitchUserMiddleware extends Middleware {
 			// reset message info
 			req.command = null;
 			req.message.mentions.users.delete( du.id );
-			console.log('- message before reset:', req.message.content);
 			req.message.content = req.parts.slice(1).join(' ');
-			console.log('- resetting message as:', req.message.content);
 			req.parseMessage();
 		}
 	}
