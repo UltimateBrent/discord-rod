@@ -154,7 +154,7 @@ class Rod {
 		// run middlewares
 		if (self.middleware.length) {
 			for (const mware of self.middleware) {
-				await mware.process( req, res );
+				if (mware.priority >= 0) await mware.process( req, res );
 			}
 		}
 
@@ -170,6 +170,13 @@ class Rod {
 				res.sendSimple('No such command: `' + req.command + '`');
 			}
 
+		}
+
+		// run after middlewares (negative priority)
+		if (self.middleware.length) {
+			for (const mware of self.middleware) {
+				if (mware.priority < 0) await mware.process(req, res);
+			}
 		}
 
 		// send it
