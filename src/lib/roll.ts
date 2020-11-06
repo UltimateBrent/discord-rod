@@ -15,6 +15,15 @@ class Roll {
 	title: string;
 	multi?: Roll[];
 
+	constructor( data: any = null ) {
+		const self = this;
+
+		if (data) {
+			data = _.filter(data, function(m) { return typeof m == 'function'; }); // dont' want to pull in mongoose methods by accident
+			Object.assign( self, data );
+		}
+	}
+
 	/**
 	 * Parses a roll string, under the context of the requesting user/server for macros etc.
 	 * @param req - the request object

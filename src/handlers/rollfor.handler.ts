@@ -33,6 +33,8 @@ class RollForHandler extends Handler {
 
 		if (roll.errors.length) {
 			res.errors = res.errors.concat( roll.errors );
+		} else {
+			res.roll = roll;
 		}
 		res.embedContent = roll.text;
 	}

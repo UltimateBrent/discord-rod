@@ -34,6 +34,7 @@ class InlineRollsMiddleware extends Middleware {
 
 				// remove these rolls from the original message and re-trigger the parse
 				const reg = new RegExp(' ?[\\(]\\' + req.server.esc + '(.*?)[\\)]', 'g');
+				res.roll = roll;
 				req.message.content = req.message.content.replace(reg, '');
 				req.parseMessage();
 			}

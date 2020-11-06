@@ -1,6 +1,7 @@
 import Discord from 'discord.js';
 import RodRequest from './rodRequest';
 import Alias from '../lib/alias';
+import Roll from './roll';
 
 class RodResponse {
 	req: RodRequest;
@@ -11,6 +12,7 @@ class RodResponse {
 		name: string,
 		avatar: string
 	};
+	roll: Roll;
 	errors: string[] = [];
 	content?: string;
 	embedContent?: string;
@@ -28,16 +30,20 @@ class RodResponse {
 	 * @param embeds - array of discord embeds, or embed content string
 	 * @return message response promise for catching/awaiting
 	 */
-	sendSimple( content: string, embedContent: string = null ): Promise<Discord.Message|any> {
+	sendSimple( content: string, embedContent: string|Discord.MessageEmbed[] = null, options: any = {} ): Promise<Discord.Message|any> {
 		this.sent = true;
 
 		let embeds: Discord.MessageEmbed[] = [];
-		if (embedContent) {
+		if (typeof embedContent == 'string') {
 			const em = new Discord.MessageEmbed();
 			em.setDescription( embedContent );
 			em.setColor( '#FFFF00' );
 			embeds = [ em ];
+		} else {
+			embeds = embedContent;
 		}
+
+		if (options.deleteCommand) this.req.message.delete({timeout: 500});
 
 		return this.req.message.channel.send(content, embeds );
 	}

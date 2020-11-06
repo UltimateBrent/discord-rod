@@ -117,6 +117,36 @@ class Call {
 		return;
 	}
 
+	/**
+	 * Removes this call from the server info
+	 * @param req - the rod request with the server info on it
+	 * @return the removed call's info
+	 */
+	public async remove( req: RodRequest ): Promise<Call> {
+		const self = this;
+
+		const old: any = _.find(req.server.rollCalls, function (c) { return c.channel == self.channel; });
+		if (old) old.remove(); // mongoose subdocs get finicky if you replace with similar contents so we can't just remove from array
+		req.server.markModified('rollCalls');
+
+		req.server = await req.server.save();
+
+		return old ? new Call(old) : null;
+	}
+
+	/**
+	 * Checks the server object to see if there is an active call for this channel
+	 * @param req - the request object for context
+	 * @return the call
+	 */
+	public static GetActiveCall( req: RodRequest ) : Call {
+
+		if (!req.server.rollCalls?.length) return null;
+
+		const c = _.find( req.server.rollCalls, function(c) { return c.channel == req.channel.id; });
+		return new Call(c);
+	}
+
 }
 
 export default Call;

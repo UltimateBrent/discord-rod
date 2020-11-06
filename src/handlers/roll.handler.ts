@@ -15,6 +15,7 @@ class RollHandler extends Handler {
 		if (roll.errors.length) {
 			res.errors = res.errors.concat( roll.errors );
 		}
+		res.roll = roll;
 		res.embedContent = roll.text;
 	}
 }
