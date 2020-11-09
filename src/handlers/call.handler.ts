@@ -2,9 +2,7 @@ import Discord from 'discord.js';
 import RodRequest from '../lib/rodRequest';
 import RodResponse from '../lib/rodResponse';
 import Handler from './handler';
-import Alias from '../lib/alias';
 import _ from 'lodash';
-import User from '../models/user.model';
 import Call from '../lib/call';
 
 

@@ -3,7 +3,6 @@ import RodRequest from '../lib/rodRequest';
 import RodResponse from '../lib/rodResponse';
 import Middleware from '../middleware/middleware';
 import _ from 'lodash';
-import User from '../models/user.model';
 import Call from '../lib/call';
 import Roll from '../lib/roll';
 
@@ -12,7 +11,7 @@ import Roll from '../lib/roll';
  */
 class CallMiddleware extends Middleware {
 
-	static priority = -10;
+	static priority = -10; // after command processing
 
 	static async process(req: RodRequest, res: RodResponse): Promise<void> {
 

@@ -43,7 +43,7 @@ class RodResponse {
 			embeds = embedContent;
 		}
 
-		if (options.deleteCommand) this.req.message.delete({timeout: 500});
+		if (options.deleteCommand) this.req.message.delete({timeout: 500, reason: 'rodbot: deleting original command'});
 
 		return this.req.message.channel.send(content, embeds );
 	}

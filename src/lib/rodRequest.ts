@@ -8,6 +8,8 @@ import _ from 'lodash';
  */
 class RodRequest {
 
+	public client: Discord.Client;
+
 	public message: Discord.Message;
 	public channel: Discord.TextChannel;
 	public user: IUser;
@@ -22,10 +24,13 @@ class RodRequest {
 
 	/**
 	 * creates a basic RodRequest from a discord message
+	 * @param client - the bot client, for reference to bot user for permissions etc.
+	 * @param message - the discord message object
 	 */
-	constructor(message: Discord.Message) {
+	constructor(client: Discord.Client, message: Discord.Message) {
 		const self = this;
 
+		self.client = client;
 		self.message = message;
 		self.channel = message.channel as Discord.TextChannel;
 		self.guser = message.member;

@@ -9,15 +9,20 @@ import fs from 'fs';
 import Middleware from './middleware/middleware';
 
 /**
- * The new Rod structure is loosely based on Express.js
+ * The Rod v2 structure is loosely based on Express.js
  * Each message can be handled by "middleware", and ultimately ends up routed to a specific handler (or none at all)
  * For example, aliasing would be handled by middleware, and a roll would be handled by the roll handler
  * Each middleware or handler is sent the original message object, and a response object, which is built up by the handlers.
+ * 
+ * Invite Link: https://discord.com/oauth2/authorize?client_id=775423644095610911&scope=bot&permissions=536963136
  */
 class Rod {
 
-	handlers: Map<string, typeof Handler> = new Map();
-	middleware: (typeof Middleware)[] = [];
+	private handlers: Map<string, typeof Handler> = new Map();
+	private middleware: (typeof Middleware)[] = [];
+	private flags: any = {};
+
+	public client: Discord.Client;
 
 	/**
 	 * Connects to discord, parses input flags, set up event handlers
@@ -32,6 +37,7 @@ class Rod {
 			const a = process.argv[i].split('=');
 			flags[a[0]] = a[1] || true;
 		}
+		self.flags = flags;
 		console.log('- flags:', flags);
 
 		self.connectToMongo();
@@ -64,7 +70,9 @@ class Rod {
 			console.error('- discord error:', e);
 		});
 
-		client.login(Secrets.discordToken);
+		client.login( Secrets[ 'discordToken' + (self.flags.tokenType || '') ] );
+
+		self.client = client;
 	}
 
 	/**
@@ -142,11 +150,11 @@ class Rod {
 	public async handleMessage( msg: Discord.Message ) {
 		const self = this;
 
-		if (msg.author.bot && !msg.content.startsWith('/rod-bot/')) return; // ignore bots unless they specifically bypass that to talk to us
+		if (msg.author.bot && !msg.content.startsWith('|rod-bot|')) return; // ignore bots unless they specifically bypass that to talk to us
 		if (msg.content.startsWith('(') && msg.content.endsWith(')')) return; // ignore parenthetical messages
-		if (msg.content.startsWith('/rod-bot/')) msg.content = msg.content.replace('/rod-bot/', ''); // if bypass bot check, then remove that from content
+		if (msg.content.startsWith('|rod-bot|')) msg.content = msg.content.replace('|rod-bot|', ''); // if bypass bot check, then remove that from content
 
-		const req = new RodRequest( msg );
+		const req = new RodRequest( self.client, msg );
 		await req.loadRodData();
 		req.parseMessage();
 		const res = new RodResponse( req );
