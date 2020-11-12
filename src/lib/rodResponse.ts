@@ -25,9 +25,10 @@ class RodResponse {
 	}
 
 	/**
-	 * Sends a message without trying to use webhooks
+	 * Sends a message without trying to use webhooks, mostly errors and feedback
 	 * @param content - the message content to send
-	 * @param embeds - array of discord embeds, or embed content string
+	 * @param embedContent - (optional) array of discord embeds, or embed content string
+	 * @param options - (optional) options flags
 	 * @return message response promise for catching/awaiting
 	 */
 	sendSimple( content: string, embedContent: string|Discord.MessageEmbed[] = null, options: any = {} ): Promise<Discord.Message|any> {
@@ -51,8 +52,9 @@ class RodResponse {
 	/**
 	 * Sends the current response object
 	 * @param content - specific content to send as the message beyond what's already stored here
+	 * @param options - options flags
 	 */
-	async send( content: string = null ): Promise<Discord.Message|any> {
+	async send( content: string = null, options: any = {} ): Promise<Discord.Message|any> {
 		const self = this;
 
 		// mark this as sent so we don't try again
