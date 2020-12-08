@@ -44,7 +44,7 @@ class RodRequest {
 	public parseMessage() {
 		const self = this;
 
-		if (!self.server.esc) self.server.esc = '.';
+		if (!self.server.esc) self.server.esc = '/';
 
 		// clean smart quotes
 		self.message.content = self.message.content.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"');
@@ -58,12 +58,13 @@ class RodRequest {
 
 		console.log('- parts:', parts);
 
-		if (parts[0]?.startsWith( self.server.esc )) {
+		if (parts[0]?.startsWith(self.server.esc) || parts[0]?.startsWith('/rod')) {
 			self.command = parts.shift().slice( self.server.esc.length );
 
-			if (self.command == 'rod') { // for instances like `/rod command param1 param2`
+			// I turned this off as I don't think this feature was used, and it lets us hardcode support for `/rod` system commands
+			/*if (self.command == 'rod') { // for instances like `/rod command param1 param2`
 				self.command = parts.shift(); 
-			}
+			}*/
 		}
 
 		// parse params
