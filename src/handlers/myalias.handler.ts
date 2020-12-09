@@ -1,38 +1,20 @@
 import Discord from 'discord.js';
 import RodRequest from '../lib/rodRequest';
 import RodResponse from '../lib/rodResponse';
-import Handler from './handler';
+import MultiCommandHandler from './multi.handler';
 import Alias from '../lib/alias';
 import _ from 'lodash';
 import User from '../models/user.model';
 
 
-class MyAlias extends Handler {
-	static setCommands = ['setalias', 'setserveralias'];
-	static setChannelCommands = ['setchannelalias'];
-	static myAliasCommands = ['myalias', 'alias'];
-	static resetCommands = ['resetalias'];
-
-	static commands = _.union(
-		MyAlias.setCommands,
-		MyAlias.setChannelCommands,
-		MyAlias.myAliasCommands,
-		MyAlias.resetCommands
-	);
-
-	static async process(req: RodRequest, res: RodResponse): Promise<void> {
-		const self = this;
-
-		// are we in a DM?
-		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
-
-		// which command type did we get?
-		if (MyAlias.setCommands.includes(req.command)) return self.set(req, res);
-		if (MyAlias.setChannelCommands.includes(req.command)) return self.setForChannel(req, res);
-		if (MyAlias.myAliasCommands.includes(req.command)) return self.myAlias(req, res);
-		if (MyAlias.resetCommands.includes(req.command)) return self.reset(req, res);
-		
-	}
+class MyAlias extends MultiCommandHandler {
+	
+	static multiCommands = new Map([
+		['set', ['setalias', 'setserveralias']],
+		['setForChannel', ['setchannelalias']],
+		['myAlias', ['myalias', 'alias']],
+		['reset', ['resetalias']]
+	]);
 
 	/**
 	 * Returns info about the user's current alias settings

@@ -1,41 +1,20 @@
 import Discord from 'discord.js';
 import RodRequest from '../lib/rodRequest';
 import RodResponse from '../lib/rodResponse';
-import Handler from './handler';
+import MultiCommandHandler from './multi.handler';
 import _ from 'lodash';
 import Call from '../lib/call';
 
 
-class CallHandler extends Handler {
-	static callforCommands = ['call', 'callfor'];
-	static addCommands = ['calladd', 'addtocall'];
-	static doneCommands = ['calldone', 'endcall', 'callend'];
-	static refreshCommands = ['callrefresh', 'refreshcall'];
-	static logCommands = ['calllog'];
+class CallHandler extends MultiCommandHandler {
 
-	static commands = _.union(
-		CallHandler.callforCommands,
-		CallHandler.doneCommands,
-		CallHandler.logCommands,
-		CallHandler.addCommands,
-		CallHandler.refreshCommands
-	);
-
-	static async process(req: RodRequest, res: RodResponse): Promise<void> {
-		const self = this;
-
-		// are we in a DM?
-		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
-
-		// which command type did we get?
-		if (CallHandler.callforCommands.includes(req.command)) return self.callfor(req, res);
-		if (CallHandler.doneCommands.includes(req.command)) return self.done(req, res);
-		if (CallHandler.logCommands.includes(req.command)) return self.log(req, res);
-		if (CallHandler.addCommands.includes(req.command)) return self.add(req, res);
-		if (CallHandler.refreshCommands.includes(req.command)) return self.refresh(req, res);
-		
-		
-	}
+	static multiCommands = new Map([
+		['callfor', 	['call', 'callfor']],
+		['add', 		['calladd', 'addtocall']],
+		['done', 		['calldone', 'endcall', 'callend']],
+		['refresh', 	['callrefresh', 'refreshcall']],
+		['log',			['calllog']]
+	]);
 
 	/**
 	 * Grants access to an alias to set of users/roles

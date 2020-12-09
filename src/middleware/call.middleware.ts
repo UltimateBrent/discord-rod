@@ -55,16 +55,17 @@ class CallMiddleware extends Middleware {
 		// remove it if it exists
 		if (r) {
 			call.rolls = _.without(call.rolls, r);
-		} else {
-			r = {
-				key: key,
-				name: name,
-				from: req.message.author.username,
-				count: r ? r.count + 1 : 1,
-				text: roll.parts.join(' ') + ' = ' + roll.result + (r?.count >= 1 ? '*' : '' ),
-				roll: parseInt( roll.result )
-			};
 		}
+		
+		r = {
+			key: key,
+			name: name,
+			from: req.message.author.username,
+			count: r ? r.count + 1 : 1,
+			text: roll.parts.join(' ') + ' = ' + roll.result + (r?.count >= 1 ? '*' : '' ),
+			roll: parseInt( roll.result )
+		};
+		
 
 		call.rolls.push( r );
 		if (!call.logs) call.logs = [];

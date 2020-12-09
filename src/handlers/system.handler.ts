@@ -103,7 +103,7 @@ class SystemHandler extends Handler {
 		res.embed = em;
 		res.shouldSend = true;
 	}
-
+	
 	/**
 	 * Prints debug messages out to help ascertain why Rod might not be working correctly.
 	 * - Tests if Rod can post at all

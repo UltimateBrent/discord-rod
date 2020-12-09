@@ -7,6 +7,7 @@ import User from '../models/user.model';
 
 /**
  * Run commands as another user, to set saved rolls or aliases for others easily
+ * @example `/su @user /saveroll sword d20`
  */
 class SwitchUserMiddleware extends Middleware {
 

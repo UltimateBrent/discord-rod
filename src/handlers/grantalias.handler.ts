@@ -1,32 +1,26 @@
 import Discord from 'discord.js';
 import RodRequest from '../lib/rodRequest';
 import RodResponse from '../lib/rodResponse';
-import Handler from './handler';
+import MultiCommandHandler from './multi.handler';
 import Alias from '../lib/alias';
 import _ from 'lodash';
 import User from '../models/user.model';
 
 
-class GrantAlias extends Handler {
-	static grantCommands = ['grant', 'grantnpc', 'grantalias'];
-	static remCommands = ['remgrant', 'remgrantnpc', 'remgrantalias'];
+class GrantAlias extends MultiCommandHandler {
 
-	static commands = _.union(
-		GrantAlias.grantCommands,
-		GrantAlias.remCommands
-	);
-
+	static multiCommands = new Map([
+		['grant', ['grant', 'grantnpc', 'grantalias']],
+		['remgrant', ['remgrant', 'remgrantnpc', 'remgrantalias']]
+	]);
+	
 	static async process(req: RodRequest, res: RodResponse): Promise<void> {
 		const self = this;
 
 		// are we in a DM?
 		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
 
-		// which command type did we get?
-		if (GrantAlias.grantCommands.includes(req.command)) return self.grant(req, res);
-		if (GrantAlias.remCommands.includes(req.command)) return self.remgrant(req, res);
-		
-		
+		super.process(req, res);
 	}
 
 	/**

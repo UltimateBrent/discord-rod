@@ -1,40 +1,20 @@
 import RodRequest from '../lib/rodRequest';
 import RodResponse from '../lib/rodResponse';
-import Handler from './handler';
+import MultiCommandHandler from './multi.handler';
 import Alias from '../lib/alias';
 import _ from 'lodash';
 
 /**
  * Multi-command class handling all alias creation and management
  */
-class ManageAlias extends Handler {
-	static addCommands = ['addalias', 'addnpc', 'add'];
-	static editCommands = ['editalias', 'editnpc', 'edit'];
-	static removeCommands = ['removealias', 'remnpc', 'rem', 'remove'];
-	static removeAllCommands = ['remallnpc', 'removeallaliases'];
-
-	static commands = _.union(
-		ManageAlias.addCommands,
-		ManageAlias.editCommands,
-		ManageAlias.removeCommands,
-		ManageAlias.removeAllCommands
-	);
-
-	/**
-	 * Handles all alias management commands and routes according to the `req.command` used.
-	 * @param req
-	 * @param res
-	 */
-	static async process(req: RodRequest, res: RodResponse): Promise<void> {
-		const self = this;
-
-		// which command type did we get?
-		if (ManageAlias.addCommands.includes( req.command )) return self.add(req, res);
-		if (ManageAlias.editCommands.includes( req.command )) return self.edit(req, res);
-		if (ManageAlias.removeCommands.includes( req.command )) return self.remove(req, res);
-		if (ManageAlias.removeAllCommands.includes( req.command )) return self.removeAll(req, res);
-	}
-
+class ManageAlias extends MultiCommandHandler {
+	
+	static multiCommands = new Map([
+		['add', ['addalias', 'addnpc', 'add']],
+		['edit', ['editalias', 'editnpc', 'edit']],
+		['remove', ['removealias', 'remnpc', 'rem', 'remove']],
+		['removeAll', ['remallnpc', 'removeallaliases']]
+	]);
 
 	/**
 	 * Adds an alias to the server
