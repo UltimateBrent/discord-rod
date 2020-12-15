@@ -93,7 +93,9 @@ class SystemHandler extends Handler {
 	 * @param res
 	 */
 	static async listignore(req: RodRequest, res: RodResponse): Promise<void> {
+		if (!req.server.ignorePrefixes?.length) return await res.sendSimple('Your server does not have any ignore prefixes configured. You can do so with `/addignore`');
 
+		return await res.sendSimple('Your ignore prefixes are below:', '`' + req.server.ignorePrefixes.join('`, `') + '`');
 	}
 
 	/**
@@ -104,6 +106,15 @@ class SystemHandler extends Handler {
 	 */
 	static async addignore(req: RodRequest, res: RodResponse): Promise<void> {
 
+		const char = req.parts[1];
+
+		if (!char) return await res.sendSimple('You must provide a prefix to be ignored.', 'Ex. `/rod addignore ~`');
+
+		if (!req.server.ignorePrefixes) req.server.ignorePrefixes = [];
+		req.server.ignorePrefixes.push( char.trim() );
+		await req.server.save();
+
+		return await res.sendSimple('Your prefix was added:', '`' + req.server.ignorePrefixes.join('`, `') + '`');
 	}
 
 	/**
@@ -113,7 +124,16 @@ class SystemHandler extends Handler {
 	 * @param res
 	 */
 	static async remignore(req: RodRequest, res: RodResponse): Promise<void> {
+		const char = req.parts[1];
 
+		if (!char) return await res.sendSimple('You must provide a prefix to be removed.', 'Ex. `/rod remignore ~`');
+
+		if (!req.server.ignorePrefixes.includes(char)) return await res.sendSimple('That prefix is not being ignored:', '`' + req.server.ignorePrefixes.join('`, `') + '`');
+
+		req.server.ignorePrefixes = _.without( req.server.ignorePrefixes, char);
+		await req.server.save();
+
+		return await res.sendSimple('Your prefix was removed:', req.server.ignorePrefixes.length ? '`' + req.server.ignorePrefixes.join('`, `') + '`' : 'No prefixes remain.');
 	}
 
 	/**
@@ -123,7 +143,10 @@ class SystemHandler extends Handler {
 	 * @param res
 	 */
 	static async clearignore(req: RodRequest, res: RodResponse): Promise<void> {
+		req.server.ignorePrefixes = [];
+		await req.server.save();
 
+		return await res.sendSimple('Your ignore prefixes have been cleared:', req.server.ignorePrefixes.length ? '`' + req.server.ignorePrefixes.join('`, `') + '`' : 'No prefixes remain.');
 	}
 
 	/**
