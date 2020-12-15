@@ -6,22 +6,22 @@ import _ from 'lodash';
 
 /**
  * Handles functions related to rod itself like debug or escaping
+ * - structure is very similar to MultiCommandHandler, but uses the first parameteter instead of the command, since the command is always `rod`
  */
 class SystemHandler extends Handler {
 
 	static commands = ['rod']; // all of these are rod prefixed
 
-	static EscapeCommands = ['setescape'];
-	static ResetEscapeCommands = ['resetescape'];
-	static ServerInfoCommands = ['serverinfo', 'info'];
-	static DebugCommands = ['debug'];
-	
-	static subCommands = _.union(
-		SystemHandler.EscapeCommands,
-		SystemHandler.ResetEscapeCommands,
-		SystemHandler.ServerInfoCommands,
-		SystemHandler.DebugCommands
-	);
+	static multiCommands: Map<string, string[]> = new Map([
+		['setescape', ['setescape']],
+		['resetescape', ['resetescape']],
+		['listignore', ['listignore', 'ignore']],
+		['addignore', ['addignore']],
+		['remignore', ['remignore']],
+		['clearignore', ['clearignore']],
+		['serverinfo', ['serverinfo', 'info']],
+		['debug', ['debug']]
+	]);
 
 	static async process(req: RodRequest, res: RodResponse): Promise<void> {
 		const self = this;
@@ -33,11 +33,13 @@ class SystemHandler extends Handler {
 		const perm = req.getPermissions();
 		if (perm != 'admin') return await res.sendSimple('You do not have permission to run system commands.');
 
+
 		// which command type did we get?
-		if (SystemHandler.EscapeCommands.includes(req.parts[0])) return self.setescape(req, res);
-		if (SystemHandler.ResetEscapeCommands.includes(req.parts[0])) return self.resetescape(req, res);
-		if (SystemHandler.ServerInfoCommands.includes(req.parts[0])) return self.serverinfo(req, res);
-		if (SystemHandler.DebugCommands.includes(req.parts[0])) return self.debug(req, res);
+		for (let [f, subcommands] of self.multiCommands) {
+			if (subcommands.includes(req.parts[0])) return self[f](req, res);
+		}
+
+		console.log('- command sent to this handler, but unhandled:', req.command);
 
 	}
 
@@ -82,6 +84,46 @@ class SystemHandler extends Handler {
 		await req.server.save();
 
 		return await res.sendSimple('Your escape character has been changed back to `/`');
+	}
+
+	/**
+	 * Lists the current server's ignore characters for Rod
+	 * @example `/rod listignore`
+	 * @param req
+	 * @param res
+	 */
+	static async listignore(req: RodRequest, res: RodResponse): Promise<void> {
+
+	}
+
+	/**
+	 * Adds an ignore character to the server, as in, if a message starts with it, Rod will not process it.
+	 * @example `/rod addignore ~`
+	 * @param req
+	 * @param res
+	 */
+	static async addignore(req: RodRequest, res: RodResponse): Promise<void> {
+
+	}
+
+	/**
+	 * Removes an ignore character from the server.
+	 * @example `/rod remignore ~`
+	 * @param req
+	 * @param res
+	 */
+	static async remignore(req: RodRequest, res: RodResponse): Promise<void> {
+
+	}
+
+	/**
+	 * Clears all the ignore characters on the server
+	 * @example `/rod clearignore`
+	 * @param req
+	 * @param res
+	 */
+	static async clearignore(req: RodRequest, res: RodResponse): Promise<void> {
+
 	}
 
 	/**
