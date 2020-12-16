@@ -118,7 +118,7 @@ class Rod {
 	}
 
 	/**
-	 * Loads the middleware
+	 * Loads the middleware and orders by priority
 	 */
 	public async loadMiddleware() {
 		const self = this;
