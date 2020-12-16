@@ -121,6 +121,49 @@ class PingHandler extends MultiCommandHandler {
 	 */
 	static async clearpings(req: RodRequest, res: RodResponse): Promise<void> {
 
+		const perm = req.getPermissions();
+		if (!perm) return await res.sendSimple('Only admins/channel admins can clear pings.');
+
+		// see if there are any mentions
+		let mentions = req.message.mentions.members.size ? _.map(req.message.mentions.members.array(), function (m) { return { id: m.id, name: m.displayName }; }) : [];
+
+		req.message.mentions.roles.forEach(function (r) {
+			mentions = mentions.concat(_.map(r.members.array(), function (m) { return { id: m.id, name: m.displayName }; }));
+		});
+
+		// is this satisfying any current pings?
+		const pings: any = _.filter(req.server.pings, function (p) {
+			if (p.channel != req.message.channel.id) return false; // is this the right channel?
+			if (!p.mentions || !p.mentions.length) return true; // if there aren't any mentions on the ping, clear it
+			if (!mentions.length) return true; // if we didn't specify a mention to filter by, then get them all
+
+			// check the mentions
+			return _.find(p.mentions, function (m) {
+				return _.find(mentions, function (mm) {
+					return mm.id == m.id;
+				});
+			});
+		});
+
+		if (pings.length) console.log('- found', pings.length, 'relevant pings.');
+		_.each(pings, function (p) {
+			req.message.channel.messages.fetch(p.message).then(function (m) {
+				m.delete();
+			});
+			req.server.pings = _.without(req.server.pings, p);
+		});
+
+		req.server.save();
+
+		const em = new Discord.MessageEmbed();
+		em.setTitle(pings.length + ' pings cleared!');
+		em.setDescription(' ');
+		em.setColor('#333399');
+		em.setFooter('Message will self-destruct in 5 seconds.');
+
+		const m: Discord.Message = await res.sendSimple(' ', [em], {deleteCommand: true});
+
+		m.delete({timeout: 5000});
 	}
 }
 

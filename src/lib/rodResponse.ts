@@ -31,7 +31,7 @@ class RodResponse {
 	 * @param options - (optional) options flags
 	 * @return message response promise for catching/awaiting
 	 */
-	sendSimple( content: string, embedContent: string|Discord.MessageEmbed[] = null, options: any = {} ): Promise<Discord.Message|any> {
+	sendSimple( content: string, embedContent: string|Discord.MessageEmbed[] = null, options: {deleteCommand?: boolean} = {} ): Promise<Discord.Message|any> {
 		this.sent = true;
 
 		let embeds: Discord.MessageEmbed[] = [];
