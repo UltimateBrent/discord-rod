@@ -1,5 +1,5 @@
 {
-	"name": "rod-of-disocrd",
+	"name": "discord-rod",
 	"version": "2.0.0",
 	"description": "A D&D roll bot with aliasing tools for use with Discord PBP games.",
 	"private": true,
@@ -17,7 +17,7 @@
 	},
 	"keywords": [],
 	"author": "",
-	"license": "ISC",
+	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/UltimateBrent/discord-rod/issues"
 	},
