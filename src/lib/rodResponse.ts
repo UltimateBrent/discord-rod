@@ -151,6 +151,11 @@ class RodResponse {
 			}
 		}
 
+		if (!content && !self.content && !embeds?.length) {
+			console.log('- empty message not sent to discord');
+			return;
+		}
+
 		// send it!
 		let m: Promise<Discord.Message>;
 		try {

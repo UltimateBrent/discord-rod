@@ -8,10 +8,10 @@ export interface IUser extends Document {
 	_id: string,
 	name: string,
 	serverSettings: any,
-	settings: { // overwritten by server settings on load, these are defaults only
+	settings: { // overwritten by server-specific settings on load, these are defaults only
 		macros?: [{
 			name: string,
-			roll: string
+			roll?: string
 		}],
 		autoAlias?: string, // npc.id
 		channelAliases?: any
