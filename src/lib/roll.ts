@@ -59,7 +59,7 @@ class Roll {
 		});
 
 		// does this contain a negative check? 'c-5' => 1d20 - 5
-		m = m.replace(/c\-([0-9]+)([ad])?/g, function (m, p1, m1) {
+		m = m.replace(/c-([0-9]+)([ad])?/g, function (m, p1, m1) {
 			//console.log(m, p1, m1);
 			return '1d20' + (m1 || '') + ' - ' + p1;
 		});
@@ -71,7 +71,7 @@ class Roll {
 		});
 
 		// does this contain shorthand? '4a:6:1' => 1d20a + 4; 1d6 + 1
-		m = m.replace(/([\-0-9]+)([ade])?:([0-9\.]+)(?:[:])?([\-0-9]+)?/g, function (m, p1, m1, p2, p3) {
+		m = m.replace(/([-0-9]+)([ade])?:([0-9.]+)(?:[:])?([-0-9]+)?/g, function (m, p1, m1, p2, p3) {
 			return '1d20' + (m1 || '') + (parseInt(p1) > 0 ? ' + ' : '') + p1 + ' # hit; ' + (p2.indexOf('.') != -1 ? p2.replace('.', 'd') : '1d' + p2) + (parseInt(p3) ? (parseInt(p3) > 0 ? ' + ' : '') + p3 : '') + ' # dmg';
 		});
 
@@ -90,14 +90,14 @@ class Roll {
 		});
 
 		// is this a multiple roll?
-		let rolls = m.split(/[,;]/);
+		const rolls = m.split(/[,;]/);
 		if (rolls.length > 1) {
-			let sep = m.match(/([,;])/)[0];
+			const sep = m.match(/([,;])/)[0];
 			const rs = _.map(rolls, function (r) {
 				return Roll.parseRoll(req, r);
 			});
 
-			let combined = _.map(rs, function (r) {
+			const combined = _.map(rs, function (r) {
 				return r.errors.length ? r.errors.join('; ') : r.text;
 			});
 
@@ -120,34 +120,35 @@ class Roll {
 
 		// isolate math
 		m = m.replace(/\+/g, ' + ');
-		m = m.replace(/\-/g, ' - ');
+		m = m.replace(/-/g, ' - ');
 		m = m.replace(/x/g, '*');
 		m = m.replace(/\*/g, ' * ');
 		//m = m.replace(/\//g, ' / ');
 		m = m.replace(/\(/g, ' ( ');
 		m = m.replace(/\)/g, ' ) ');
-		m = m.replace(/  /g, ' '); // extra spaces
+		m = m.replace(/ {2}/g, ' '); // extra spaces
 
 		let parts = m.trim().split(' ');
 		parts = _.filter(parts, function (p) { return !(p.startsWith(req.server.esc) && p != req.server.esc); }); // remove the command
 		//console.log('- parts', parts);
 
-		let total = 0;
-		let pretty = [];
-		let expressions = [];
+		const total = 0;
+		const pretty = [];
+		const expressions = [];
 		let error = null;
 		let d = null;
 		_.each(parts, function (p) {
-			if (d = p.match(/([1-9]\d*)?[dDfF]([1-9fF]\d*)?([aAdDkKlLer\+])?([1-9]\d*)?/)) { // dice
-				let count = d[1] ? parseInt(d[1]) : 1;
-				let fate = p.match(/[fF]/);
+			// eslint-disable-next-line no-cond-assign
+			if (d = p.match(/([1-9]\d*)?[dDfF]([1-9fF]\d*)?([aAdDkKlLer+])?([1-9]\d*)?/)) { // dice
+				const count = d[1] ? parseInt(d[1]) : 1;
+				const fate = p.match(/[fF]/);
 				let die = d[2] ? parseInt(d[2]) : 20;
-				let adv = d[3] && d[3].toLowerCase().indexOf('a') != -1;
-				let dis = d[3] && d[3].toLowerCase().indexOf('d') != -1;
-				let keep = d[3] && d[3].toLowerCase().indexOf('k') != -1 ? d[4] || 1 : false;
-				let lose = d[3] && d[3].toLowerCase().indexOf('l') != -1 ? d[4] || 1 : false;
-				let explode = d[3] && d[3].toLowerCase().indexOf('e') != -1 ? d[4] || die : false;
-				let mod = d[3] && d[3].toLowerCase().indexOf('+') != -1 ? d[4] || 1 : false;
+				const adv = d[3] && d[3].toLowerCase().indexOf('a') != -1;
+				const dis = d[3] && d[3].toLowerCase().indexOf('d') != -1;
+				const keep = d[3] && d[3].toLowerCase().indexOf('k') != -1 ? d[4] || 1 : false;
+				const lose = d[3] && d[3].toLowerCase().indexOf('l') != -1 ? d[4] || 1 : false;
+				const explode = d[3] && d[3].toLowerCase().indexOf('e') != -1 ? d[4] || die : false;
+				const mod = d[3] && d[3].toLowerCase().indexOf('+') != -1 ? d[4] || 1 : false;
 				//console.log('- die:', count, die, adv || dis, keep, 'from', d);
 				if (fate) {
 					die = 3;
@@ -172,20 +173,20 @@ class Roll {
 
 				if (adv || dis) {
 					//console.log('- advantage or disadvantage detected');
-					let ex2 = [];
+					const ex2 = [];
 					for (let i = 0; i < count; i++) {
 						ex2.push(1 + Math.floor(mt.random() * die));
 					}
 
-					let exs: any = Roll.mathString(ex.join('+'));
-					let ex2s: any = Roll.mathString(ex2.join('+'));
-					let g = Math.max(exs, ex2s);
-					let l = Math.min(exs, ex2s);
-					let final = adv ? g : l;
-					let dir = adv ? '>' : '<';
+					const exs: any = Roll.mathString(ex.join('+'));
+					const ex2s: any = Roll.mathString(ex2.join('+'));
+					const g = Math.max(exs, ex2s);
+					const l = Math.min(exs, ex2s);
+					const final = adv ? g : l;
+					const dir = adv ? '>' : '<';
 					let first: any = adv ? g : l;
 					if (first == 20 && die == 20) first = '__**20**__';
-					let last = adv ? l : g;
+					const last = adv ? l : g;
 
 					pretty.push('(' + first + ' ' + dir + ' ' + last + ')');
 					expressions.push(final);
@@ -201,8 +202,8 @@ class Roll {
 
 					ex = _.sortBy(ex, function (num) { return -1 * parseInt(('' + num).replace(/[_*]/g, '')); });
 
-					let newEx = [];
-					let newPretty = [];
+					const newEx = [];
+					const newPretty = [];
 					for (let k = 0; k < ex.length; k++) {
 						if (k < keep) {
 							newEx.push(ex[k]);
@@ -226,8 +227,8 @@ class Roll {
 
 					ex = _.sortBy(ex, function (num) { return parseInt(num); });
 
-					let newEx = [];
-					let newPretty = [];
+					const newEx = [];
+					const newPretty = [];
 					for (let k = 0; k < ex.length; k++) {
 						if (k < lose) {
 							newEx.push(ex[k]);
@@ -252,10 +253,10 @@ class Roll {
 						return;
 					}
 
-					let explodes = _.filter(ex, function (c) { return ('' + c).replace(/\_\_\*\*([0-9]+)\*\*\_\_/g, '$1') == explode; }).length;
+					let explodes = _.filter(ex, function (c) { return ('' + c).replace(/__\*\*([0-9]+)\*\*__/g, '$1') == explode; }).length;
 					while (explodes) {
 						explodes--;
-						let r = 1 + Math.floor(mt.random() * die);
+						const r = 1 + Math.floor(mt.random() * die);
 
 						if (r == die) {
 							explodes++;
@@ -271,11 +272,11 @@ class Roll {
 					ex.push(mod);
 				}
 
-				let expression = (ex.length > 1 ? '(' : '') + ex.join('+') + (ex.length > 1 ? ')' : '');
+				const expression = (ex.length > 1 ? '(' : '') + ex.join('+') + (ex.length > 1 ? ')' : '');
 				expressions.push(expression);
 				pretty.push(expression);
 			} else
-				if (p.match(/[0-9+\-\*\/\(\)]/)) {
+				if (p.match(/[0-9+\-*/()]/)) {
 					expressions.push(p);
 					pretty.push(p);
 				} else {
@@ -300,8 +301,8 @@ class Roll {
 	 * @return the evaluation
 	 */
 	static mathString(s: string): string {
-		s = s.replace(/\_\_\*\*([0-9]+)\*\*\_\_/g, '$1');
-		if (s.match(/[^0-9\+\-\*\/\(\) ]/)) {
+		s = s.replace(/__\*\*([0-9]+)\*\*__/g, '$1');
+		if (s.match(/[^0-9+\-*/() ]/)) {
 			return 'Error: non-math `' + s + '`';
 		} else {
 			try {

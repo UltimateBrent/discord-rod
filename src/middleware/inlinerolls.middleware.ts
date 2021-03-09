@@ -18,7 +18,7 @@ class InlineRollsMiddleware extends Middleware {
 		if (req.message.content.includes('(' + req.server.esc + 'roll ') || req.message.content.includes('(' + req.server.esc + 'r ') ) {
 
 			// lets get the rolls if we can
-			let rolls = req.message.content.match(/[\(].r(?:oll)?(.*?)[\)]/g);
+			let rolls = req.message.content.match(/[(].r(?:oll)?(.*?)[)]/g);
 			if (rolls) {
 
 				// remove the parens

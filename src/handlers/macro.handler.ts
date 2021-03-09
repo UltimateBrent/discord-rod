@@ -37,7 +37,7 @@ class MacroHandler extends MultiCommandHandler {
 		if (!name || !text) return await res.sendSimple('You must include a name for your macro and the command it will execute. Extra spaces in your command can also cause this.', '`' + req.server.esc + 'saveroll name command`');
 
 		let current = (req.user.serverSettings ? req.user.serverSettings.macros : null) || req.user.settings.macros || [];
-		let m = {
+		const m = {
 			name: name,
 			roll: text
 		};
@@ -61,7 +61,7 @@ class MacroHandler extends MultiCommandHandler {
 		const ms = req.user.settings.macros || [];
 		if (!ms.length) return await res.sendSimple('You have no saved rolls.');
 
-		let texts = _.map( ms, function(m) {
+		const texts = _.map( ms, function(m) {
 			return '**' + m.name + '**: `' + m.roll + '`';
 		});
 

@@ -18,7 +18,7 @@ class MultiCommandHandler extends Handler {
 		const self = this;
 
 		let commands = [];
-		for (let [f, subcommands] of self.multiCommands) {
+		for (const [f, subcommands] of self.multiCommands) {
 			commands = commands.concat( subcommands );
 		}
 
@@ -32,7 +32,7 @@ class MultiCommandHandler extends Handler {
 		if (!req.channel.guild && !self.allowInDMs) return await res.sendSimple('This command does not work in direct messages.');
 
 		// which command type did we get?
-		for (let [f, subcommands] of self.multiCommands) {
+		for (const [f, subcommands] of self.multiCommands) {
 			if (subcommands.includes( req.command )) return self[f](req, res);
 		}
 		
