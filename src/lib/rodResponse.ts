@@ -75,12 +75,12 @@ class RodResponse {
 			let embed = null;
 
 			if (self.postAs) {
-				let em = new Discord.MessageEmbed();
+				const em = new Discord.MessageEmbed();
 				em.setDescription('Direct messages cannot have webhooks, so I cannot alias your message.');
 				em.setColor('#993333');
 				embed = em;
 			} else {
-				let em = new Discord.MessageEmbed();
+				const em = new Discord.MessageEmbed();
 				em.setDescription(content);
 				em.setColor(self.embedColor || '#333333');
 				embed = em;
@@ -203,7 +203,7 @@ class RodResponse {
 	 */
 	static ColorFromString(str: string): string {
 		let hash = 0;
-		for (var i = 0; i < str.length; i++) {
+		for (let i = 0; i < str.length; i++) {
 			hash = str.charCodeAt(i) + ((hash << 5) - hash);
 		}
 

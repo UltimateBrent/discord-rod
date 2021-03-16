@@ -1,3 +1,4 @@
+/* eslint-disable no-cond-assign */
 import Discord from 'discord.js';
 import RodRequest from '../lib/rodRequest';
 import RodResponse from '../lib/rodResponse';

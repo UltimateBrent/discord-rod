@@ -43,7 +43,7 @@ class ManageAlias extends MultiCommandHandler {
 		if (!npc.id || !npc.name) return await res.sendSimple('Your alias needs at least and id and a name.', '`/addalias id "My Name" http://images.com/myavatar.jpg`');
 		if (npc.id.length < 3 || npc.id.length > 32) return await res.sendSimple('Invalid Name', 'Your alias\'s id cannot be less than 3 characters or more than 32.');
 		if (npc.name.length < 3 || npc.name.length > 32) return await res.sendSimple('Invalid Name', 'Your alias\'s name cannot be less than 3 characters or more than 32.');
-		if (npc.avatar && !npc.avatar.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/)) {
+		if (npc.avatar && !npc.avatar.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/)) {
 			return await res.sendSimple('The avatar you supplied  `' + npc.avatar + '` does not seem to be a valid URL.', '`/addalias id "My Name" https://images.com/myavatar.jpg`');
 		}
 

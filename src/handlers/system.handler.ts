@@ -35,7 +35,7 @@ class SystemHandler extends Handler {
 
 
 		// which command type did we get?
-		for (let [f, subcommands] of self.multiCommands) {
+		for (const [f, subcommands] of self.multiCommands) {
 			if (subcommands.includes(req.parts[0])) return self[f](req, res);
 		}
 
@@ -57,9 +57,9 @@ class SystemHandler extends Handler {
 
 		const newesc = req.parts[1];
 
-		if (!newesc) return await res.sendSimple('No escape character sent. Allowed Escapes:', '`! | / \ + - $ % ^ & * , . < > : ;`');
+		if (!newesc) return await res.sendSimple('No escape character sent. Allowed Escapes:', '`! | / \\ + - $ % ^ & * , . < > : ;`');
 		if (newesc.length > 1) return await res.sendSimple('Error: new escape character can only be one character. Not changed.');
-		if (!newesc.match(/[!|\/\\+\-$%^&*,.<>:;]/)) return await res.sendSimple('Error: new escape character not allowed. Not changed.');
+		if (!newesc.match(/[!|/\\+\-$%^&*,.<>:;]/)) return await res.sendSimple('Error: new escape character not allowed. Not changed.');
 
 		console.log('- will change to', newesc);
 
@@ -186,6 +186,7 @@ class SystemHandler extends Handler {
 		let hooks = null;
 		try {
 			hooks = await req.getWebhooks(false);
+		// eslint-disable-next-line no-empty
 		} catch(e) {}
 		if (hooks?.size) {
 			await res.sendSimple('`3.` It looks like this channel has webhooks. :white_check_mark:');

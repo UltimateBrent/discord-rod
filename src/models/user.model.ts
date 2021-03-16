@@ -73,7 +73,7 @@ s.statics.GetFromID = async function (u: Discord.User, gid: string): Promise<IUs
  * @param val - setting value
  * @return resulting user object
  */
-s.methods.saveSetting = async function (req: RodRequest, key: string, val: any): Promise<IUser> {
+s.methods.saveSetting = async function (this: IUser, req: RodRequest, key: string, val: any): Promise<IUser> {
 	
 	const gu = this;
 	const gid = req.channel.guild.id;
@@ -95,7 +95,7 @@ s.methods.saveSetting = async function (req: RodRequest, key: string, val: any):
 /**
  * Calculates current alias that would be used in this channel
  */
-s.methods.getCurrentAlias = function(req: RodRequest): Alias {
+s.methods.getCurrentAlias = function(this: IUser, req: RodRequest): Alias {
 
 	// get server-level alias
 	const sKey = this.settings?.autoAlias;
