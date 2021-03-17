@@ -39,7 +39,7 @@ class TableHandler extends MultiCommandHandler {
 
 	/**
 	 * Rolls a table
-	 * @example `/rolltable wildmagic`
+	 * @example `/rolltable wildmagic` or `/rolltable [3] wildmagic` or `rolltable wildmagic 23`
 	 * @param req
 	 * @param res
 	 */
@@ -61,8 +61,9 @@ class TableHandler extends MultiCommandHandler {
 				iterations--;
 			}
 			res.embed = null;
+			res.embeds = embeds;
 			console.log('- sending', embeds.length, 'embeds');
-			return await res.sendSimple(null, embeds); //TODO: This seems to work right, but they dont' all show up
+			return;
 		}
 
 		let error = null;
@@ -103,7 +104,7 @@ class TableHandler extends MultiCommandHandler {
 		const em = new Discord.MessageEmbed();
 		em.setTitle( 'Rolling for ' + name.toUpperCase() );
 		em.setDescription( 'Rolled a d' + weight + ' => `' + (roll + 1) + '` ' + (error || '') + '\n\n```\n' + item.text + '\n```');
-		em.setColor('#00FF00');
+		em.setColor( RodResponse.ColorFromString( item.text ) );
 
 		res.embed = em;
 	}

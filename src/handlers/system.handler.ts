@@ -20,7 +20,8 @@ class SystemHandler extends Handler {
 		['remignore', ['remignore']],
 		['clearignore', ['clearignore']],
 		['serverinfo', ['serverinfo', 'info']],
-		['debug', ['debug']]
+		['debug', ['debug']],
+		['test', ['testo']]
 	]);
 
 	static async process(req: RodRequest, res: RodResponse): Promise<void> {
@@ -209,6 +210,28 @@ class SystemHandler extends Handler {
 			avatar: 'https://cdn.discordapp.com/attachments/784802568643674112/784910116721131551/z.png'
 		}
 		await res.send('`4.` Rod can post as a webhook. If you can see numbers `1` through `4`, everything is okay. :white_check_mark:');
+	}
+
+	/**
+	 * Test features
+	 */
+	static async test( req: RodRequest, res: RodResponse): Promise<void> {
+
+		const em = new Discord.MessageEmbed();
+		em.setAuthor(req.message.guild.name, req.message.guild.iconURL());
+		em.setDescription('Server ID: **' + req.message.guild.id + '**\nChannel ID: **' + req.message.channel.id + '**');
+		em.addField('Members', req.message.guild.memberCount, true);
+		em.addField('Since', new Date(req.message.guild.createdAt).toISOString().split('T')[0], true);
+		em.addField('Owner', req.message.guild.owner.user.username + ' (' + req.message.guild.owner.nickname + ')', true);
+		em.setColor('#FF3333');
+
+		const em2 = new Discord.MessageEmbed();
+		em2.setAuthor(req.message.guild.name, req.message.guild.iconURL());
+		em2.setDescription('Server ID: **' + req.message.guild.id + '**\nChannel ID: **' + req.message.channel.id + '**');
+		
+		//return await res.sendSimple(null, [em, em2]);
+		res.embeds = [em, em2];
+
 	}
 }
 

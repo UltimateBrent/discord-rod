@@ -19,6 +19,7 @@ class RodResponse {
 	embedColor?: string;
 	embedFooter?: string;
 	embed?: Discord.MessageEmbed;
+	embeds?: Discord.MessageEmbed[];
 
 	constructor( req: RodRequest ) {
 		this.req = req;
@@ -131,7 +132,8 @@ class RodResponse {
 		}
 
 		// build the embed if necessary
-		const embeds = [];
+		let embeds = [];
+		if (self.embeds) embeds = self.embeds;
 		if (self.embed) embeds.push( self.embed );
 		if (self.embedContent) {
 			const em = new Discord.MessageEmbed();
