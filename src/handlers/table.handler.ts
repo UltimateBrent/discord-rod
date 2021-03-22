@@ -184,6 +184,32 @@ class TableHandler extends MultiCommandHandler {
 		res.embed = em;
 	}
 
+	/**
+	 * Shows the contents of a table
+	 * @example `/showtable wildmagic`
+	 * @param req
+	 * @param res
+	 */
+	static async show(req: RodRequest, res: RodResponse): Promise<void> {
+		const self = this;
+		const name = req.parts[0];
+		
+		const table = _.find(req.server.tables, function (t) { return t.name.toLowerCase() == name.toLowerCase(); });
+		if (!table) return await res.sendSimple('No such table: `' + name + '`');
+
+		let content = '```css\n## ' + name + ' ##\n```\n```css\nWeight: Roll\n';
+		for (const r of table.data) {
+			content += r.weight + ': ' + '    '.slice(-4 + ('' + r.weight).length) + r.text + '\n';
+		}
+		content += '```';
+
+		return res.sendSimple(content, null, { split: {
+			maxLength: 2000,
+			char: '\n',
+			prepend: '```css\n',
+			append: '```'
+		}});
+	}
 
 }
 

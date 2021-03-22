@@ -32,7 +32,7 @@ class RodResponse {
 	 * @param options - (optional) options flags
 	 * @return message response promise for catching/awaiting
 	 */
-	sendSimple( content: string, embedContent: string|Discord.MessageEmbed[] = null, options: {deleteCommand?: boolean} = {} ): Promise<Discord.Message|any> {
+	async sendSimple( content: string, embedContent: string|Discord.MessageEmbed[] = null, options: {deleteCommand?: boolean, split?: {}} = {} ): Promise<Discord.Message|any> {
 		this.sent = true;
 
 		let embeds: Discord.MessageEmbed[] = [];
@@ -47,7 +47,17 @@ class RodResponse {
 
 		if (options.deleteCommand) this.req.message.delete({timeout: 500, reason: 'rodbot: deleting original command'});
 
-		return this.req.message.channel.send(content, embeds );
+		// determine if we need to split
+		const splits = Discord.Util.splitMessage(content, options.split || {maxLength: 2000});
+		
+		if (splits.length < 2) {
+			return this.req.message.channel.send(content, embeds );
+		} else {
+			for (const m of splits) {
+				await this.req.message.channel.send(m);
+			}
+			return;
+		}
 	}
 
 	/**
