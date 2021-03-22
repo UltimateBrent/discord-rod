@@ -55,7 +55,7 @@ class Roll {
 		// is this a roll macro?
 		_.each(req.user.settings.macros || [], function (r) {
 			if (!r.name || !r.roll) return;
-			m = m.replace(new RegExp('^(?:\\' + req.server.esc + 'r(?:oll)?)?(?:\\s)?' + r.name + '\\b', 'gi'), r.roll);
+			m = m.replace(new RegExp('^(?:\\' + req.esc + 'r(?:oll)?)?(?:\\s)?' + r.name + '\\b', 'gi'), r.roll);
 		});
 
 		// does this contain a negative check? 'c-5' => 1d20 - 5
@@ -129,7 +129,7 @@ class Roll {
 		m = m.replace(/ {2}/g, ' '); // extra spaces
 
 		let parts = m.trim().split(' ');
-		parts = _.filter(parts, function (p) { return !(p.startsWith(req.server.esc) && p != req.server.esc); }); // remove the command
+		parts = _.filter(parts, function (p) { return !(p.startsWith(req.esc) && p != req.esc); }); // remove the command
 		//console.log('- parts', parts);
 
 		const total = 0;

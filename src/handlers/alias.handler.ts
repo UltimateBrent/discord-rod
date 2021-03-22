@@ -81,18 +81,18 @@ class ManageAlias extends MultiCommandHandler {
 		if (!perm) return await res.sendSimple('You do not have permission to edit aliases.');
 
 		// check data
-		if (!req.parts[0]) return await res.sendSimple('You must include the id of the alias you wish to edit.', '`' + req.server.esc + 'editalias id NewName https://imagedomain.com/newimage.jpg`');
+		if (!req.parts[0]) return await res.sendSimple('You must include the id of the alias you wish to edit.', '`' + req.esc + 'editalias id NewName https://imagedomain.com/newimage.jpg`');
 
 		// get the alias
 		const alias = Alias.FindAlias(req, req.parts[0]);
-		if (!alias) return await res.sendSimple('No such alias: `' + req.parts[0] + '`', 'Check your list: `' + req.server.esc + 'listaliases`');
+		if (!alias) return await res.sendSimple('No such alias: `' + req.parts[0] + '`', 'Check your list: `' + req.esc + 'listaliases`');
 
 		// if we're a channel admin, let's make sure we have access to it
 		if (!alias.checkEdit(req)) return await res.sendSimple('As a channel admin, you can only edit aliases that you created.');
 
 		// if we dont' have extra data, let's show them current data and let them know how to finish the edit
 		if (req.parts.length == 1) {
-			return await res.sendSimple('You need to supply new info to edit the alias: `' + req.server.esc + 'editalias id NewName https://imagedomain.com/newimage.jpg`', '```id: ' + alias.id + '\nname: ' + alias.name + '\nimage: ' + (alias.avatar || 'none') + '```');
+			return await res.sendSimple('You need to supply new info to edit the alias: `' + req.esc + 'editalias id NewName https://imagedomain.com/newimage.jpg`', '```id: ' + alias.id + '\nname: ' + alias.name + '\nimage: ' + (alias.avatar || 'none') + '```');
 		}
 
 		// we're good, let's edit it
@@ -119,11 +119,11 @@ class ManageAlias extends MultiCommandHandler {
 		if (!perm) return await res.sendSimple('You do not have permission to edit aliases.');
 
 		// check data
-		if (!req.parts[0]) return await res.sendSimple('You must include the id of the alias you wish to edit.', '`' + req.server.esc + 'editalias id NewName https://imagedomain.com/newimage.jpg`');
+		if (!req.parts[0]) return await res.sendSimple('You must include the id of the alias you wish to edit.', '`' + req.esc + 'editalias id NewName https://imagedomain.com/newimage.jpg`');
 
 		// get the alias
 		const alias = Alias.FindAlias(req, req.parts[0]);
-		if (!alias) return await res.sendSimple('No such alias: `' + req.parts[0] + '`', 'Check your list: `' + req.server.esc + 'listaliases`');
+		if (!alias) return await res.sendSimple('No such alias: `' + req.parts[0] + '`', 'Check your list: `' + req.esc + 'listaliases`');
 
 		// if we're a channel admin, let's make sure we have access to it
 		if (!alias.checkEdit(req)) return await res.sendSimple('As a channel admin, you can only edit aliases that you created.');

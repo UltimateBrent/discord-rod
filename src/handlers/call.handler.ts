@@ -30,7 +30,7 @@ class CallHandler extends MultiCommandHandler {
 
 		// check if there are any active calls
 		if (Call.GetActiveCall( req )) {
-			return await res.sendSimple('You already have an active call in this channel.', 'Ends calls with `' + req.server.esc + 'calldone`');
+			return await res.sendSimple('You already have an active call in this channel.', 'Ends calls with `' + req.esc + 'calldone`');
 		}
 
 		// parse

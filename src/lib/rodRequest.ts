@@ -1,4 +1,5 @@
 import Discord from 'discord.js';
+import Rod from '../rod';
 import User, { IUser } from '../models/user.model';
 import Server, { IServer } from '../models/server.model';
 import _ from 'lodash';
@@ -16,6 +17,7 @@ class RodRequest {
 	public guser: Discord.GuildMember;
 	public server: IServer;
 
+	public esc: string = Rod.defaultEscape;
 	public command: string;
 	public parts: string[];
 	public params: any = {};
@@ -44,7 +46,7 @@ class RodRequest {
 	public parseMessage() {
 		const self = this;
 
-		if (!self.server.esc) self.server.esc = '/';
+		self.esc = self.server.esc || Rod.defaultEscape;
 
 		// clean smart quotes
 		self.message.content = self.message.content.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"');
@@ -58,8 +60,8 @@ class RodRequest {
 
 		console.log('- parts:', parts);
 
-		if (parts[0]?.startsWith(self.server.esc) || parts[0]?.startsWith('/rod')) {
-			self.command = parts.shift().slice( self.server.esc.length );
+		if (parts[0]?.startsWith(self.esc) || parts[0]?.startsWith('/rod')) {
+			self.command = parts.shift().slice( self.esc.length );
 
 			// I turned this off as I don't think this feature was used, and it lets us hardcode support for `/rod` system commands
 			/*if (self.command == 'rod') { // for instances like `/rod command param1 param2`

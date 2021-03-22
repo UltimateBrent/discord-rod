@@ -34,7 +34,7 @@ class MacroHandler extends MultiCommandHandler {
 		const text = req.parts.join(' ');
 		console.log('- add macro', name + ':', text);
 
-		if (!name || !text) return await res.sendSimple('You must include a name for your macro and the command it will execute. Extra spaces in your command can also cause this.', '`' + req.server.esc + 'saveroll name command`');
+		if (!name || !text) return await res.sendSimple('You must include a name for your macro and the command it will execute. Extra spaces in your command can also cause this.', '`' + req.esc + 'saveroll name command`');
 
 		let current = (req.user.serverSettings ? req.user.serverSettings.macros : null) || req.user.settings.macros || [];
 		const m = {
@@ -47,7 +47,7 @@ class MacroHandler extends MultiCommandHandler {
 
 		await req.user.saveSetting(req, 'macros', current);
 
-		return await res.sendSimple('Macro `' + name + '` saved.', '`' + req.server.esc + 'roll ' + name + ' => ' + text + '`');
+		return await res.sendSimple('Macro `' + name + '` saved.', '`' + req.esc + 'roll ' + name + ' => ' + text + '`');
 	}
 
 	/**
@@ -77,7 +77,7 @@ class MacroHandler extends MultiCommandHandler {
 	static async remove(req: RodRequest, res: RodResponse): Promise<void> {
 
 		const name = req.parts.shift();
-		if (!name) return await res.sendSimple('You must include a name to remove a macro.', '`' + req.server.esc + 'remroll name`');
+		if (!name) return await res.sendSimple('You must include a name to remove a macro.', '`' + req.esc + 'remroll name`');
 
 		let current = (req.user.serverSettings ? req.user.serverSettings.macros : null) || req.user.settings.macros || [];
 

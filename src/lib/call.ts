@@ -74,7 +74,7 @@ class Call {
 		if (remaining.length) {
 			em.setFooter( 'Still waiting on: ' + remaining.join(', ') );
 		} else {
-			em.setFooter( 'Rolls done! Type `' + req.server.esc + 'calldone` to end, or `' + req.server.esc + 'calladd` more participants.' );
+			em.setFooter( 'Rolls done! Type `' + req.esc + 'calldone` to end, or `' + req.esc + 'calladd` more participants.' );
 		}
 
 

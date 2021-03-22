@@ -26,6 +26,15 @@ class RodResponse {
 	}
 
 	/**
+	 * Escapes bad thinks like `@everyone` or `@here`
+	 * @param content - the string to escape
+	 * @returns the escaped string
+	 */
+	private escape( content: string) : string {
+		return content.replace(/@(everyone|here|channel|testescape)/, '©$1');
+	}
+
+	/**
 	 * Sends a message without trying to use webhooks, mostly errors and feedback
 	 * @param content - the message content to send
 	 * @param embedContent - (optional) array of discord embeds, or embed content string
@@ -33,6 +42,7 @@ class RodResponse {
 	 * @return message response promise for catching/awaiting
 	 */
 	async sendSimple( content: string, embedContent: string|Discord.MessageEmbed[] = null, options: {deleteCommand?: boolean, split?: {}} = {} ): Promise<Discord.Message|any> {
+		const self = this;
 		this.sent = true;
 
 		let embeds: Discord.MessageEmbed[] = [];
@@ -46,6 +56,9 @@ class RodResponse {
 		}
 
 		if (options.deleteCommand) this.req.message.delete({timeout: 500, reason: 'rodbot: deleting original command'});
+
+		// escape bad things
+		content = self.escape( content );
 
 		// determine if we need to split
 		const splits = Discord.Util.splitMessage(content, options.split || {maxLength: 2000});
@@ -98,7 +111,7 @@ class RodResponse {
 				content = ' ';
 			}
 
-			return self.sendSimple(content || '', embed).catch(console.log);
+			return self.sendSimple(self.escape( content ) || '', embed).catch(console.log);
 		}
 
 		const hooks = await self.req.getWebhooks( true );
@@ -171,7 +184,7 @@ class RodResponse {
 		// send it!
 		let m: Promise<Discord.Message>;
 		try {
-			m = hook.send(content || self.content || '', {
+			m = hook.send(self.escape( content || self.content || '' ), {
 				username: username,
 				avatarURL: avatar,
 				embeds: embeds
@@ -189,7 +202,7 @@ class RodResponse {
 			name: username,
 			avatar: avatar,
 			webhook: hook.id,
-			content: content || self.content || ''
+			content: self.escape( content || self.content || '' )
 		};
 		self.req.server.markModified('lastMessages');
 		self.req.server.save();

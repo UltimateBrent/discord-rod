@@ -23,7 +23,7 @@ class SwitchUserMiddleware extends Middleware {
 			const perm = req.getPermissions();
 			if (perm != 'admin') return await res.sendSimple('You do not have permission run commands for others.');
 
-			if (!req.message.mentions.users.size) return await res.sendSimple('You did not mention anyone to run this command as.', '`' + req.server.esc + 'su @name /command`');
+			if (!req.message.mentions.users.size) return await res.sendSimple('You did not mention anyone to run this command as.', '`' + req.esc + 'su @name /command`');
 
 			const du: Discord.User = req.message.mentions.users.first();
 			const user = await User.GetFromID(du, req.channel.guild.id);

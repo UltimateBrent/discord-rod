@@ -64,11 +64,11 @@ class SystemHandler extends Handler {
 
 		console.log('- will change to', newesc);
 
-		req.server.esc = newesc;
+		req.esc = newesc;
 		//rod.serverCache[ server.id ] = server;
 		await req.server.save();
 
-		return await res.sendSimple('Your escape character has been changed to `' + req.server.esc + '` If you did this on accident or somehow have set to something unreachable, you can use `/rod resetescape`');
+		return await res.sendSimple('Your escape character has been changed to `' + req.esc + '` If you did this on accident or somehow have set to something unreachable, you can use `/rod resetescape`');
 	}
 
 	/**
@@ -80,11 +80,11 @@ class SystemHandler extends Handler {
 	static async resetescape(req: RodRequest, res: RodResponse): Promise<void> {
 		console.log('- server ', req.server.name, ' resetting escape');
 
-		req.server.esc = null;
+		req.esc = null;
 		//rod.serverCache[ server.id ] = server;
 		await req.server.save();
 
-		return await res.sendSimple('Your escape character has been changed back to `/`');
+		return await res.sendSimple('Your escape character has been changed back to `.`');
 	}
 
 	/**
@@ -164,6 +164,7 @@ class SystemHandler extends Handler {
 		em.addField('Members', req.message.guild.memberCount, true);
 		em.addField('Since', new Date(req.message.guild.createdAt).toISOString().split('T')[0], true);
 		em.addField('Owner', req.message.guild.owner.user.username + ' (' + req.message.guild.owner.nickname + ')', true);
+		em.addField('Escape Char', req.esc, true);
 		em.setColor('#FF3333');
 
 		res.embed = em;

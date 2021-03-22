@@ -15,7 +15,7 @@ class InlineRollsMiddleware extends Middleware {
 	static async process(req: RodRequest, res: RodResponse): Promise<void> {
 
 		// did `(/roll` or `(/r` appear in our message?
-		if (req.message.content.includes('(' + req.server.esc + 'roll ') || req.message.content.includes('(' + req.server.esc + 'r ') ) {
+		if (req.message.content.includes('(' + req.esc + 'roll ') || req.message.content.includes('(' + req.esc + 'r ') ) {
 
 			// lets get the rolls if we can
 			let rolls = req.message.content.match(/[(].r(?:oll)?(.*?)[)]/g);
@@ -33,7 +33,7 @@ class InlineRollsMiddleware extends Middleware {
 				if (roll.text) res.embedContent = roll.text;
 
 				// remove these rolls from the original message and re-trigger the parse
-				const reg = new RegExp(' ?[\\(]\\' + req.server.esc + '(.*?)[\\)]', 'g');
+				const reg = new RegExp(' ?[\\(]\\' + req.esc + '(.*?)[\\)]', 'g');
 				res.roll = roll;
 				req.message.content = req.message.content.replace(reg, '');
 				req.parseMessage();

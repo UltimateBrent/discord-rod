@@ -22,7 +22,7 @@ class PingHandler extends MultiCommandHandler {
 	static async ping(req: RodRequest, res: RodResponse): Promise<void> {
 
 		// what's the message
-		let text = req.message.content.replace(req.server.esc + 'ping ', '');
+		let text = req.message.content.replace(req.esc + 'ping ', '');
 
 		// who was mentioned?
 		let mentions = req.message.mentions.members.size ? _.map(req.message.mentions.members.array(), function (m) { return { id: m.id, name: m.displayName }; }) : [];
@@ -76,10 +76,10 @@ class PingHandler extends MultiCommandHandler {
 	 * @param res
 	 */
 	static async turn(req: RodRequest, res: RodResponse): Promise<void> {
-		if (req.message.content.trim() == req.server.esc + 'turn') {
-			req.message.content = req.server.esc + 'ping It is time for the next turn!';
+		if (req.message.content.trim() == req.esc + 'turn') {
+			req.message.content = req.esc + 'ping It is time for the next turn!';
 		} else {
-			req.message.content = req.server.esc + 'ping It is your turn ' + req.message.content.replace(req.server.esc + 'turn ', '') + '!';
+			req.message.content = req.esc + 'ping It is your turn ' + req.message.content.replace(req.esc + 'turn ', '') + '!';
 		}
 
 		return PingHandler.ping(req, res);

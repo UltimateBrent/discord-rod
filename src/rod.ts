@@ -22,6 +22,8 @@ class Rod {
 	private middleware: (typeof Middleware)[] = [];
 	private flags: any = {};
 
+	public defaultEscape: string = '.';
+
 	public client: Discord.Client;
 
 	/**

@@ -36,7 +36,7 @@ class TargetAlias extends Handler {
 
 		// let's find the mentioned channel
 		const channels = req.message.mentions.channels;
-		if (!channels.size) return await res.sendSimple('You need to mention the target channel', '`' + req.server.esc + 'settargetchannel #my-target-channel`');
+		if (!channels.size) return await res.sendSimple('You need to mention the target channel', '`' + req.esc + 'settargetchannel #my-target-channel`');
 		if (channels.size > 1) return await res.sendSimple('You mentioned more than one target channel and that is confusing. Just target one.');
 
 		const channel = channels.first();

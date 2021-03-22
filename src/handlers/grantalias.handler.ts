@@ -35,11 +35,11 @@ class GrantAlias extends MultiCommandHandler {
 		if (!perm) return await res.sendSimple('You do not have permission to grant aliases.');
 
 		// check data
-		if (!req.parts[0] || !(req.message.mentions.users.size || req.message.mentions.roles.size)) return await res.sendSimple('You must include the id of the alias you wish to grant and mention a person or role to grant it to.', '`' + req.server.esc + 'grantalias id @name`');
+		if (!req.parts[0] || !(req.message.mentions.users.size || req.message.mentions.roles.size)) return await res.sendSimple('You must include the id of the alias you wish to grant and mention a person or role to grant it to.', '`' + req.esc + 'grantalias id @name`');
 
 		// get the alias
 		const alias = Alias.FindAlias(req, req.parts[0]);
-		if (!alias) return await res.sendSimple('No such alias: `' + req.parts[0] + '`', 'Check your list: `' + req.server.esc + 'listaliases`');
+		if (!alias) return await res.sendSimple('No such alias: `' + req.parts[0] + '`', 'Check your list: `' + req.esc + 'listaliases`');
 
 		// if we're a channel admin, let's make sure we have access to it
 		if (!alias.checkEdit(req)) return await res.sendSimple('As a channel admin, you can only edit aliases that you created.');
@@ -57,7 +57,7 @@ class GrantAlias extends MultiCommandHandler {
 		if (roles) granted = granted.concat(_.map(roles, function (m) { return '<@&' + m + '>'; }));
 		const mentionText = granted.join(', ');
 
-		res.content = 'I an now able to be used by ' + mentionText + '! Usage: `' + req.server.esc + 'use ' + alias.id + ' whatever you want to say`. You can also `' + req.server.esc + 'roll` and inline roll in those messages. Use `' + req.server.esc + 'setalias ' + alias.id + '` or `' + req.server.esc + 'setchannelalias ' + alias.id + '` to always have anything you say converted to me. You can use `' + req.server.esc + 'setalias off` to turn that off, and `' + req.server.esc + 'alias` to see your current alias settings.';
+		res.content = 'I an now able to be used by ' + mentionText + '! Usage: `' + req.esc + 'use ' + alias.id + ' whatever you want to say`. You can also `' + req.esc + 'roll` and inline roll in those messages. Use `' + req.esc + 'setalias ' + alias.id + '` or `' + req.esc + 'setchannelalias ' + alias.id + '` to always have anything you say converted to me. You can use `' + req.esc + 'setalias off` to turn that off, and `' + req.esc + 'alias` to see your current alias settings.';
 		res.alias = alias;
 
 		return;
@@ -74,11 +74,11 @@ class GrantAlias extends MultiCommandHandler {
 		if (!perm) return await res.sendSimple('You do not have permission to grant aliases.');
 
 		// check data
-		if (!req.parts[0] || !(req.message.mentions.users.size || req.message.mentions.roles.size)) return await res.sendSimple('You must include the id of the alias you wish to ungrant and mention a person or role to remove the grant from.', '`' + req.server.esc + 'remgrantalias id @name`');
+		if (!req.parts[0] || !(req.message.mentions.users.size || req.message.mentions.roles.size)) return await res.sendSimple('You must include the id of the alias you wish to ungrant and mention a person or role to remove the grant from.', '`' + req.esc + 'remgrantalias id @name`');
 
 		// get the alias
 		const alias = Alias.FindAlias(req, req.parts[0]);
-		if (!alias) return await res.sendSimple('No such alias: `' + req.parts[0] + '`', 'Check your list: `' + req.server.esc + 'listaliases` then try again: `' + req.server.esc + 'remgrantalias id @name`');
+		if (!alias) return await res.sendSimple('No such alias: `' + req.parts[0] + '`', 'Check your list: `' + req.esc + 'listaliases` then try again: `' + req.esc + 'remgrantalias id @name`');
 
 		// if we're a channel admin, let's make sure we have access to it
 		if (!alias.checkEdit(req)) return await res.sendSimple('As a channel admin, you can only edit aliases that you created.');
@@ -96,7 +96,7 @@ class GrantAlias extends MultiCommandHandler {
 		if (roles) granted = granted.concat(_.map(roles, function (m) { return '<@&' + m + '>'; }));
 		const mentionText = granted.join(', ');
 
-		res.content = 'I am now free of ' + mentionText + '! Please remind them to check their aliases with `' + req.server.esc + 'alias` to make sure they aren\'t set to use this anymore.';
+		res.content = 'I am now free of ' + mentionText + '! Please remind them to check their aliases with `' + req.esc + 'alias` to make sure they aren\'t set to use this anymore.';
 		res.alias = alias;
 
 		return;

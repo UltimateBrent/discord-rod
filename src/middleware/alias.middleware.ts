@@ -23,7 +23,7 @@ class AliasMiddleware extends Middleware {
 			const alias = Alias.FindAlias(req, req.parts[0]);
 			if (!alias) return await res.sendSimple('No such alias exists: `' + req.parts[0] + '`');
 
-			if (!alias.checkGrant(req)) return await res.sendSimple('You don\'t have permission to use that alias. Have an admin use `' + req.server.esc + 'grantalias` for you.');
+			if (!alias.checkGrant(req)) return await res.sendSimple('You don\'t have permission to use that alias. Have an admin use `' + req.esc + 'grantalias` for you.');
 
 			// we're good
 			res.alias = alias;
