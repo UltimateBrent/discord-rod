@@ -3,7 +3,9 @@ import RodRequest from '../lib/rodRequest';
 import RodResponse from '../lib/rodResponse';
 import MultiCommandHandler from './multi.handler';
 import _ from 'lodash';
+import request from 'superagent';
 import MersenneTwister from 'mersenne-twister';
+import CSVParse from 'csv-parse';
 const mt = new MersenneTwister();
 
 /**
@@ -14,9 +16,10 @@ class TableHandler extends MultiCommandHandler {
 	
 	static multiCommands = new Map([
 		['list', ['listtables']],
-		['add', ['addtable', 'savetable']],
+		['add', ['addtable', 'savetable', 'loadtable']],
 		['remove', ['remmtable', 'deletetable', 'remroll']],
-		['roll', ['rolltable', 'tableroll']]
+		['roll', ['rolltable', 'tableroll']],
+		['show', ['showtable', 'tableshow']]
 	]);
 
 	/**
@@ -35,6 +38,55 @@ class TableHandler extends MultiCommandHandler {
 		});
 
 		return await res.sendSimple('', '```css\n## Tables ##\n```\n' + texts.join('\n'), { deleteCommand: true });
+	}
+
+	/**
+	 * Adds a table from either an uploaded or linked CSV
+	 * @example `/addtable wildmagic http://link.com/sheet.csv`
+	 * @param req
+	 * @param res
+	 */
+	static async add(req: RodRequest, res: RodResponse): Promise<void> {
+
+		let name = req.parts[0];
+		let url = req.parts[1];
+
+		if (req.message.attachments.size) {
+			const attachment = req.message.attachments.first();
+			url = attachment.url;
+			//console.log('- attachment found:', url);
+		}
+
+		// get the csv file
+		try {
+			const csvFile = await request.get(url).buffer();
+			const parser = CSVParse( csvFile.body );
+			const data = [];
+			for await ( const record of parser ) {
+				data.push( record );
+			}
+			console.log('- csv data:', url, data);
+			data.shift(); // remove header row
+			const tdata = data.map((row) => { return {text: row[1], weight: parseInt( row[0] )};});
+
+			const table = {
+				name: name,
+				source: url,
+				author: req.user.id,
+				data: tdata
+			};
+
+			// save the table to the server
+			req.server.tables = req.server.tables.filter((t) => { return t.name != name; });
+			req.server.tables.push( table );
+			await req.server.save();
+
+			return res.send('Saved **' + name + '** with ' + table.data.length + ' rows!');
+
+		} catch(e) {
+			console.log('- csv error:', url, e);
+			return res.sendSimple('There was an error loading or parsing your CSV file.');
+		}
 	}
 
 	/**
@@ -62,14 +114,14 @@ class TableHandler extends MultiCommandHandler {
 			}
 			res.embed = null;
 			res.embeds = embeds;
-			console.log('- sending', embeds.length, 'embeds');
+			//console.log('- sending', embeds.length, 'embeds');
 			return;
 		}
 
 		let error = null;
 		const name = req.parts.shift();
 		let num = req.parts.shift();
-		console.log('- rolling from table', name, num);
+		//console.log('- rolling from table', name, num);
 
 		const table = _.find( req.server.tables, function(t) { return t.name.toLowerCase() == name.toLowerCase(); });
 		if (!table) return await res.sendSimple('No such table: `' + name + '`');
