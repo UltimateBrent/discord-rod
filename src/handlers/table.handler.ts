@@ -17,7 +17,7 @@ class TableHandler extends MultiCommandHandler {
 	static multiCommands = new Map([
 		['list', ['listtables']],
 		['add', ['addtable', 'savetable', 'loadtable']],
-		['remove', ['remmtable', 'deletetable', 'remroll']],
+		['remove', ['remtable', 'deletetable']],
 		['roll', ['rolltable', 'tableroll']],
 		['show', ['showtable', 'tableshow']]
 	]);
@@ -87,6 +87,29 @@ class TableHandler extends MultiCommandHandler {
 			console.log('- csv error:', url, e);
 			return res.sendSimple('There was an error loading or parsing your CSV file.');
 		}
+	}
+
+	/**
+	 * Deletes a table from the server
+	 * @example `/remtable wildmagic`
+	 * @param req
+	 * @param res
+	 */
+	static async remove(req: RodRequest, res: RodResponse): Promise<void> {
+		const name = req.parts[0];
+
+		console.log('- removing table:', name );
+
+		if (!req.server.tables.length) return res.sendSimple('You do not have any saved tables.');
+
+		// find the table
+		const table = _.find(req.server.tables, function (t) { return t.name.toLowerCase() == name.toLowerCase(); });
+		if (!table) return await res.sendSimple('No such table: `' + name + '`');
+
+		req.server.tables = req.server.tables.filter((t) => { return t.name != name; });
+		await req.server.save();
+
+		return res.send('Removed **' + name + '** with ' + table.data.length + ' rows.');
 	}
 
 	/**
