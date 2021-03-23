@@ -98,7 +98,7 @@ const s = new Schema({
 	},
 	ignorePrefixes: [String],
 	lastMessages: Schema.Types.Mixed,
-	channelAliasTargets: Schema.Types.Mixed,
+	channelAliasTargets: {type: Schema.Types.Mixed, default: {}},
 	tables: [
 		{
 			name: String,
