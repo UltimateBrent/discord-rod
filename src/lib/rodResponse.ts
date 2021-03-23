@@ -31,6 +31,7 @@ class RodResponse {
 	 * @returns the escaped string
 	 */
 	private escape( content: string) : string {
+		if (!content) return null;
 		return content.replace(/@(everyone|here|channel|testescape)/, '©$1');
 	}
 
