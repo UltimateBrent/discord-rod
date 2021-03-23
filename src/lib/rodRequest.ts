@@ -58,7 +58,7 @@ class RodRequest {
 		// remove quotes from quoted params
 		parts = _.map(parts, function (p) { return p.replace(/^"|"$/g, ''); });
 
-		console.log('- parts:', parts);
+		//console.log('- parts:', parts);
 
 		if (parts[0]?.startsWith(self.esc) || parts[0]?.startsWith('/rod')) {
 			self.command = parts.shift().slice( self.esc.length );
@@ -76,7 +76,7 @@ class RodRequest {
 			params[a[0]] = a[1]?.replace(/^"|"$/g, '') || true;
 		}
 
-		console.log('- command + params:', self.command, parts, params);
+		//console.log('- command + params:', self.command, parts, params);
 		self.parts = parts;
 		self.params = params;
 	}
