@@ -60,7 +60,7 @@ class RodRequest {
 
 		//console.log('- parts:', parts);
 
-		if (parts[0]?.startsWith(self.esc) || parts[0]?.startsWith('/rod')) {
+		if (parts[0]?.startsWith(self.esc) || parts[0]?.startsWith('/rod') || parts[0]?.startsWith('.rod')) {
 			self.command = parts.shift().slice( self.esc.length );
 
 			// I turned this off as I don't think this feature was used, and it lets us hardcode support for `/rod` system commands

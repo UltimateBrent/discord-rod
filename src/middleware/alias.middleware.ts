@@ -19,6 +19,7 @@ class AliasMiddleware extends Middleware {
 		if (AliasMiddleware.sayCommands.includes( req.command )) {
 			// are we in a DM?
 			if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
+			if (!req.parts.length) return await res.sendSimple('No alias provided.');
 
 			const alias = Alias.FindAlias(req, req.parts[0]);
 			if (!alias) return await res.sendSimple('No such alias exists: `' + req.parts[0] + '`');

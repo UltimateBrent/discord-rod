@@ -169,7 +169,7 @@ class Rod {
 		}
 
 		// run handler (if any)
-		if (req.command) {
+		if (req.command && !res.sent) {
 
 			// do we have a handler for this command?
 			const h: typeof Handler = self.handlers.get(req.command);
