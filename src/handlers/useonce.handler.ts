@@ -21,7 +21,7 @@ class UseOnceAlias extends Handler {
 
 		const name = req.parts[0];
 		let image = req.parts[1];
-		if (!image.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/)) {
+		if (!image || !image.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/)) {
 			// this wasn't an image
 			image = null;
 		}
