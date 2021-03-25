@@ -32,6 +32,12 @@ class ManageAlias extends MultiCommandHandler {
 
 		if (!req.parts[0]) return await res.sendSimple('Your alias needs at least and id and a name.', '`/addalias id "My Name" http://images.com/myavatar.jpg`');
 
+		// did they uploaded an image instead of putting it in the message?
+		if (!req.parts[2] && req.message.attachments.size) {
+			const attachment = req.message.attachments.first();
+			req.parts[2] = attachment.url;
+		}
+
 		const npc = {
 			id: req.parts[0].toLowerCase(),
 			name: req.parts[1],
@@ -93,6 +99,12 @@ class ManageAlias extends MultiCommandHandler {
 		// if we dont' have extra data, let's show them current data and let them know how to finish the edit
 		if (req.parts.length == 1) {
 			return await res.sendSimple('You need to supply new info to edit the alias: `' + req.esc + 'editalias id NewName https://imagedomain.com/newimage.jpg`', '```id: ' + alias.id + '\nname: ' + alias.name + '\nimage: ' + (alias.avatar || 'none') + '```');
+		}
+
+		// if there was an uploaded image, but nothing sent in otherwise, let's use that
+		if (!req.parts[2] && req.message.attachments.size) {
+			const attachment = req.message.attachments.first();
+			req.parts[2] = attachment.url;
 		}
 
 		// we're good, let's edit it
