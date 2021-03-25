@@ -7,7 +7,7 @@ class Roll {
 
 	errors: string[] = [];
 	text: string;
-	result: string;
+	result: string|number;
 	pretty: string[];
 	raw: string;
 	parts: string[];
@@ -139,17 +139,50 @@ class Roll {
 		let d = null;
 		_.each(parts, function (p) {
 			// eslint-disable-next-line no-cond-assign
-			if (d = p.match(/([1-9]\d*)?[dDfF]([1-9fF]\d*)?([aAdDkKlLer+])?([1-9]\d*)?/)) { // dice
-				const count = d[1] ? parseInt(d[1]) : 1;
+			if (d = p.match(/([1-9]\d*)?[dDfFwW]([1-9fF]\d*)?([aAdDkKlLer+])?([0-9=<>]*)?/)) { // dice
+				let count = d[1] ? parseInt(d[1]) : 1;
 				const fate = p.match(/[fF]/);
+				const wod = p.match(/[wW]/);
 				let die = d[2] ? parseInt(d[2]) : 20;
 				const adv = d[3] && d[3].toLowerCase().indexOf('a') != -1;
 				const dis = d[3] && d[3].toLowerCase().indexOf('d') != -1;
 				const keep = d[3] && d[3].toLowerCase().indexOf('k') != -1 ? d[4] || 1 : false;
 				const lose = d[3] && d[3].toLowerCase().indexOf('l') != -1 ? d[4] || 1 : false;
-				const explode = d[3] && d[3].toLowerCase().indexOf('e') != -1 ? d[4] || die : false;
+				let explode = d[3] && d[3].toLowerCase().indexOf('e') != -1 ? d[4] || die : false;
 				const mod = d[3] && d[3].toLowerCase().indexOf('+') != -1 ? d[4] || 1 : false;
-				//console.log('- die:', count, die, adv || dis, keep, 'from', d);
+
+				if (wod) { // world of darkness rolling is weird enough that we'll break here and handle separately
+					let ex = [];
+					let success = 0;
+					let explodes = 0;
+					const check = die;
+					if (explode && !isNaN(explode)) explode = 10;
+					if (parts.length == 1 && !title) title = 'successes';
+					console.log('- wod roll:', count, check, explode);
+					for (let i = 0; i < count; i++) {
+						let rnum: any = 1 + Math.floor(mt.random() * 10);
+						let r = rnum;
+						if (rnum >= check) {
+							success++;
+							r = '**' + r + '**';
+						}
+						if (explode && Roll.explodeCheck(rnum, explode)) {
+							r = '__' + r + '__';
+							count++;
+							explodes++;
+							if (explodes >= 10 * count) {
+								self.errors.push('Infinite explode loop. Either your character dies or the person they hit did.');
+								return;
+							}
+						}
+						ex.push(r);
+					}
+
+					pretty.push('(' + ex.join(' ') + ')');
+					expressions.push( success );
+					return;
+
+				}
 				if (fate) {
 					die = 3;
 				}
@@ -166,7 +199,7 @@ class Roll {
 				for (let i = 0; i < count; i++) {
 					let r: any = 1 + Math.floor(mt.random() * die);
 					if (fate) r -= 2;
-					if (explode && r == die) r = '__**' + r + '**__';
+					if (explode && Roll.explodeCheck(r, explode)) r = '__**' + r + '**__';
 					if (r == 20 && die == 20) r = '__**20**__';
 					ex.push(r);
 				}
@@ -244,21 +277,27 @@ class Roll {
 				}
 
 				if (explode) {
-					if (explode > die) {
-						self.errors.push( 'Your explode cannot be greater than the die value.' );
-						return;
-					}
 					if (die == 1) {
 						self.errors.push( 'exploding on a d1 creates a black hole, and your character dies.' );
 						return;
 					}
 
-					let explodes = _.filter(ex, function (c) { return ('' + c).replace(/__\*\*([0-9]+)\*\*__/g, '$1') == explode; }).length;
+					console.log('- explode found:', {ex, die, explode});
+
+					
+
+					let total = 0;
+					let explodes = _.filter(ex, c => Roll.explodeCheck(c, explode)).length;
 					while (explodes) {
+						total++;
+						if (total > 50) {
+							self.errors.push( 'Infinite explode loop. Either your character dies or the person they hit did.' );
+							break; // let's not get caught in an infinite loop
+						}
 						explodes--;
 						const r = 1 + Math.floor(mt.random() * die);
 
-						if (r == die) {
+						if (Roll.explodeCheck(r, explode)) {
 							explodes++;
 							ex.push('__**' + r + '**__');
 						} else {
@@ -276,7 +315,7 @@ class Roll {
 				expressions.push(expression);
 				pretty.push(expression);
 			} else
-				if (p.match(/[0-9+\-*/()]/)) {
+				if (p.match(/[0-9?:><=+\-*/()]/)) {
 					expressions.push(p);
 					pretty.push(p);
 				} else {
@@ -296,18 +335,33 @@ class Roll {
 	}
 
 	/**
+	 * Checks to see if a roll should explode based on the explode string
+	 * @param r - the roll to check
+	 * @param explode - the explode string sent
+	 * @return whether or not to explode
+	 */
+	static explodeCheck(c: any, explode: any) {
+		if (!isNaN(explode)) { // it's a number
+			return ('' + c).replace(/__\*\*([0-9]+)\*\*__/g, '$1') == explode;
+		} else {
+			return Roll.mathString(('' + c).replace(/__\*\*([0-9]+)\*\*__/g, '$1') + explode, true);
+		}
+	}
+
+	/**
 	 * Evaluates the string as basic math
 	 * @param s - the math to be evaluated
 	 * @return the evaluation
 	 */
-	static mathString(s: string): string {
+	static mathString(s: string, noErrors:boolean = false): number|string {
 		s = s.replace(/__\*\*([0-9]+)\*\*__/g, '$1');
-		if (s.match(/[^0-9+\-*/() ]/)) {
+		if (s.match(/[^0-9?:><=+\-*/() ]/)) {
 			return 'Error: non-math `' + s + '`';
 		} else {
 			try {
-				return eval(s);
+				return eval(s) as number;
 			} catch (e) {
+				if (noErrors) return 0;
 				return 'Error: non-math `' + s + '`';
 			}
 		}

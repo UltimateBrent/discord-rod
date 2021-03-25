@@ -64,7 +64,7 @@ class CallMiddleware extends Middleware {
 			from: req.message.author.username,
 			count: r ? r.count + 1 : 1,
 			text: roll.parts.join(' ') + ' = ' + roll.result + (r?.count >= 1 ? '*' : '' ),
-			roll: parseInt( roll.result )
+			roll: typeof roll.result == 'string' ? parseInt( roll.result ) : roll.result
 		};
 		
 
