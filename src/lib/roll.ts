@@ -139,7 +139,7 @@ class Roll {
 		let d = null;
 		_.each(parts, function (p) {
 			// eslint-disable-next-line no-cond-assign
-			if (d = p.match(/([1-9]\d*)?[dDfFwW]([1-9fF]\d*)?([aAdDkKlLer+])?([0-9=<>]*)?/)) { // dice
+			if (d = p.match(/([1-9]\d*)?[dDfFwW]([1-9fF]\d*)?([aAdDkKlLter+])?([0-9=<>]*)?/)) { // dice
 				let count = d[1] ? parseInt(d[1]) : 1;
 				const fate = p.match(/[fF]/);
 				const wod = p.match(/[wW]/);
@@ -151,38 +151,14 @@ class Roll {
 				let explode = d[3] && d[3].toLowerCase().indexOf('e') != -1 ? d[4] || die : false;
 				const mod = d[3] && d[3].toLowerCase().indexOf('+') != -1 ? d[4] || 1 : false;
 
-				if (wod) { // world of darkness rolling is weird enough that we'll break here and handle separately
-					let ex = [];
-					let success = 0;
-					let explodes = 0;
-					const check = die;
-					if (explode && !isNaN(explode)) explode = 10;
-					if (parts.length == 1 && !title) title = 'successes';
-					console.log('- wod roll:', count, check, explode);
-					for (let i = 0; i < count; i++) {
-						let rnum: any = 1 + Math.floor(mt.random() * 10);
-						let r = rnum;
-						if (rnum >= check) {
-							success++;
-							r = '**' + r + '**';
-						}
-						if (explode && Roll.explodeCheck(rnum, explode)) {
-							r = '__' + r + '__';
-							count++;
-							explodes++;
-							if (explodes >= 10 * count) {
-								self.errors.push('Infinite explode loop. Either your character dies or the person they hit did.');
-								return;
-							}
-						}
-						ex.push(r);
-					}
-
-					pretty.push('(' + ex.join(' ') + ')');
-					expressions.push( success );
+				// world of darkness rolling is weird enough that we'll break here and handle separately
+				if (wod) { 
+					const wroll = self.WodRoll(p);
+					pretty.push('(' + wroll.ex.join(' ') + ')');
+					expressions.push( wroll.success );
 					return;
-
 				}
+
 				if (fate) {
 					die = 3;
 				}
@@ -335,6 +311,68 @@ class Roll {
 	}
 
 	/**
+	 * Parses a World of Darkness roll. It's different enough from the regular D&D die system that trying to mix them got really dirty
+	 * @param roll - the wod roll: `10w5te8`
+	 * @return the results object
+	 */
+	public WodRoll( roll: string) : {ex: string[], success: number} {
+		const self = this;
+		// re-parse the roll string
+		const d = roll.match(/([1-9]\d*)?[wW]([1-9]\d*)?([tde0-9=<>]*)?/);
+		console.log('- wod roll:', roll, 'parsed:', d);
+		let count = d[1] ? parseInt(d[1]) : 1;
+		let die = d[2] ? parseInt(d[2]) : 5;
+		let tripleM = roll.match(/w.*?t([0-9<>=]*)/);
+		let triple: any = tripleM ? tripleM[1] || 10 : 0;
+		let doubleM = roll.match(/w.*?d([0-9<>=]*)/);
+		let double: any = doubleM ? doubleM[1] || 10 : 0;
+		let explodeM = roll.match(/w.*?e([0-9<>=]*)/);
+		let explode: any = explodeM ? explodeM[1] || 10 : 0;
+		console.log('- explode match:', explodeM);
+
+		let ex = [];
+		let success = 0;
+		let explodes = 0;
+		const check = die || 5;
+		console.log('- wod roll:', {count, check, explode, double, triple});
+		for (let i = 0; i < count; i++) {
+			let rnum: any = 1 + Math.floor(mt.random() * 10);
+			let r = rnum;
+			if (rnum >= check) {
+				success++;
+				r = '**' + r + '**';
+			}
+			if (rnum == 1) {
+				success--;
+				r = '~~' + r + '~~';
+			}
+					
+			if (explode && Roll.explodeCheck(rnum, explode)) {
+				r = '__' + r + '__';
+				count++;
+				explodes++;
+				if (explodes >= 10 * count) {
+					self.errors.push('Infinite explode loop. Either your character dies or the person they hit did.');
+					return;
+				}
+			}
+
+			if (triple && Roll.explodeCheck(rnum, triple)) {
+				r = r + '^^';
+				success += 2;
+			} else
+			if (double && Roll.explodeCheck(rnum, double)) {
+				r = r + '^';
+				success++;
+			}
+
+			ex.push(r);
+		}
+
+		return {ex, success};
+	}
+
+	/**
 	 * Checks to see if a roll should explode based on the explode string
 	 * @param r - the roll to check
 	 * @param explode - the explode string sent
@@ -342,9 +380,9 @@ class Roll {
 	 */
 	static explodeCheck(c: any, explode: any) {
 		if (!isNaN(explode)) { // it's a number
-			return ('' + c).replace(/__\*\*([0-9]+)\*\*__/g, '$1') == explode;
+			return parseInt(('' + c).replace(/[_*~^]/g, '')) >= parseInt(explode);
 		} else {
-			return Roll.mathString(('' + c).replace(/__\*\*([0-9]+)\*\*__/g, '$1') + explode, true);
+			return Roll.mathString(('' + c).replace(/[_*~^]/g, '') + explode, true);
 		}
 	}
 
@@ -356,9 +394,11 @@ class Roll {
 	static mathString(s: string, noErrors:boolean = false): number|string {
 		s = s.replace(/__\*\*([0-9]+)\*\*__/g, '$1');
 		if (s.match(/[^0-9?:><=+\-*/() ]/)) {
+			if (noErrors) return 0;
 			return 'Error: non-math `' + s + '`';
 		} else {
 			try {
+				console.log('- evaling:', s);
 				return eval(s) as number;
 			} catch (e) {
 				if (noErrors) return 0;
