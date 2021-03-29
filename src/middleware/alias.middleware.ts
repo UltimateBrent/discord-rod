@@ -9,7 +9,7 @@ import Middleware from '../middleware/middleware';
  */
 class AliasMiddleware extends Middleware {
 
-	static priority = 1; // last
+	static priority = 1; // last before handlers
 
 	static sayCommands = ['usealias', 'use', 'npc', 'say'];
 
@@ -28,12 +28,13 @@ class AliasMiddleware extends Middleware {
 
 			// we're good
 			res.alias = alias;
-			req.command = null;
 			res.shouldSend = true;
-			req.message.content = req.parts.slice(1).join(' ');
+			req.message.content = req.message.content.replace( req.esc + req.command + ' ' + req.parts[0], '').trim(); //req.parts.slice(1).join(' ');
+			req.command = null;
 			req.parseMessage();
 			if (!req.command) res.content = req.message.content;
 			AliasMiddleware.setTargetChannel(req, res);
+			console.log('- going to handlers with:', req.command, res.alias);
 			return;
 		}
 

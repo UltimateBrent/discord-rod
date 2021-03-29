@@ -177,8 +177,8 @@ class Rod {
 				await h.process( req, res );
 			} else {
 				console.log('- no handler for command:', req.command);
-				req.command = null;
 				res.sendSimple('No such command: `' + req.command + '`');
+				req.command = null;
 			}
 
 		}

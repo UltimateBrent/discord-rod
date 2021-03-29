@@ -85,8 +85,8 @@ class RodResponse {
 		// mark this as sent so we don't try again
 		self.sent = true;
 
-		// if alias is set, overwrite postas
-		if (self.alias) {
+		// if alias is set, and no postas, use that
+		if (self.alias && !self.postAs) {
 			//console.log('- setting postas from:', self.alias.name, self.alias.avatar);
 			self.postAs = {
 				name: self.alias.name,

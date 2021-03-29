@@ -319,7 +319,7 @@ class Roll {
 		const self = this;
 		// re-parse the roll string
 		const d = roll.match(/([1-9]\d*)?[wW]([1-9]\d*)?([tde0-9=<>]*)?/);
-		console.log('- wod roll:', roll, 'parsed:', d);
+		//console.log('- wod roll:', roll, 'parsed:', d);
 		let count = d[1] ? parseInt(d[1]) : 1;
 		let die = d[2] ? parseInt(d[2]) : 5;
 		let tripleM = roll.match(/w.*?t([0-9<>=]*)/);
@@ -328,13 +328,13 @@ class Roll {
 		let double: any = doubleM ? doubleM[1] || 10 : 0;
 		let explodeM = roll.match(/w.*?e([0-9<>=]*)/);
 		let explode: any = explodeM ? explodeM[1] || 10 : 0;
-		console.log('- explode match:', explodeM);
+		//console.log('- explode match:', explodeM);
 
 		let ex = [];
 		let success = 0;
 		let explodes = 0;
 		const check = die || 5;
-		console.log('- wod roll:', {count, check, explode, double, triple});
+		//console.log('- wod roll:', {count, check, explode, double, triple});
 		for (let i = 0; i < count; i++) {
 			let rnum: any = 1 + Math.floor(mt.random() * 10);
 			let r = rnum;
@@ -398,7 +398,6 @@ class Roll {
 			return 'Error: non-math `' + s + '`';
 		} else {
 			try {
-				console.log('- evaling:', s);
 				return eval(s) as number;
 			} catch (e) {
 				if (noErrors) return 0;
