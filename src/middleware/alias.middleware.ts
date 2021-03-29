@@ -34,7 +34,6 @@ class AliasMiddleware extends Middleware {
 			req.parseMessage();
 			if (!req.command) res.content = req.message.content;
 			AliasMiddleware.setTargetChannel(req, res);
-			console.log('- going to handlers with:', req.command, res.alias);
 			return;
 		}
 

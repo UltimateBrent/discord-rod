@@ -10,7 +10,7 @@ class RollHandler extends Handler {
 
 	static async process(req: RodRequest, res: RodResponse): Promise<void> {
 		const roll: Roll = Roll.parseRoll( req, req.parts.join(' ') );
-		console.log('- process roll:', roll);
+		//console.log('- process roll:', roll);
 
 		if (roll.errors.length) {
 			res.errors = res.errors.concat( roll.errors );
