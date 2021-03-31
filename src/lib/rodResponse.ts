@@ -56,7 +56,11 @@ class RodResponse {
 			embeds = embedContent;
 		}
 
-		if (options.deleteCommand) this.req.message.delete({timeout: 500, reason: 'rodbot: deleting original command'});
+		try {
+			if (options.deleteCommand) this.req.message.delete({timeout: 500, reason: 'rodbot: deleting original command'});
+		} catch(e) {
+			console.log('- failed to delete message in sendSimple');
+		}
 
 		// escape bad things
 		content = self.escape( content );

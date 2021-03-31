@@ -82,7 +82,11 @@ class CallMiddleware extends Middleware {
 			await m.edit('', em);
 
 			// delete the roll
-			req.message.delete({timeout: 500, reason: 'gobbled by rodbot call'});
+			try {
+				req.message.delete({timeout: 500, reason: 'gobbled by rodbot call'});
+			} catch(e) {
+				console.log('- failed to delete message in call middleware');
+			}
 
 			res.sent = true;
 		}
