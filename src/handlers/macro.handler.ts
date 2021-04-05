@@ -35,6 +35,7 @@ class MacroHandler extends MultiCommandHandler {
 		console.log('- add macro', name + ':', text);
 
 		if (!name || !text) return await res.sendSimple('You must include a name for your macro and the command it will execute. Extra spaces in your command can also cause this.', '`' + req.esc + 'saveroll name command`');
+		if (name.match(/[^0-9a-zA-Z]/)) return await res.sendSimple('Your macro name can only include numbers and letters.');
 
 		let current = (req.user.serverSettings ? req.user.serverSettings.macros : null) || req.user.settings.macros || [];
 		const m = {
