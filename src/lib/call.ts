@@ -26,7 +26,7 @@ class Call {
 	 * @param call - object from server record
 	 * @return the call
 	 */
-	constructor(call: any) {
+	constructor(call: any = {}) {
 		const self = this;
 
 		if (call.message) self.message = call.message;
