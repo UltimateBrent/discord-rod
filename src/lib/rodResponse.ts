@@ -32,7 +32,7 @@ class RodResponse {
 	 */
 	private escape( content: string) : string {
 		if (!content) return null;
-		return content.replace(/@(everyone|here|channel|testescape)/, '©$1');
+		return (content + '').replace(/@(everyone|here|channel|testescape)/, '©$1');
 	}
 
 	/**

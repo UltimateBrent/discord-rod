@@ -55,7 +55,11 @@ class Roll {
 		// is this a roll macro?
 		_.each(req.user.settings.macros || [], function (r) {
 			if (!r.name || !r.roll) return;
-			m = m.replace(new RegExp('^(?:\\' + req.esc + 'r(?:oll)?)?(?:\\s)?' + r.name + '\\b', 'gi'), r.roll);
+			try {
+				m = m.replace(new RegExp('^(?:\\' + req.esc + 'r(?:oll)?)?(?:\\s)?' + r.name + '\\b', 'gi'), r.roll);
+			} catch(e) {
+				self.errors.push('Something about your saved macro: `' + r.name +'` caused an error. We\'ll try to prevent these things from being created in the future, but for now, please remove it.');
+			}
 		});
 
 		// does this contain a negative check? 'c-5' => 1d20 - 5
