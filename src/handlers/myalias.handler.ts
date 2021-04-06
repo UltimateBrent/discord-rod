@@ -35,7 +35,7 @@ class MyAlias extends MultiCommandHandler {
 		}
 
 		const sKey = user.settings?.autoAlias || 'none';
-		const caKey = user.settings?.channelAliases[ req.message.channel.id ] || 'auto';
+		const caKey = user.settings?.channelAliases?.[ req.message.channel.id ] || 'auto';
 
 		let text = '<@' + user._id + '>\'s server alias is set to: `' + sKey + '`\nTheir channel alias is set to: `' + caKey + '`\n\n';
 
