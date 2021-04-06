@@ -62,11 +62,9 @@ class Rod {
 		});
 
 		client.on('message', msg => {
-			try {
-				self.handleMessage(msg);
-			} catch(e) {
+			self.handleMessage(msg).catch(e => {
 				console.error('- handle message error:', e);
-			}
+			});
 		});
 		client.on('error', e => {
 			console.error('- discord error:', e);
