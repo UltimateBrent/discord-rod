@@ -57,7 +57,7 @@ class RodResponse {
 		}
 
 		try {
-			if (options.deleteCommand) this.req.message.delete({timeout: 500, reason: 'rodbot: deleting original command'});
+			if (options.deleteCommand) this.req.message.delete({timeout: 500, reason: 'rodbot: deleting original command'}).catch(e => { console.log('- failed to delete message:', e); });
 		} catch(e) {
 			console.log('- failed to delete message in sendSimple');
 		}
@@ -214,14 +214,12 @@ class RodResponse {
 
 		// delete the original message that sent this as long as target channel is this channel
 		if (self.req.channel.id != self.req.message.channel.id) return;
-		try {
-			self.req.message.delete({
-				timeout: 1200,
-				reason: 'Rod deletes commands after responding to them.'
-			});
-		} catch(e) {
+		self.req.message.delete({
+			timeout: 1200,
+			reason: 'Rod deletes commands after responding to them.'
+		}).catch(e => {
 			console.log('- message delete failed:', e);
-		}
+		});
 
 		return m;
 	}
