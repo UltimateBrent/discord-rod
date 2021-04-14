@@ -13,6 +13,9 @@ class AliasMiddleware extends Middleware {
 
 	static sayCommands = ['usealias', 'use', 'npc', 'say'];
 
+	/**
+	 * Checks to see if we're using a specified alias, and if not, checks to see if there's an alias set for the user
+	 */
 	static async process(req: RodRequest, res: RodResponse): Promise<void> {
 
 		// are we using a say command?
@@ -48,6 +51,9 @@ class AliasMiddleware extends Middleware {
 		}
 	}
 
+	/**
+	 * Sets the alias speech channel if applicable
+	 */
 	static setTargetChannel(req: RodRequest, res: RodResponse) {
 		// if target channel, let's set it
 		const target = req.server.channelAliasTargets[req.message.channel.id];

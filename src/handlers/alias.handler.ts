@@ -11,9 +11,10 @@ class ManageAlias extends MultiCommandHandler {
 	
 	static multiCommands = new Map([
 		['add', ['addalias', 'addnpc', 'add']],
-		['edit', ['editalias', 'editnpc', 'edit']],
+		['edit', ['editalias', 'editnpc']],
 		['remove', ['removealias', 'remnpc', 'rem', 'remove']],
-		['removeAll', ['remallnpc', 'removeallaliases']]
+		['removeAll', ['remallnpc', 'removeallaliases', 'remallalias']],
+		['editspeech', ['edit', 'editspeech']]
 	]);
 
 	/**
@@ -22,9 +23,6 @@ class ManageAlias extends MultiCommandHandler {
 	 * @param res - the response
 	 */
 	static async add(req: RodRequest, res: RodResponse): Promise<void> {
-
-		// are we in a DM?
-		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
 
 		// do we have permission?
 		const perm = req.getPermissions();
@@ -79,9 +77,6 @@ class ManageAlias extends MultiCommandHandler {
 	 * @param res
 	 */
 	static async edit(req: RodRequest, res: RodResponse): Promise<void> {
-		// are we in a DM?
-		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
-
 		// do we have permission?
 		const perm = req.getPermissions();
 		if (!perm) return await res.sendSimple('You do not have permission to edit aliases.');
@@ -123,9 +118,6 @@ class ManageAlias extends MultiCommandHandler {
 	 * @param res
 	 */
 	static async remove(req: RodRequest, res: RodResponse): Promise<void> {
-		// are we in a DM?
-		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
-
 		// do we have permission?
 		const perm = req.getPermissions();
 		if (!perm) return await res.sendSimple('You do not have permission to edit aliases.');
@@ -150,8 +142,6 @@ class ManageAlias extends MultiCommandHandler {
 	 * @param res
 	 */
 	static async removeAll(req: RodRequest, res: RodResponse): Promise<void> {
-		// are we in a DM?
-		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
 
 		// do we have permission?
 		const perm = req.getPermissions();
@@ -162,6 +152,39 @@ class ManageAlias extends MultiCommandHandler {
 		await req.server.save();
 
 		await res.send('Removed all aliases. I hope you meant to do that.');
+	}
+
+	/**
+	 * Edits the last thing the user said, as long as it was the last thing in the channel by deleting and reposting
+	 * @param req
+	 * @param res
+	 */
+	static async editspeech(req: RodRequest, res: RodResponse): Promise<void> {
+		if (!req.parts[0]) return await res.sendSimple('Editing requires that you provide a new message.', '`' + req.esc + 'editspeech My new message`');
+
+		// get last message posted
+		const ms = await req.channel.messages.fetch({before: req.message.id, limit: 1});
+		const lastMessage = ms.first();
+
+		const lastGhost = req.server.lastMessages[ req.channel.id ];
+
+		if (lastMessage.author.bot && lastMessage.content.trim() == lastGhost.content.trim() && req.message.author.id == lastGhost.author) {
+			// we have permission to edit, so let's do it
+			if (lastMessage.embeds.length) {
+				const em = lastMessage.embeds.shift();
+				res.embed = em;
+			}
+			res.postAs = {
+				name: lastGhost.name,
+				avatar: lastGhost.avatar
+			};
+
+			lastMessage.delete({timeout: 800});
+
+			return await res.send( req.parts.join(' '));
+		} else {
+			return await res.sendSimple('You were not the author of the last aliased message, so we cannot edit it.');
+		}
 	}
 
 }
