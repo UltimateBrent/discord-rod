@@ -168,6 +168,8 @@ class ManageAlias extends MultiCommandHandler {
 
 		const lastGhost = req.server.lastMessages[ req.channel.id ];
 
+		if (!lastMessage.content || !lastGhost.content) return await res.sendSimple('The last message was not editable.');
+
 		if (lastMessage.author.bot && lastMessage.content.trim() == lastGhost.content.trim() && req.message.author.id == lastGhost.author) {
 			// we have permission to edit, so let's do it
 			if (lastMessage.embeds.length) {
