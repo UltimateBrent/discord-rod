@@ -164,7 +164,8 @@ class SystemHandler extends Handler {
 		em.addField('Members', req.message.guild.memberCount, true);
 		em.addField('Since', new Date(req.message.guild.createdAt).toISOString().split('T')[0], true);
 		em.addField('Owner', req.message.guild.owner.user.username + ' (' + req.message.guild.owner.nickname + ')', true);
-		em.addField('Escape Char', req.esc, true);
+		em.addField('Escape Char', '`' + req.esc + '`', true);
+		em.addField('Ignore Char', req.server.ignorePrefixes.length ? '`' + req.server.ignorePrefixes.join('` `') + '`' : 'none', true);
 		em.setColor('#FF3333');
 
 		res.embed = em;
@@ -181,7 +182,7 @@ class SystemHandler extends Handler {
 		await res.sendSimple('`1.` You have activated Rod\'s Debugger! Rod is going to make a few posts now. Which ones you see should be reported. :white_check_mark:');
 
 		const em = new Discord.MessageEmbed();
-		em.setDescription('`2.` This server can show embeds. :white_check_mark:');
+		em.setDescription('`2.` This server/channel/user can show embeds. :white_check_mark:');
 		em.setColor('#FF3399');
 
 		await res.sendSimple(null, [em]);
@@ -208,7 +209,7 @@ class SystemHandler extends Handler {
 		}
 		res.postAs = {
 			name: 'Rod Alert!',
-			avatar: 'https://cdn.discordapp.com/attachments/784802568643674112/784910116721131551/z.png'
+			avatar: 'https://rodbot.io/content/images/2018/03/d20_small-1.png'
 		}
 		await res.send('`4.` Rod can post as a webhook. If you can see numbers `1` through `4`, everything is okay. :white_check_mark:');
 	}
@@ -218,20 +219,14 @@ class SystemHandler extends Handler {
 	 */
 	static async test( req: RodRequest, res: RodResponse): Promise<void> {
 
-		const em = new Discord.MessageEmbed();
-		em.setAuthor(req.message.guild.name, req.message.guild.iconURL());
-		em.setDescription('Server ID: **' + req.message.guild.id + '**\nChannel ID: **' + req.message.channel.id + '**');
-		em.addField('Members', req.message.guild.memberCount, true);
-		em.addField('Since', new Date(req.message.guild.createdAt).toISOString().split('T')[0], true);
-		em.addField('Owner', req.message.guild.owner.user.username + ' (' + req.message.guild.owner.nickname + ')', true);
-		em.setColor('#FF3333');
+		const newhooks = await req.getWebhooks();
+		console.log(newhooks);
 
-		const em2 = new Discord.MessageEmbed();
-		em2.setAuthor(req.message.guild.name, req.message.guild.iconURL());
-		em2.setDescription('Server ID: **' + req.message.guild.id + '**\nChannel ID: **' + req.message.channel.id + '**');
-		
-		//return await res.sendSimple(null, [em, em2]);
-		res.embeds = [em, em2];
+		for (let [key, hook] of newhooks) {
+			console.log( key, hook.token );
+		}
+
+		await res.sendSimple('Test complete, check console.');
 
 	}
 }

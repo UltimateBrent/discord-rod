@@ -46,6 +46,11 @@ class Rod {
 		self.connectToDiscord();
 		self.loadHandlers();
 		self.loadMiddleware();
+
+		// listen for discord API errors
+		process.on('unhandledRejection', error => {
+			console.error('Unhandled promise rejection:', error);
+		});
 	}
 
 	/**

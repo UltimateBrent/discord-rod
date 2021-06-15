@@ -187,12 +187,13 @@ class RodResponse {
 		}
 
 		// send it!
-		let m: Promise<Discord.Message>;
+		let m: Discord.Message;
 		try {
-			m = hook.send(self.escape( content || self.content || '' ), {
+			m = await hook.send(self.escape( content || self.content || '' ), {
 				username: username,
 				avatarURL: avatar,
-				embeds: embeds
+				embeds: embeds,
+				disableMentions: 'everyone'
 			});
 		} catch(e) {
 			console.log('- hook.send error:', e);

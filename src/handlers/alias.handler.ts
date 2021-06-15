@@ -183,7 +183,7 @@ class ManageAlias extends MultiCommandHandler {
 
 			lastMessage.delete({timeout: 800});
 
-			return await res.send( req.parts.join(' '));
+			return await res.send( req.message.content.replace(/^\S+ /, ''));
 		} else {
 			return await res.sendSimple('You were not the author of the last aliased message, so we cannot edit it.');
 		}
