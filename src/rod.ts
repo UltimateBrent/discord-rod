@@ -161,6 +161,12 @@ class Rod {
 
 		const req = new RodRequest( self.client, msg );
 		await req.loadRodData();
+
+		// is this part of our ignore prefixes?
+		for (let pre of req.server.ignorePrefixes || []) {
+			if (msg.content.startsWith( pre )) return;
+		}
+
 		req.parseMessage();
 		const res = new RodResponse( req );
 
