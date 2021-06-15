@@ -123,6 +123,12 @@ class RodRequest {
 
 		try {
 			const hooks = await (self.channel as Discord.TextChannel).fetchWebhooks();
+
+			// filter out ones that won't work
+			for (let [key, hook] of hooks) {
+				if (!hook.token) hooks.delete( key );
+			}
+
 			if (!hooks.size && create) {
 				console.log('- no hooks found, creating...');
 

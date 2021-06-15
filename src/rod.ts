@@ -85,7 +85,7 @@ class Rod {
 			useNewUrlParser: true,
 			useUnifiedTopology: true
 		}).then(() => {
-			console.log('- connected to mongo');
+			console.log('- connected to mongo db');
 		}).catch(err => {
 			console.error('- mongo connection err:', err);
 		});
