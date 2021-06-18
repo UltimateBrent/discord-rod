@@ -54,13 +54,14 @@ class TableHandler extends MultiCommandHandler {
 		if (req.message.attachments.size) {
 			const attachment = req.message.attachments.first();
 			url = attachment.url;
-			//console.log('- attachment found:', url);
+			console.log('- attachment found:', url);
 		}
 
 		// get the csv file
 		try {
 			const csvFile = await request.get(url).buffer();
-			const parser = CSVParse( csvFile.body );
+			//console.log('- got csvfile:', csvFile.text);
+			const parser = CSVParse( csvFile.text );
 			const data = [];
 			for await ( const record of parser ) {
 				data.push( record );
