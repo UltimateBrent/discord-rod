@@ -66,7 +66,8 @@ class TableHandler extends MultiCommandHandler {
 			for await ( const record of parser ) {
 				data.push( record );
 			}
-			console.log('- csv data:', url, data);
+			console.log('- csv data:', url);
+			console.table( data );
 			data.shift(); // remove header row
 			const tdata = data.map((row) => { return {text: row[1], weight: parseInt( row[0] )};});
 
