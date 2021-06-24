@@ -23,25 +23,25 @@
 	},
 	"homepage": "https://github.com/UltimateBrent/discord-rod#readme",
 	"devDependencies": {
-		"@types/async": "^3.2.3",
-		"@types/lodash": "^4.14.157",
+		"@types/async": "^3.2.6",
+		"@types/lodash": "^4.14.170",
 		"@types/mersenne-twister": "^1.1.2",
-		"@types/node": "^14.0.13",
+		"@types/node": "^14.17.4",
 		"@typescript-eslint/eslint-plugin": "^3.4.0",
 		"@typescript-eslint/parser": "^3.4.0",
-		"eslint": "^7.3.1",
-		"eslint-plugin-import": "^2.21.2",
-		"nodemon": "^2.0.4",
+		"eslint": "^7.29.0",
+		"eslint-plugin-import": "^2.23.4",
+		"nodemon": "^2.0.7",
 		"ts-node": "^8.10.2",
-		"typescript": "^3.9.5"
+		"typescript": "^3.9.10"
 	},
 	"dependencies": {
 		"async": "^3.2.0",
-		"csv-parse": "^4.15.3",
-		"discord.js": "^12.3.1",
+		"csv-parse": "^4.16.0",
+		"discord.js": "^12.5.3",
 		"lodash": "^4.17.21",
 		"mersenne-twister": "^1.1.0",
-		"mongoose": "^5.11.19",
+		"mongoose": "^5.12.14",
 		"superagent": "^6.1.0"
 	}
 }
