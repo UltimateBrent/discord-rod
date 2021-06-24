@@ -113,9 +113,7 @@ const s = new Schema({
 		avatar: String,
 		createdBy: String,
 		grant: [String],
-		grantRoles: [String],
-		avraeId: String,
-		avrae: Schema.Types.Mixed
+		grantRoles: [String]
 	}],
 	rollCalls: [
 		{
