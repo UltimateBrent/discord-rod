@@ -34,7 +34,7 @@
 		"eslint-plugin-import": "^2.23.4",
 		"nodemon": "^2.0.7",
 		"ts-node": "^8.10.2",
-		"typescript": "^3.9.10"
+		"typescript": "^3.9.5"
 	},
 	"dependencies": {
 		"async": "^3.2.0",
@@ -42,7 +42,7 @@
 		"discord.js": "^12.5.3",
 		"lodash": "^4.17.21",
 		"mersenne-twister": "^1.1.0",
-		"mongoose": "^5.12.14",
+		"mongoose": "5.11.19",
 		"superagent": "^6.1.0"
 	}
 }
