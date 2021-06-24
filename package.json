@@ -39,7 +39,7 @@
 		"async": "^3.2.0",
 		"csv-parse": "^4.15.3",
 		"discord.js": "^12.3.1",
-		"lodash": "^4.17.15",
+		"lodash": "^4.17.21",
 		"mersenne-twister": "^1.1.0",
 		"mongoose": "^5.11.19",
 		"superagent": "^6.1.0"
