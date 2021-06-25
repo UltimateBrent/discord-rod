@@ -127,7 +127,7 @@ class RodRequest {
 			// filter out ones that won't work
 			for (let [key, hook] of hooks) {
 				if (!hook.token) {
-					console.log('- hook had no token:', key, hook);
+					//console.log('- hook had no token:', key, hook);
 					hooks.delete( key );
 				}
 			}

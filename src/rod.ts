@@ -164,7 +164,7 @@ class Rod {
 
 		// is this part of our ignore prefixes?
 		for (let pre of req.server.ignorePrefixes || []) {
-			if (msg.content.startsWith( pre )) return;
+			if (msg.content.startsWith( pre ) && !msg.content.startsWith('/rod')) return;
 		}
 
 		req.parseMessage();
@@ -185,8 +185,8 @@ class Rod {
 			if (h) {
 				await h.process( req, res );
 			} else {
-				console.log('- no handler for command:', req.command);
-				res.sendSimple('No such command: `' + req.command + '`');
+				//console.log('- no handler for command:', req.command);
+				//res.sendSimple('No such command: `' + req.command + '`');
 				req.command = null;
 			}
 
