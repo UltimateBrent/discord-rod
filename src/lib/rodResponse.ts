@@ -42,7 +42,7 @@ class RodResponse {
 	 * @param options - (optional) options flags
 	 * @return message response promise for catching/awaiting
 	 */
-	async sendSimple( content: string, embedContent: string|Discord.MessageEmbed[] = null, options: {deleteCommand?: boolean, split?: {}} = {} ): Promise<Discord.Message|any> {
+	async sendSimple( content: string, embedContent: string|Discord.MessageEmbed[] = null, options: {deleteCommand?: boolean, deleteMessage?: boolean, split?: {}} = {} ): Promise<Discord.Message|any> {
 		const self = this;
 		this.sent = true;
 
@@ -56,12 +56,8 @@ class RodResponse {
 			embeds = embedContent;
 		}
 
-		try {
-			if (options.deleteCommand) this.req.message.delete({timeout: 500, reason: 'rodbot: deleting original command'}).catch(e => { console.log('- failed to delete message:', e); });
-		} catch(e) {
-			console.log('- failed to delete message in sendSimple');
-		}
-
+		if (options.deleteCommand) this.req.message.delete({timeout: 500, reason: 'rodbot: deleting original command'}).catch(e => { console.log('- failed to delete original message from send simple:', e); });
+		
 		// escape bad things
 		content = self.escape( content );
 
@@ -69,7 +65,12 @@ class RodResponse {
 		const splits = Discord.Util.splitMessage(content, options.split || {maxLength: 2000});
 		
 		if (splits.length < 2) {
-			return this.req.message.channel.send(content, embeds );
+			const m = await this.req.message.channel.send(content, embeds );
+
+			if (options.deleteMessage) m.delete({timeout: 5000, reason: 'rodbot: deleting temp message'}).catch(e => { console.log('- failed to delete temp message from send simple:', e); });
+
+			return m;
+
 		} else {
 			for (const m of splits) {
 				await this.req.message.channel.send(m);

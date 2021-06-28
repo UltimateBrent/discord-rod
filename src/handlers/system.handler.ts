@@ -21,7 +21,8 @@ class SystemHandler extends Handler {
 		['clearignore', ['clearignore']],
 		['serverinfo', ['serverinfo', 'info']],
 		['debug', ['debug']],
-		['test', ['testo']]
+		['test', ['testo']],
+		['init', ['init']]
 	]);
 
 	static async process(req: RodRequest, res: RodResponse): Promise<void> {
@@ -40,8 +41,16 @@ class SystemHandler extends Handler {
 			if (subcommands.includes(req.parts[0])) return self[f](req, res);
 		}
 
-		console.log('- command sent to this handler, but unhandled:', req.command);
+		// if we got this far, we don't have a subhandler for whatever they sent. Just ignore it.
+		req.command = null;
+	}
 
+	/**
+	 * Just here because people keep calling it.
+	 */
+	static async init(req: RodRequest, res: RodResponse): Promise<void> {
+		console.log('- rod init');
+		return await res.sendSimple('Hey! You don\'t have to do this anymore, but people kept getting confused when I did not answer at all, so how are you today?');
 	}
 
 	/**

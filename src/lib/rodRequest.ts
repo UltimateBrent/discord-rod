@@ -145,7 +145,7 @@ class RodRequest {
 					} catch(e) {
 						// unlikely we'll get here if we could fetchWebhooks, but let's be sure
 						console.error('- webhook creation error:', e);
-						throw new Error( 'Error creating webhooks. Most likely reason is insufficient permissions. Please make sure Rod has the `Manage Webhooks` permssion. ' );
+						return new Discord.Collection();
 					}
 				}
 
@@ -155,7 +155,7 @@ class RodRequest {
 
 		} catch(e) {
 			console.error('- webhook fetching error:', e);
-			throw new Error('Error fetching webhooks. Most likely reason is insufficient permissions. Please make sure Rod has the `Manage Webhooks` permssion. ');
+			return new Discord.Collection();
 		}
 
 		

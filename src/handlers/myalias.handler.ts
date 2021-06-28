@@ -64,7 +64,7 @@ class MyAlias extends MultiCommandHandler {
 
 		const current: Alias = req.user.getCurrentAlias( req );
 
-		res.sendSimple('You set your server-level alias to `' + (alias?.id || 'off') + '`. If you posted in this channel, you would post as `' + (current?.name || 'no alias') + '`.');
+		res.sendSimple('You set your server-level alias to `' + (alias?.id || 'off') + '`. If you posted in this channel, you would post as `' + (current?.name || 'no alias') + '`.', null, { deleteCommand: true, deleteMessage: true });
 	}
 
 	/**
@@ -91,7 +91,7 @@ class MyAlias extends MultiCommandHandler {
 
 		const current: Alias = req.user.getCurrentAlias(req);
 
-		res.sendSimple('You set your alias for this channel to `' + (alias?.id || (req.parts[0] == 'off' ? 'off' : 'auto (use server setting)')) + '`. If you posted in this channel, you would post as `' + (current?.name || 'no alias') + '`.');
+		res.sendSimple('You set your alias for this channel to `' + (alias?.id || (req.parts[0] == 'off' ? 'off' : 'auto (use server setting)')) + '`. If you posted in this channel, you would post as `' + (current?.name || 'no alias') + '`.', null, { deleteCommand: true, deleteMessage: true });
 	}
 
 	/**
@@ -104,7 +104,7 @@ class MyAlias extends MultiCommandHandler {
 		req.user = await req.user.saveSetting( req, 'channelAliases', {} );
 		req.user = await req.user.saveSetting( req, 'autoAlias', null );
 
-		res.sendSimple('Your alias settings for this server have been reset.');
+		res.sendSimple('Your alias settings for this server have been reset.', null, { deleteCommand: true, deleteMessage: true });
 	}
 }
 

@@ -14,7 +14,8 @@ class ManageAlias extends MultiCommandHandler {
 		['edit', ['editalias', 'editnpc']],
 		['remove', ['removealias', 'remnpc', 'rem', 'remove']],
 		['removeAll', ['remallnpc', 'removeallaliases', 'remallalias']],
-		['editspeech', ['edit', 'editspeech']]
+		['editspeech', ['edit', 'editspeech']],
+		['deletespeech', ['delete', 'deletespeech']]
 	]);
 
 	/**
@@ -168,7 +169,7 @@ class ManageAlias extends MultiCommandHandler {
 
 		const lastGhost = req.server.lastMessages[ req.channel.id ];
 
-		if (!lastMessage.content || !lastGhost.content) return await res.sendSimple('The last message was not editable.');
+		if (!lastMessage.content || !lastGhost.content) return await res.sendSimple('The last message was not editable.', null, { deleteCommand: true, deleteMessage: true });
 
 		if (lastMessage.author.bot && lastMessage.content.trim() == lastGhost.content.trim() && req.message.author.id == lastGhost.author) {
 			// we have permission to edit, so let's do it
@@ -185,7 +186,31 @@ class ManageAlias extends MultiCommandHandler {
 
 			return await res.send( req.message.content.replace(/^\S+ /, ''));
 		} else {
-			return await res.sendSimple('You were not the author of the last aliased message, so we cannot edit it.');
+			return await res.sendSimple('You were not the author of the last aliased message, so we cannot edit it.', null, { deleteCommand: true, deleteMessage: true });
+		}
+	}
+
+	/**
+	 * Deletes the last thing the user said, as long as it was the last thing in the channel
+	 * @param req
+	 * @param res
+	 */
+	static async deletespeech(req: RodRequest, res: RodResponse): Promise<void> {
+		// get last message posted
+		const ms = await req.channel.messages.fetch({ before: req.message.id, limit: 1 });
+		const lastMessage = ms.first();
+
+		const lastGhost = req.server.lastMessages[req.channel.id];
+
+		if (!lastMessage.content || !lastGhost.content) return await res.sendSimple('The last message isn\'t deletable.');
+
+		if (lastMessage.author.bot && lastMessage.content.trim() == lastGhost.content.trim() && req.message.author.id == lastGhost.author) {
+			// we have permission to edit, so let's do it
+			lastMessage.delete({ timeout: 800 });
+
+			return await res.sendSimple('Message deleted', 'Self-destructing in 5s', {deleteCommand: true, deleteMessage: true});
+		} else {
+			return await res.sendSimple('You were not the author of the last aliased message, so we cannot edit it.', null, { deleteCommand: true, deleteMessage: true });
 		}
 	}
 

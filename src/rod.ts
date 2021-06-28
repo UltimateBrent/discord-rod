@@ -188,6 +188,7 @@ class Rod {
 				//console.log('- no handler for command:', req.command);
 				//res.sendSimple('No such command: `' + req.command + '`');
 				req.command = null;
+				res.shouldSend = false;
 			}
 
 		}
