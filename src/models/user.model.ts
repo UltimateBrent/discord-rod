@@ -42,7 +42,7 @@ const s = new Schema({
 			name: String,
 			roll: String
 		}],
-		autoAlias: { type: String, default: false } // npc.id
+		autoAlias: { type: String, default: null } // npc.id
 	}
 });
 
@@ -98,7 +98,8 @@ s.methods.saveSetting = async function (this: IUser, req: RodRequest, key: strin
 s.methods.getCurrentAlias = function(this: IUser, req: RodRequest): Alias {
 
 	// get server-level alias
-	const sKey = this.settings?.autoAlias;
+	let sKey = this.settings?.autoAlias;
+	if (sKey == 'false') sKey = null; // fixing casting bug because default was `false` before, and being stored as "false"
 
 	// get channel alias
 	const channelAliases: any = this.settings?.channelAliases || {};
