@@ -65,6 +65,7 @@ class SystemHandler extends Handler {
 		console.log('- will change to', newesc);
 
 		req.esc = newesc;
+		req.server.esc = newesc;
 		//rod.serverCache[ server.id ] = server;
 		await req.server.save();
 
@@ -94,7 +95,7 @@ class SystemHandler extends Handler {
 	 * @param res
 	 */
 	static async listignore(req: RodRequest, res: RodResponse): Promise<void> {
-		if (!req.server.ignorePrefixes?.length) return await res.sendSimple('Your server does not have any ignore prefixes configured. You can do so with `/addignore`');
+		if (!req.server.ignorePrefixes?.length) return await res.sendSimple('Your server does not have any ignore prefixes configured. You can do so with `/rod addignore`');
 
 		return await res.sendSimple('Your ignore prefixes are below:', '`' + req.server.ignorePrefixes.join('`, `') + '`');
 	}
