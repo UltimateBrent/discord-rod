@@ -12,7 +12,7 @@ class ManageAlias extends MultiCommandHandler {
 	static multiCommands = new Map([
 		['add', ['addalias', 'addnpc', 'add']],
 		['edit', ['editalias', 'editnpc']],
-		['remove', ['removealias', 'remnpc', 'rem', 'remove']],
+		['remove', ['removealias', 'remalias', 'remnpc', 'rem', 'remove']],
 		['removeAll', ['remallnpc', 'removeallaliases', 'remallalias']],
 		['editspeech', ['edit', 'editspeech']],
 		['deletespeech', ['delete', 'deletespeech']]
