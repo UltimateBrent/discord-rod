@@ -14,15 +14,6 @@ class GrantAlias extends MultiCommandHandler {
 		['remgrant', ['remgrant', 'remgrantnpc', 'remgrantalias']]
 	]);
 	
-	static async process(req: RodRequest, res: RodResponse): Promise<void> {
-		const self = this;
-
-		// are we in a DM?
-		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
-
-		super.process(req, res);
-	}
-
 	/**
 	 * Grants access to an alias to set of users/roles
 	 * @param req
