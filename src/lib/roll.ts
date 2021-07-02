@@ -130,7 +130,7 @@ class Roll {
 		//m = m.replace(/\//g, ' / ');
 		m = m.replace(/\(/g, ' ( ');
 		m = m.replace(/\)/g, ' ) ');
-		m = m.replace(/ {2}/g, ' '); // extra spaces
+		m = m.replace(/\s\s+/g, ' '); // extra spaces
 
 		let parts = m.trim().split(' ');
 		parts = _.filter(parts, function (p) { return !(p.startsWith(req.esc) && p != req.esc); }); // remove the command
