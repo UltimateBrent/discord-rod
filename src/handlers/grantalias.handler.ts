@@ -57,7 +57,7 @@ class GrantAlias extends MultiCommandHandler {
 		if (roles) granted = granted.concat(_.map(roles, function (m) { return '<@&' + m + '>'; }));
 		const mentionText = granted.join(', ');
 
-		res.content = 'I an now able to be used by ' + mentionText + '! Usage: `' + req.esc + 'use ' + alias.id + ' whatever you want to say`. You can also `' + req.esc + 'roll` and inline roll in those messages. Use `' + req.esc + 'setalias ' + alias.id + '` or `' + req.esc + 'setchannelalias ' + alias.id + '` to always have anything you say converted to me. You can use `' + req.esc + 'setalias off` to turn that off, and `' + req.esc + 'alias` to see your current alias settings.';
+		res.content = 'I am now able to be used by ' + mentionText + '! Usage: `' + req.esc + 'use ' + alias.id + ' whatever you want to say`. You can also `' + req.esc + 'roll` and inline roll in those messages. Use `' + req.esc + 'setalias ' + alias.id + '` or `' + req.esc + 'setchannelalias ' + alias.id + '` to always have anything you say converted to me. You can use `' + req.esc + 'setalias off` to turn that off, and `' + req.esc + 'alias` to see your current alias settings.';
 		res.alias = alias;
 
 		return;

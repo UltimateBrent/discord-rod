@@ -111,7 +111,7 @@ class ManageAlias extends MultiCommandHandler {
 
 		// let's say something as our new alias
 		res.alias = alias;
-		await res.send('I am new an improved!');
+		await res.send('I am new and improved!');
 	}
 
 	/**
