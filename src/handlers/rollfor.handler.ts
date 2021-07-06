@@ -29,7 +29,7 @@ class RollForHandler extends Handler {
 		// TODO call the roll call check
 
 		const roll: Roll = Roll.parseRoll( req, req.parts.slice(1).join(' ') );
-		console.log('- process roll:', roll);
+		//console.log('- process roll:', roll);
 
 		if (roll.errors.length) {
 			res.errors = res.errors.concat( roll.errors );

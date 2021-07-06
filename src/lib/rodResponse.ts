@@ -220,7 +220,7 @@ class RodResponse {
 			timeout: 1200,
 			reason: 'Rod deletes commands after responding to them.'
 		}).catch(e => {
-			console.log('- message delete failed:', e);
+			//console.log('- message delete failed:', e);
 		});
 
 		return m;

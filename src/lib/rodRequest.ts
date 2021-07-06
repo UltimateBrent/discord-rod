@@ -133,7 +133,7 @@ class RodRequest {
 			}
 
 			if (!hooks.size && create) {
-				console.log('- no hooks found, creating...');
+				//console.log('- no hooks found, creating...');
 
 				for (let i = hooks.size; i < 2; i++) {
 					try {
