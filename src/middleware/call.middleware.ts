@@ -41,7 +41,7 @@ class CallMiddleware extends Middleware {
 		}
 
 		if (!m) {
-			console.log('- roll check did not find anyone that', res.postAs ? res.postAs.name : req.message.member.displayName, 'matched.');
+			//console.log('- roll check did not find anyone that', res.postAs ? res.postAs.name : req.message.member.displayName, 'matched.');
 			return;
 		}
 
