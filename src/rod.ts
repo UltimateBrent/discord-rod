@@ -181,6 +181,7 @@ class Rod {
 		if (req.command && !res.sent) {
 
 			// do we have a handler for this command?
+			console.log('- running handler:', req.command, req.message.content);
 			const h: typeof Handler = self.handlers.get(req.command);
 			if (h) {
 				await h.process( req, res );
