@@ -183,7 +183,7 @@ class ManageAlias extends MultiCommandHandler {
 				avatar: lastGhost.avatar
 			};
 
-			lastMessage.delete({timeout: 800});
+			lastMessage.delete();
 
 			return await res.send( req.message.content.replace(/^\S+ /, ''));
 		} else {
@@ -207,7 +207,7 @@ class ManageAlias extends MultiCommandHandler {
 
 		if (lastMessage.author.bot && lastMessage.content.trim() == lastGhost.content.trim() && req.message.author.id == lastGhost.author) {
 			// we have permission to edit, so let's do it
-			lastMessage.delete({ timeout: 800 });
+			lastMessage.delete();
 
 			return await res.sendSimple('Message deleted', 'Self-destructing in 5s', {deleteCommand: true, deleteMessage: true});
 		} else {

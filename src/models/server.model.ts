@@ -170,7 +170,7 @@ s.statics.GetFromGuild = async function (g: Discord.Guild): Promise<IServer> {
 	s = new Server();
 	s._id = g.id;
 	s.name = g.name;
-	s.owner = g.ownerID;
+	s.owner = g.ownerId;
 	s.created = new Date(g.createdAt);
 	return await s.save();
 };

@@ -134,9 +134,7 @@ class Alias {
 
 		if (self.grantRoles && !roleId) {
 			const r = _.find(self.grantRoles, function (r) {
-				return _.find(req.guser.roles.cache.array(), function (ur) {
-					return ur.id == r;
-				});
+				return req.guser.roles.cache.has(r);
 			});
 			if (r) {
 				return true;

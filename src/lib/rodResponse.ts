@@ -56,7 +56,7 @@ class RodResponse {
 			embeds = embedContent;
 		}
 
-		if (options.deleteCommand) this.req.message.delete({timeout: 500, reason: 'rodbot: deleting original command'}).catch(e => { console.log('- failed to delete original message from send simple:', e); });
+		if (options.deleteCommand) this.req.message.delete().catch(e => { console.log('- failed to delete original message from send simple:', e); });
 		
 		// escape bad things
 		content = self.escape( content );
@@ -65,9 +65,9 @@ class RodResponse {
 		const splits = Discord.Util.splitMessage(content, options.split || {maxLength: 2000});
 		
 		if (splits.length < 2) {
-			const m = await this.req.message.channel.send(content, embeds );
+			const m = await this.req.message.channel.send({content, embeds});
 
-			if (options.deleteMessage) m.delete({timeout: 5000, reason: 'rodbot: deleting temp message'}).catch(e => { console.log('- failed to delete temp message from send simple:', e); });
+			if (options.deleteMessage) m.delete().catch(e => { console.log('- failed to delete temp message from send simple:', e); });
 
 			return m;
 
@@ -100,7 +100,7 @@ class RodResponse {
 		}
 
 		// is this a pm?
-		if (typeof self.req.channel['fetchWebhooks'] !== 'function') { // direct messages don't have webhooks
+		if (typeof self.req.channel['fetchWebhooks'] !== 'function' && !self.req.channel.parent) { // direct messages don't have webhooks
 			content = self.embedContent || content || self.req.message.content;
 			let embed = null;
 
@@ -112,12 +112,12 @@ class RodResponse {
 			} else {
 				const em = new Discord.MessageEmbed();
 				em.setDescription(content);
-				em.setColor(self.embedColor || '#333333');
+				em.setColor((self.embedColor || '#333333') as Discord.ColorResolvable);
 				embed = em;
 				content = ' ';
 			}
 
-			return self.sendSimple(self.escape( content ) || '', embed).catch(console.log);
+			return self.sendSimple(self.escape( content ) || '', [embed]).catch(console.log);
 		}
 
 		const hooks = await self.req.getWebhooks( true );
@@ -167,7 +167,7 @@ class RodResponse {
 		if (self.embedContent) {
 			const em = new Discord.MessageEmbed();
 			em.setDescription( self.embedContent);
-			em.setColor( self.embedColor || RodResponse.ColorFromString(username || self.req.message.author.id));
+			em.setColor( (self.embedColor || RodResponse.ColorFromString(username || self.req.message.author.id)) as Discord.ColorResolvable);
 			if (self.embedFooter) {
 				em.setFooter( self.embedFooter );
 			}
@@ -190,12 +190,14 @@ class RodResponse {
 		// send it!
 		let m: Discord.Message;
 		try {
-			m = await hook.send(self.escape( content || self.content || '' ), {
+			m = await hook.send( {
+				content: self.escape(content || self.content || ''),
 				username: username,
 				avatarURL: avatar,
 				embeds: embeds,
-				disableMentions: 'everyone'
-			});
+				allowedMentions: {parse: ['roles', 'users']},
+				threadId: self.req.channel.isThread() ? self.req.channel.id : null
+			}) as Discord.Message;
 		} catch(e) {
 			console.log('- hook.send error:', e);
 			self.req.channel.send( 'Got an error trying to post to webhook: ' + e );
@@ -216,10 +218,7 @@ class RodResponse {
 
 		// delete the original message that sent this as long as target channel is this channel
 		if (self.req.channel.id != self.req.message.channel.id) return;
-		self.req.message.delete({
-			timeout: 1200,
-			reason: 'Rod deletes commands after responding to them.'
-		}).catch(e => {
+		self.req.message.delete().catch(e => {
 			//console.log('- message delete failed:', e);
 		});
 

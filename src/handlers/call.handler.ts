@@ -38,14 +38,14 @@ class CallHandler extends MultiCommandHandler {
 		const text = req.parts.slice(1).join(' ');
 
 		// who was mentioned?
-		let mentions = req.message.mentions.members.size ? _.map(req.message.mentions.members.array(), function (m) { return {id: m.id, name: m.displayName}; }) : [];
+		let mentions = req.message.mentions.members.size ? _.map(Array.from( req.message.mentions.members.values()), function (m) { return {id: m.id, name: m.displayName}; }) : [];
 
 		// turn role members into members
 		if (req.message.mentions.roles.size) {
-			for (const role of req.message.mentions.roles.array()) {
+			for (const role of Array.from( req.message.mentions.roles.values())) {
 				console.log('- checking role:', role.name);
 
-				if (role.members.size) mentions = mentions.concat( _.map(role.members.array(), function (m) { return { id: m.id, name: m.displayName }; }) );
+				if (role.members.size) mentions = mentions.concat( _.map(Array.from( role.members.values()), function (m) { return { id: m.id, name: m.displayName }; }) );
 			}
 
 			// might have double grabbed people from role
@@ -102,14 +102,14 @@ class CallHandler extends MultiCommandHandler {
 		if (!perm) return await res.sendSimple('You do not have permission to add mentions to calls.');
 
 		// who was mentioned?
-		let mentions = req.message.mentions.members.size ? _.map(req.message.mentions.members.array(), function (m) { return { id: m.id, name: m.displayName }; }) : [];
+		let mentions = req.message.mentions.members.size ? _.map(Array.from( req.message.mentions.members.values() ), function (m) { return { id: m.id, name: m.displayName }; }) : [];
 
 		// turn role members into members
 		if (req.message.mentions.roles.size) {
-			for (const role of req.message.mentions.roles.array()) {
+			for (const role of Array.from( req.message.mentions.roles.values())) {
 				console.log('- checking role:', role.name);
 
-				if (role.members.size) mentions = mentions.concat(_.map(role.members.array(), function (m) { return { id: m.id, name: m.displayName }; }));
+				if (role.members.size) mentions = mentions.concat(_.map(Array.from( role.members.values() ), function (m) { return { id: m.id, name: m.displayName }; }));
 			}
 
 			// might have double grabbed people from role
@@ -142,11 +142,11 @@ class CallHandler extends MultiCommandHandler {
 			const em = call.generateEmbed(req);
 
 			const m = await req.channel.messages.fetch(call.message);
-			await m.edit('', em);
+			await m.edit({content: '', embeds: [em]});
 
 			// delete the roll
 			try {
-				req.message.delete({ timeout: 500, reason: 'gobbled by rodbot call' });
+				req.message.delete();
 			} catch(e) {
 				console.log('- failed to delete message in call handler');
 			}
@@ -171,7 +171,7 @@ class CallHandler extends MultiCommandHandler {
 
 		// delete old post
 		const m = await req.channel.messages.fetch(call.message);
-		m.delete({timeout: 500, reason: 'rodbot: replaced by new call post'});
+		m.delete();
 
 		// make new post
 		const em = call.generateEmbed(req);

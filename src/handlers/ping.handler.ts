@@ -25,12 +25,12 @@ class PingHandler extends MultiCommandHandler {
 		let text = req.message.content.replace(req.esc + 'ping ', '');
 
 		// who was mentioned?
-		let mentions = req.message.mentions.members.size ? _.map(req.message.mentions.members.array(), function (m) { return { id: m.id, name: m.displayName }; }) : [];
+		let mentions = req.message.mentions.members.size ? _.map(Array.from( req.message.mentions.members.values() ), function (m) { return { id: m.id, name: m.displayName }; }) : [];
 
-		let roles = req.message.mentions.roles.size ? _.map(req.message.mentions.roles.array(), function (r) { return { id: r.id, name: r.name }; }) : [];
+		let roles = req.message.mentions.roles.size ? _.map(Array.from( req.message.mentions.roles.values() ), function (r) { return { id: r.id, name: r.name }; }) : [];
 
 		req.message.mentions.roles.forEach(function (r) {
-			mentions = mentions.concat(_.map(r.members.array(), function (m) { return { id: m.id, name: m.displayName }; }));
+			mentions = mentions.concat(_.map(Array.from( r.members.values() ), function (m) { return { id: m.id, name: m.displayName }; }));
 		});
 
 		mentions = _.uniq(mentions);
@@ -125,10 +125,10 @@ class PingHandler extends MultiCommandHandler {
 		if (!perm) return await res.sendSimple('Only admins/channel admins can clear pings.');
 
 		// see if there are any mentions
-		let mentions = req.message.mentions.members.size ? _.map(req.message.mentions.members.array(), function (m) { return { id: m.id, name: m.displayName }; }) : [];
+		let mentions = req.message.mentions.members.size ? _.map(Array.from( req.message.mentions.members.values() ), function (m) { return { id: m.id, name: m.displayName }; }) : [];
 
 		req.message.mentions.roles.forEach(function (r) {
-			mentions = mentions.concat(_.map(r.members.array(), function (m) { return { id: m.id, name: m.displayName }; }));
+			mentions = mentions.concat(_.map(Array.from( r.members.values() ), function (m) { return { id: m.id, name: m.displayName }; }));
 		});
 
 		// is this satisfying any current pings?
@@ -163,7 +163,7 @@ class PingHandler extends MultiCommandHandler {
 
 		const m: Discord.Message = await res.sendSimple(' ', [em], {deleteCommand: true});
 
-		m.delete({timeout: 5000});
+		m.delete();
 	}
 }
 

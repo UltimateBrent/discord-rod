@@ -79,11 +79,11 @@ class CallMiddleware extends Middleware {
 			const em = call.generateEmbed( req );
 
 			const m = await req.channel.messages.fetch( call.message );
-			await m.edit('', em);
+			await m.edit({content: '', embeds: [em]});
 
 			// delete the roll
 			try {
-				req.message.delete({timeout: 500, reason: 'gobbled by rodbot call'});
+				req.message.delete();
 			} catch(e) {
 				console.log('- failed to delete message in call middleware');
 			}

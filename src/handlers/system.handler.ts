@@ -171,9 +171,8 @@ class SystemHandler extends Handler {
 		const em = new Discord.MessageEmbed();
 		em.setAuthor(req.message.guild.name, req.message.guild.iconURL());
 		em.setDescription('Server ID: **' + req.message.guild.id + '**\nChannel ID: **' + req.message.channel.id + '**');
-		em.addField('Members', req.message.guild.memberCount, true);
+		em.addField('Members', req.message.guild.memberCount.toString(), true);
 		em.addField('Since', new Date(req.message.guild.createdAt).toISOString().split('T')[0], true);
-		em.addField('Owner', req.message.guild.owner.user.username + ' (' + req.message.guild.owner.nickname + ')', true);
 		em.addField('Escape Char', '`' + req.esc + '`', true);
 		em.addField('Ignore Char', req.server.ignorePrefixes.length ? '`' + req.server.ignorePrefixes.join('` `') + '`' : 'none', true);
 		em.setColor('#FF3333');

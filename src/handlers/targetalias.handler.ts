@@ -39,11 +39,11 @@ class TargetAlias extends Handler {
 		if (!channels.size) return await res.sendSimple('You need to mention the target channel', '`' + req.esc + 'settargetchannel #my-target-channel`');
 		if (channels.size > 1) return await res.sendSimple('You mentioned more than one target channel and that is confusing. Just target one.');
 
-		const channel = channels.first();
+		const channel = channels.first() as Discord.TextChannel;
 
 		// do we have permissions to manage this at target channel?
 		const perms = channel.permissionsFor( req.guser );
-		if (perm != 'admin' && !perms.has('MANAGE_MESSAGES')) return await res.sendSimple('You have permissions to manage Rod here, but not at the target channel, and you need both.');
+		if (perm != 'admin' && !perms.has([Discord.Permissions.FLAGS.MANAGE_MESSAGES])) return await res.sendSimple('You have permissions to manage Rod here, but not at the target channel, and you need both.');
 
 		// we're good, let's do it
 		const channelTargets = req.server.channelAliasTargets || {};

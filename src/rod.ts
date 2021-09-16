@@ -59,7 +59,11 @@ class Rod {
 	public connectToDiscord() {
 		const self = this;
 
-		const client = new Discord.Client();
+		const client = new Discord.Client({intents: [
+			Discord.Intents.FLAGS.GUILDS,
+			Discord.Intents.FLAGS.GUILD_MESSAGES,
+			Discord.Intents.FLAGS.GUILD_WEBHOOKS
+		]});
 		console.log('- connecting bot - shard: ', client.shard ? client.shard.ids : 'unsharded');
 
 		client.on('ready', () => {

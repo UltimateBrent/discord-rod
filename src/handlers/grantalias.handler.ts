@@ -35,8 +35,8 @@ class GrantAlias extends MultiCommandHandler {
 		// if we're a channel admin, let's make sure we have access to it
 		if (!alias.checkEdit(req)) return await res.sendSimple('As a channel admin, you can only edit aliases that you created.');
 
-		const users = req.message.mentions.users.size ? _.map(req.message.mentions.users.array(), function (m) { return m.id; }) : [];
-		const roles = req.message.mentions.roles.size ? _.map(req.message.mentions.roles.array(), function (m) { return m.id; }) : [];
+		const users = req.message.mentions.users.size ? _.map(Array.from( req.message.mentions.users.values() ), function (m) { return m.id; }) : [];
+		const roles = req.message.mentions.roles.size ? _.map(Array.from( req.message.mentions.roles.values() ), function (m) { return m.id; }) : [];
 
 		alias.grant = _.uniq( alias.grant.concat( users ) );
 		alias.grantRoles = _.uniq( alias.grantRoles.concat( roles ) );
@@ -74,8 +74,8 @@ class GrantAlias extends MultiCommandHandler {
 		// if we're a channel admin, let's make sure we have access to it
 		if (!alias.checkEdit(req)) return await res.sendSimple('As a channel admin, you can only edit aliases that you created.');
 
-		const users = req.message.mentions.users.size ? _.map(req.message.mentions.users.array(), function (m) { return m.id; }) : [];
-		const roles = req.message.mentions.roles.size ? _.map(req.message.mentions.roles.array(), function (m) { return m.id; }) : [];
+		const users = req.message.mentions.users.size ? _.map(Array.from( req.message.mentions.users.values() ), function (m) { return m.id; }) : [];
+		const roles = req.message.mentions.roles.size ? _.map(Array.from( req.message.mentions.roles.values() ), function (m) { return m.id; }) : [];
 
 		alias.grant = _.without(alias.grant, ...users);
 		alias.grantRoles = _.without(alias.grantRoles, ...roles);

@@ -12,7 +12,7 @@ class RodRequest {
 	public client: Discord.Client;
 
 	public message: Discord.Message;
-	public channel: Discord.TextChannel;
+	public channel: Discord.TextChannel|Discord.ThreadChannel;
 	public user: IUser;
 	public guser: Discord.GuildMember;
 	public server: IServer;
@@ -34,7 +34,11 @@ class RodRequest {
 
 		self.client = client;
 		self.message = message;
-		self.channel = message.channel as Discord.TextChannel;
+		if (message.channel.isThread()) {
+			self.channel = message.channel as Discord.ThreadChannel;
+		} else {
+			self.channel = message.channel as Discord.TextChannel;
+		}
 		self.guser = message.member;
 
 	}
@@ -104,10 +108,10 @@ class RodRequest {
 		const self = this;
 
 		// guild-level admin, can do everything
-		if (self.guser.hasPermission('ADMINISTRATOR')) return 'admin';
+		if (self.guser.permissions.has([Discord.Permissions.FLAGS.ADMINISTRATOR])) return 'admin';
 
 		// channel-level admin, can create/edit only their own npcs
-		if (self.channel.permissionsFor(self.message.member).has('MANAGE_MESSAGES')) return 'channeladmin';
+		if (self.channel.permissionsFor(self.message.member).has([Discord.Permissions.FLAGS.MANAGE_MESSAGES])) return 'channeladmin';
 		
 		return null;
 	}
@@ -122,7 +126,12 @@ class RodRequest {
 		const self = this;
 
 		try {
-			const hooks = await (self.channel as Discord.TextChannel).fetchWebhooks();
+			let hooks: Discord.Collection<string, Discord.Webhook>;
+			if (self.channel.isThread()) {
+				hooks = await (self.channel.parent as Discord.TextChannel).fetchWebhooks();
+			} else {
+				hooks = await (self.channel as Discord.TextChannel).fetchWebhooks();
+			}
 
 			// filter out ones that won't work
 			for (let [key, hook] of hooks) {
