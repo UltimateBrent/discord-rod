@@ -15,5 +15,5 @@ manager.on('shardCreate', shard => console.log(`Launched shard ${shard.id}`));
 if (flags.dev) {
 	manager.spawn({amount: 1});
 } else {
-	manager.spawn({delay: 20000});
+	manager.spawn();
 }
