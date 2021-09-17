@@ -181,7 +181,7 @@ class TableHandler extends MultiCommandHandler {
 		const em = new Discord.MessageEmbed();
 		em.setTitle( 'Rolling for ' + name.toUpperCase() );
 		em.setDescription( 'Rolled a d' + weight + ' => `' + (roll + 1) + '` ' + (error || '') + '\n\n```\n' + item.text + '\n```');
-		em.setColor( RodResponse.ColorFromString( item.text ) );
+		em.setColor( RodResponse.ColorFromString( item.text ) as Discord.ColorResolvable );
 
 		res.embed = em;
 	}

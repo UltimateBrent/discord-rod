@@ -13,7 +13,7 @@ const manager = new ShardingManager('./dist/rod.js', {
 });
 manager.on('shardCreate', shard => console.log(`Launched shard ${shard.id}`));
 if (flags.dev) {
-	manager.spawn(1);
+	manager.spawn({amount: 1});
 } else {
-	manager.spawn('auto', 20000);
+	manager.spawn({delay: 20000});
 }
