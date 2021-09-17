@@ -32,11 +32,11 @@ class UseOnceAlias extends Handler {
 		};
 
 		// remove the name and image if applicable
-		req.parts.shift();
-		if (image) req.parts.shift();
+		let newText = req.message.content.replace(/^\S+ /, '');
+		if (image) newText = newText.replace(/^\S+ /, '')
 
 		// recreate the message without the params
-		return await res.send( req.parts.join(' ') );
+		return await res.send( newText );
 	}
 
 }
