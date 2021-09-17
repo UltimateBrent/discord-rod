@@ -62,7 +62,7 @@ class RodResponse {
 		content = self.escape( content );
 
 		// determine if we need to split
-		const splits = Discord.Util.splitMessage(content, options.split || {maxLength: 2000});
+		const splits = content && content.length > 10 ? Discord.Util.splitMessage(content, options.split || {maxLength: 2000}) : [];
 		
 		if (splits.length < 2) {
 			const m = await this.req.message.channel.send({content, embeds});
