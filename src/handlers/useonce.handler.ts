@@ -33,7 +33,7 @@ class UseOnceAlias extends Handler {
 
 		// remove the name and image if applicable
 		let newText = req.message.content.replace(/^\S+ /, '');
-		if (image) newText = newText.replace(/^\S+ /, '')
+		if (image) newText = newText.replace(/^\S+ /, '');
 
 		// recreate the message without the params
 		return await res.send( newText );
