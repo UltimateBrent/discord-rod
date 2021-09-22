@@ -26,7 +26,7 @@ class RodResponse {
 	}
 
 	/**
-	 * Escapes bad thinks like `@everyone` or `@here`
+	 * Escapes bad things like `@everyone` or `@here`
 	 * @param content - the string to escape
 	 * @returns the escaped string
 	 */
