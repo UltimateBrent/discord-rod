@@ -57,6 +57,9 @@ class TableHandler extends MultiCommandHandler {
 			console.log('- attachment found:', url);
 		}
 
+		if (!name) return res.sendSimple('You must include a name with your table.');
+		if (!url) return res.sendSimple('You must include a url to a csv or upload one with your command.');
+
 		// get the csv file
 		try {
 			const csvFile = await request.get(url).buffer();
