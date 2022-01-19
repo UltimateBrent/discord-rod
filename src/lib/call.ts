@@ -127,6 +127,7 @@ class Call {
 
 		const old: any = _.find(req.server.rollCalls, function (c) { return c.channel == self.channel; });
 		if (old) old.remove(); // mongoose subdocs get finicky if you replace with similar contents so we can't just remove from array
+		req.server.rollCalls = _.without( req.server.rollCalls, old);
 		req.server.markModified('rollCalls');
 
 		req.server = await req.server.save();

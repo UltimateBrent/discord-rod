@@ -26,17 +26,20 @@ class ListAliases extends Handler {
 		// are we filtering by a role or user grant?
 		let checkUser = null;
 		let checkRole = null;
-		if (req.params.grants && (req.message.mentions.users.size || req.message.mentions.roles.size)) {
+		if (req.message.mentions.users.size || req.message.mentions.roles.size) {
+			req.params.grants = true;
 			if (req.message.mentions.users.size) checkUser = req.message.mentions.users.first();
 			if (req.message.mentions.roles.size) checkRole = req.message.mentions.roles.first();
 		}
+
+		//console.log('- listing aliases, grants:', req.params.grants, 'for user:', checkUser, 'and role:', checkRole);
 
 		// get npcs and filter if we're a channel admin
 		let ms = req.server.npcs ? req.server.npcs.concat([]) : [];
 		ms = _.filter(ms, function (npc) {
 			const a = new Alias(npc);
 			if (checkUser || checkRole) {
-				return a.checkGrant( req ) && a.checkGrant(req, checkUser, checkRole);
+				return a.checkGrant( req ) && a.checkGrant(req, checkUser?.id, checkRole?.id);
 			} else {
 				return a.checkGrant( req );
 			}

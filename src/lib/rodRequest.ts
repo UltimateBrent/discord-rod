@@ -2,6 +2,7 @@ import Discord from 'discord.js';
 import Rod from '../rod';
 import User, { IUser } from '../models/user.model';
 import Server, { IServer } from '../models/server.model';
+import AliasMiddleware from '../middleware/alias.middleware';
 import _ from 'lodash';
 
 /**
@@ -67,10 +68,12 @@ class RodRequest {
 		if (parts[0]?.startsWith(self.esc) || parts[0]?.startsWith('/rod') || parts[0]?.startsWith('.rod')) {
 			self.command = parts.shift().slice( self.esc.length );
 
-			// I turned this off as I don't think this feature was used, and it lets us hardcode support for `/rod` system commands
-			/*if (self.command == 'rod') { // for instances like `/rod command param1 param2`
-				self.command = parts.shift(); 
-			}*/
+			// if this isn't an active command, let's reverse this
+			if (!Rod.handlerExists(self.command) && !AliasMiddleware.sayCommands.includes(self.command)) {
+				parts.unshift( self.esc + self.command );
+				self.command = null;
+			}
+
 		}
 
 		// parse params

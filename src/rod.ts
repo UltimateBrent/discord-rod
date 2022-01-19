@@ -127,6 +127,17 @@ class Rod {
 	}
 
 	/**
+	 * Checks to see if a particular handler exists
+	 * @param name - the handler name to check
+	 * @return whether or not it exists
+	 */
+	public handlerExists( name: string): boolean {
+		const self = this;
+
+		return !!self.handlers.get(name);
+	}
+
+	/**
 	 * Loads the middleware and orders by priority
 	 */
 	public async loadMiddleware() {

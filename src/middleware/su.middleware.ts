@@ -28,6 +28,8 @@ class SwitchUserMiddleware extends Middleware {
 			const du: Discord.User = req.message.mentions.users.first();
 			const user = await User.GetFromID(du, req.channel.guild.id);
 
+			console.log('- running su command from', req.user.name, 'as', user.name, ':', req.parts.slice(1).join(' ') );
+
 			req.user = user;
 
 			// reset message info

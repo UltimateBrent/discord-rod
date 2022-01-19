@@ -118,7 +118,7 @@ class Alias {
 		const checkId = userId || req.message.author.id;
 
 		// are we admins?
-		if (perm == 'admin' || (perm == 'channeladmin' && self.createdBy == checkId)) {
+		if (!userId && !roleId && (perm == 'admin' || (perm == 'channeladmin' && self.createdBy == checkId))) {
 			return true;
 		}
 
@@ -132,7 +132,7 @@ class Alias {
 			return true;
 		}
 
-		if (self.grantRoles && !roleId) {
+		if (self.grantRoles && !userId && !roleId) {
 			const r = _.find(self.grantRoles, function (r) {
 				return req.guser.roles.cache.has(r);
 			});

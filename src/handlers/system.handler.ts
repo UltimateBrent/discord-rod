@@ -82,7 +82,7 @@ class SystemHandler extends Handler {
 	}
 
 	/**
-	 * Resets the server's escape character to default ( usually `/` )
+	 * Resets the server's escape character to default ( usually `.` )
 	 * @example `/rod resetescape`
 	 * @param req
 	 * @param res
@@ -91,6 +91,7 @@ class SystemHandler extends Handler {
 		console.log('- server ', req.server.name, ' resetting escape');
 
 		req.esc = null;
+		req.server.esc = null;
 		//rod.serverCache[ server.id ] = server;
 		await req.server.save();
 
@@ -188,7 +189,7 @@ class SystemHandler extends Handler {
 	 * - If Webhooks are available
 	 */
 	static async debug(req: RodRequest, res: RodResponse): Promise<void> {
-		await res.sendSimple('`1.` You have activated Rod\'s Debugger! Rod is going to make a few posts now. Which ones you see should be reported. :white_check_mark:');
+		await res.sendSimple('`1.` You have activated Rod\'s Debugger! Rod is going to make a few posts now. Which ones you see should be reported.\nServer ID: `' + req.server.id + '`, esc: `' + req.esc + '`, ignore: `' + req.server.ignorePrefixes.join(', ') + '` :white_check_mark:');
 
 		const em = new Discord.MessageEmbed();
 		em.setDescription('`2.` This server/channel/user can show embeds. :white_check_mark:');

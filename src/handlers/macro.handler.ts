@@ -19,7 +19,8 @@ class MacroHandler extends MultiCommandHandler {
 		//['run', ['runmacro', 'run', 'exec', 'my']],
 		['add', ['addroll', 'saveroll']],
 		['list', ['listmacros', 'listrolls']],
-		['remove', ['remmacro', 'deletemacro', 'remroll']]
+		['remove', ['remmacro', 'deletemacro', 'remroll']],
+		['clear', ['clearrolls', 'clearmacros']]
 	]);
 
 	/**
@@ -87,6 +88,18 @@ class MacroHandler extends MultiCommandHandler {
 		await req.user.saveSetting(req, 'macros', current);
 
 		return await res.sendSimple('Macro `' + name + '` removed.');
+	}
+
+	/**
+	 * Clears all a user's saved macros
+	 * @example `/clearmacros`
+	 * @param req
+	 * @param res
+	 */
+	static async clear(req: RodRequest, res: RodResponse): Promise<void> {
+		await req.user.saveSetting(req, 'macros', []);
+
+		return await res.sendSimple('All macros removed.');
 	}
 
 }
