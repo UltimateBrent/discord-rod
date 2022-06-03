@@ -31,7 +31,7 @@ class MyAlias extends MultiCommandHandler {
 			if (!perm) return await res.sendSimple('You do not have permission to check aliases.');
 
 			const du: Discord.User = req.message.mentions.users.first();
-			user = await User.GetFromID(du, req.channel.guild.id);
+			user = await req.getUserFromID(du, req.channel.guild.id);
 		}
 
 		const sKey = user.settings?.autoAlias || 'none';

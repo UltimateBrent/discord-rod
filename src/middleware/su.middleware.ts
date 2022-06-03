@@ -26,7 +26,7 @@ class SwitchUserMiddleware extends Middleware {
 			if (!req.message.mentions.users.size) return await res.sendSimple('You did not mention anyone to run this command as.', '`' + req.esc + 'su @name /command`');
 
 			const du: Discord.User = req.message.mentions.users.first();
-			const user = await User.GetFromID(du, req.channel.guild.id);
+			const user = await req.getUserFromID(du, req.channel.guild.id);
 
 			console.log('- running su command from', req.user.name, 'as', user.name, ':', req.parts.slice(1).join(' ') );
 

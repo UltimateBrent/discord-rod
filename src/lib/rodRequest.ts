@@ -1,5 +1,6 @@
 import Discord from 'discord.js';
 import Rod from '../rod';
+import Alias from './alias';
 import User, { IUser } from '../models/user.model';
 import Server, { IServer } from '../models/server.model';
 import AliasMiddleware from '../middleware/alias.middleware';
@@ -95,8 +96,8 @@ class RodRequest {
 		const self = this;
 
 		
-		const u = User.GetFromID( self.message.author, self.message.guild ? self.message.guild.id : null );
-		const s = Server.GetFromGuild( self.message.guild );
+		const u = self.getUserFromID( self.message.author, self.message.guild ? self.message.guild.id : null );
+		const s = self.getServerFromGuild( self.message.guild );
 
 		[self.user, self.server] = await Promise.all([u, s]);
 
@@ -171,6 +172,96 @@ class RodRequest {
 		}
 
 		
+	}
+
+	/**
+	 * Gets the server record from a Discord.Guild
+	 */
+	async getServerFromGuild(g: Discord.Guild): Promise<IServer> {
+
+		let s: IServer = await Server.findOne({ _id: g.id });
+		if (s) return s;
+
+		console.log('- new server entry:', g.name, g.id);
+		s = new Server();
+		s._id = g.id;
+		s.name = g.name;
+		s.owner = g.ownerId;
+		s.created = new Date(g.createdAt);
+		return await s.save();
+	}
+
+	async getUserFromID(u: Discord.User, gid: string): Promise<IUser | any> {
+
+		/*if (rod.userCache[ u.id ] && !rod.userCache[ u.id ].dirty) {
+			var s = rod.userCache[ u.id ];
+			if (s.serverSettings && s.serverSettings[gid]) s.settings = _.extend(s.settings, s.serverSettings[gid]);
+			return cb(null, rod.userCache[ u.id ]);
+		}*/
+
+		let s: any = await User.findOne({ _id: u.id });
+		if (s) {
+			//rod.userCache[ u.id ] = s;
+			if (s.serverSettings && s.serverSettings[gid]) s.settings = _.extend(s.settings, s.serverSettings[gid]);
+			return s;
+		}
+
+		s = new User({ _id: u.id, name: u.username, settings: {}, serverSettings: {} });
+
+		return s;
+	};
+
+	/**
+	 * Saves a setting for the user, using the current guild as context
+	 * @param req - the request to get the guild
+	 * @param key - setting name
+	 * @param val - setting value
+	 * @return resulting user object
+	 */
+	async saveUserSetting(key: string, val: any): Promise<IUser> {
+		const self = this;
+
+		const gu = self.user;
+		const gid = self.channel.guild.id;
+
+		if (!gu.serverSettings[gid]) gu.serverSettings[gid] = {};
+
+		gu.serverSettings[gid][key] = val;
+		gu.settings = {};
+		gu.markModified('serverSettings');
+		gu.markModified('settings');
+		await gu.save();
+
+		// let's apply server settings over defaults
+		if (gu.serverSettings && gu.serverSettings[gid]) gu.settings = _.extend(gu.settings, gu.serverSettings[gid]);
+
+		return gu;
+	};
+
+	/**
+	 * Calculates current alias that would be used in this channel
+	 */
+	getCurrentAlias(): Alias {
+		const self = this;
+
+		// get server-level alias
+		let sKey = self.user.settings?.autoAlias;
+		if (sKey == 'false') sKey = null; // fixing casting bug because default was `false` before, and being stored as "false"
+
+		// get channel alias
+		const channelAliases: any = self.user.settings?.channelAliases || {};
+		const caKey = channelAliases[self.message.channel.id];
+
+		// if channel alias is set to none, we don't want any alias at all
+		if (caKey == 'none') return null;
+
+		// if we have a channel alias, let's return that
+		if (caKey && caKey != 'auto') return Alias.FindAlias(self, caKey);
+
+		// if we have a server alias, return that
+		if (sKey) return Alias.FindAlias(self, sKey);
+
+		return null;
 	}
 }
 

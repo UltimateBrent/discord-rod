@@ -1,5 +1,4 @@
 import RodRequest from "./rodRequest";
-import Discord from 'discord.js';
 import _ from 'lodash';
 
 /**

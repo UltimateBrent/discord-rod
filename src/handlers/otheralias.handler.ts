@@ -33,7 +33,7 @@ class MyAlias extends MultiCommandHandler {
 		const aliasId = req.parts[0].slice(0, 1) == '<' ? req.parts[1] : req.parts[0];
 
 		const du: Discord.User = req.message.mentions.users.first();
-		const user: IUser = await User.GetFromID( du, req.channel.guild.id );
+		const user: IUser = await req.getUserFromID( du, req.channel.guild.id );
 
 		let alias: Alias = null;
 		if (aliasId != 'off') {
@@ -66,7 +66,7 @@ class MyAlias extends MultiCommandHandler {
 		let aliasId = req.parts[0].slice(0, 1) == '<' ? req.parts[1] : req.parts[0];
 
 		const du: Discord.User = req.message.mentions.users.first();
-		const user: IUser = await User.GetFromID(du, req.channel.guild.id);
+		const user: IUser = await req.getUserFromID(du, req.channel.guild.id);
 		
 		let alias = null;
 		if (aliasId == 'none') aliasId = 'off'; // confusing, so adding alias
@@ -102,7 +102,7 @@ class MyAlias extends MultiCommandHandler {
 		if (!req.message.mentions.users.size) return await res.sendSimple('You must @mention the user you want to set the alias for.', '`' + req.esc + req.command + ' @name`');
 
 		const du: Discord.User = req.message.mentions.users.first();
-		const user: IUser = await User.GetFromID(du, req.channel.guild.id);
+		const user: IUser = await req.getUserFromID(du, req.channel.guild.id);
 		
 		await user.saveSetting( req, 'channelAliases', {} );
 		await user.saveSetting( req, 'autoAlias', null );

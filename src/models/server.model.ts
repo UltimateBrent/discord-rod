@@ -72,18 +72,7 @@ export interface IServer extends Document { // Typescript definition
 	raw: any
 }
 
-export interface IServerModel extends Model<IServer> {
-
-	/**
-	 * Looks up a server based on their discord guild id
-	 * @param g - the discord guild object from the message
-	 * @return the rod server object
-	 */
-	GetFromGuild(g: Discord.Guild): Promise<IServer>;
-
-}
-
-const s = new Schema({
+const s = new Schema<IServer>({
 	_id: String,
 	name: String,
 	owner: String,
@@ -161,21 +150,6 @@ const s = new Schema({
 	raw: Schema.Types.Mixed
 });
 
-s.statics.GetFromGuild = async function (g: Discord.Guild): Promise<IServer> {
-
-	let s: IServer = await this.findOne({ _id: g.id });
-	if (s) return s;
-
-	console.log('- new server entry:', g.name, g.id);
-	s = new Server();
-	s._id = g.id;
-	s.name = g.name;
-	s.owner = g.ownerId;
-	s.created = new Date(g.createdAt);
-	return await s.save();
-};
-
-
-const Server = mongoose.model<IServer, IServerModel>('Server', s);
+const Server = mongoose.model<IServer>('Server', s);
 export default Server;
 
