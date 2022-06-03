@@ -39,7 +39,7 @@ class MyAlias extends MultiCommandHandler {
 
 		let text = '<@' + user._id + '>\'s server alias is set to: `' + sKey + '`\nTheir channel alias is set to: `' + caKey + '`\n\n';
 
-		const current = user.getCurrentAlias( req );
+		const current = req.getCurrentAlias();
 
 		text += '<@' + user._id + '> would post here as: `' + (current?.name || 'no alias') + '`';
 
@@ -60,9 +60,9 @@ class MyAlias extends MultiCommandHandler {
 			if (!alias.checkGrant(req)) return await res.sendSimple('You don\'t have permission to use that alias. Have an admin use `' + req.esc + 'grantalias` for you.');
 		}
 
-		req.user = await req.user.saveSetting( req, 'autoAlias', alias?.id);
+		req.user = await req.saveUserSetting('autoAlias', alias?.id);
 
-		const current: Alias = req.user.getCurrentAlias( req );
+		const current: Alias = req.getCurrentAlias();
 
 		res.sendSimple('You set your server-level alias to `' + (alias?.id || 'off') + '`. If you posted in this channel, you would post as `' + (current?.name || 'no alias') + '`.', null, { deleteCommand: true, deleteMessage: true });
 	}
@@ -87,9 +87,9 @@ class MyAlias extends MultiCommandHandler {
 		const channelAliases = req.user.settings.channelAliases || {};
 		channelAliases[ req.channel.id ] = alias?.id || (req.parts[0] == 'off' ? 'none' : null);
 
-		req.user = await req.user.saveSetting( req, 'channelAliases', channelAliases );
+		req.user = await req.saveUserSetting('channelAliases', channelAliases );
 
-		const current: Alias = req.user.getCurrentAlias(req);
+		const current: Alias = req.getCurrentAlias();
 
 		res.sendSimple('You set your alias for this channel to `' + (alias?.id || (req.parts[0] == 'off' ? 'off' : 'auto (use server setting)')) + '`. If you posted in this channel, you would post as `' + (current?.name || 'no alias') + '`.', null, { deleteCommand: true, deleteMessage: true });
 	}
@@ -101,8 +101,8 @@ class MyAlias extends MultiCommandHandler {
 	 */
 	static async reset( req: RodRequest, res: RodResponse): Promise<void> {
 		
-		req.user = await req.user.saveSetting( req, 'channelAliases', {} );
-		req.user = await req.user.saveSetting( req, 'autoAlias', null );
+		req.user = await req.saveUserSetting('channelAliases', {} );
+		req.user = await req.saveUserSetting('autoAlias', null );
 
 		res.sendSimple('Your alias settings for this server have been reset.', null, { deleteCommand: true, deleteMessage: true });
 	}

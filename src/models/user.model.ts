@@ -15,9 +15,7 @@ export interface IUser extends Document {
 		autoAlias?: string, // npc.id
 		channelAliases?: any
 	},
-	empty: boolean,
-	saveSetting(req: RodRequest, key: string, val: any): Promise<IUser>,
-	getCurrentAlias(req: RodRequest): Alias
+	empty: boolean
 }
 
 const s = new Schema<IUser>({

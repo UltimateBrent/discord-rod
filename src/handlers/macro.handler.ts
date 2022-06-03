@@ -47,7 +47,7 @@ class MacroHandler extends MultiCommandHandler {
 		current = _.filter( current, function(r) { return r.name != m.name; });
 		current.push(m);
 
-		await req.user.saveSetting(req, 'macros', current);
+		await req.saveUserSetting('macros', current);
 
 		return await res.sendSimple('Macro `' + name + '` saved.', '`' + req.esc + 'roll ' + name + ' => ' + text + '`');
 	}
@@ -85,7 +85,7 @@ class MacroHandler extends MultiCommandHandler {
 
 		current = _.filter(current, function (r) { return r.name != name; });
 
-		await req.user.saveSetting(req, 'macros', current);
+		await req.saveUserSetting('macros', current);
 
 		return await res.sendSimple('Macro `' + name + '` removed.');
 	}
@@ -97,7 +97,7 @@ class MacroHandler extends MultiCommandHandler {
 	 * @param res
 	 */
 	static async clear(req: RodRequest, res: RodResponse): Promise<void> {
-		await req.user.saveSetting(req, 'macros', []);
+		await req.saveUserSetting('macros', []);
 
 		return await res.sendSimple('All macros removed.');
 	}

@@ -41,7 +41,7 @@ class AliasMiddleware extends Middleware {
 		}
 
 		// get current alias, if any
-		const alias: Alias = req.user.getCurrentAlias( req );
+		const alias: Alias = req.getCurrentAlias();
 		if (alias) {
 			res.alias = alias;
 			res.shouldSend = true;

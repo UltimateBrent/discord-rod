@@ -42,7 +42,7 @@ class MyAlias extends MultiCommandHandler {
 			if (!alias.checkGrant(req)) return await res.sendSimple('That user desn\'t have permission to use that alias. Please use `' + req.esc + 'grantalias` to grant it first.');
 		}
 
-		await user.saveSetting( req, 'autoAlias', alias?.id);
+		await req.saveUserSetting('autoAlias', alias?.id);
 
 		res.sendSimple('You set the server-level alias for <@' + user._id + '>  to `' + (alias?.id || 'off') + '`. If they posted in this channel, they would post as `' + (alias?.name || 'no alias') + '`.');
 	}
@@ -80,9 +80,9 @@ class MyAlias extends MultiCommandHandler {
 		const channelAliases = user.settings.channelAliases || {};
 		channelAliases[req.channel.id] = alias?.id || (aliasId == 'off' ? 'none' : null);
 
-		await user.saveSetting( req, 'channelAliases', channelAliases );
+		await req.saveUserSetting('channelAliases', channelAliases );
 
-		const current: Alias = user.getCurrentAlias(req);
+		const current: Alias = req.getCurrentAlias();
 
 		res.sendSimple('You set the alias for this channel for <@' + user._id + '> to `' + (alias?.id || (aliasId == 'off' ? 'off' : 'auto (use server setting)')) + '`. If they posted in this channel, they would post as `' + (current?.name || 'no alias') + '`.');
 	}
@@ -104,8 +104,8 @@ class MyAlias extends MultiCommandHandler {
 		const du: Discord.User = req.message.mentions.users.first();
 		const user: IUser = await req.getUserFromID(du, req.channel.guild.id);
 		
-		await user.saveSetting( req, 'channelAliases', {} );
-		await user.saveSetting( req, 'autoAlias', null );
+		await req.saveUserSetting('channelAliases', {} );
+		await req.saveUserSetting('autoAlias', null );
 
 		res.sendSimple('<@' + user._id + '>\'s alias settings for this server have been reset.');
 	}
