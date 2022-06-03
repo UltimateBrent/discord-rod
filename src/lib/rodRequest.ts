@@ -213,7 +213,6 @@ class RodRequest {
 
 	/**
 	 * Saves a setting for the user, using the current guild as context
-	 * @param req - the request to get the guild
 	 * @param key - setting name
 	 * @param val - setting value
 	 * @return resulting user object
