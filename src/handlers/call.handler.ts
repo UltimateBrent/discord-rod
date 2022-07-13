@@ -142,7 +142,7 @@ class CallHandler extends MultiCommandHandler {
 			const em = call.generateEmbed(req);
 
 			const m = await req.channel.messages.fetch(call.message);
-			await m.edit({content: '', embeds: [em]});
+			await m.edit({content: ' ', embeds: [em]});
 
 			// delete the roll
 			try {
