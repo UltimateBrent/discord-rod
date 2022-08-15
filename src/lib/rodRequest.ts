@@ -111,6 +111,8 @@ class RodRequest {
 	getPermissions(): string {
 		const self = this;
 
+		if (!self.guser || !self.guser.permissions) return null;
+
 		// guild-level admin, can do everything
 		if (self.guser.permissions.has([Discord.Permissions.FLAGS.ADMINISTRATOR])) return 'admin';
 
