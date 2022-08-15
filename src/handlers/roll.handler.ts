@@ -1,14 +1,22 @@
 import RodRequest from '../lib/rodRequest';
 import RodResponse from '../lib/rodResponse';
-import Handler from './handler';
+import MultiCommandHandler from './multi.handler';
 import Roll from '../lib/roll';
 
 
-class RollHandler extends Handler {
+class RollHandler extends MultiCommandHandler {
 
-	static commands: string[] = ['roll', 'r'];
+	static multiCommands = new Map([
+		['roll', ['roll', 'r']],
+		['coin', ['coinflip', 'flipacoin', 'coin']]
+	]);
 
-	static async process(req: RodRequest, res: RodResponse): Promise<void> {
+	/**
+	 * Processes a roll command
+	 * @param req - the request
+	 * @param res - the response
+	 */
+	static async roll(req: RodRequest, res: RodResponse): Promise<void> {
 		const roll: Roll = Roll.parseRoll( req, req.parts.join(' ') );
 		//console.log('- process roll:', roll);
 
@@ -20,6 +28,18 @@ class RollHandler extends Handler {
 
 		res.roll = roll;
 		res.embedContent = roll.text;
+	}
+
+	/**
+	 * Processes a "coin flip" roll
+	 * @param req - the request
+	 * @param res - the response
+	 */
+	static async coin(req: RodRequest, res: RodResponse): Promise<void> {
+
+		const flip = Math.random() > 0.5 ? 'heads' : 'tails';
+
+		res.embedContent = flip;
 	}
 }
 
