@@ -67,8 +67,11 @@ class RodResponse {
 		if (splits.length < 2) {
 			const m = await this.req.message.channel.send({content, embeds});
 
-			if (options.deleteMessage) m.delete().catch(e => { console.log('- failed to delete temp message from send simple:', e); });
-
+			if (options.deleteMessage) {
+				setTimeout(function() {
+					m.delete().catch(e => { console.log('- failed to delete temp message from send simple:', e); });
+				}, 5000);
+			}
 			return m;
 
 		} else {
@@ -169,7 +172,7 @@ class RodResponse {
 			em.setDescription( self.embedContent);
 			em.setColor( (self.embedColor || RodResponse.ColorFromString(username || self.req.message.author.id)) as Discord.ColorResolvable);
 			if (self.embedFooter) {
-				em.setFooter( self.embedFooter );
+				em.setFooter({text: self.embedFooter});
 			}
 			embeds.push( em );
 		}

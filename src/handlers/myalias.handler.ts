@@ -43,7 +43,7 @@ class MyAlias extends MultiCommandHandler {
 
 		text += '<@' + user._id + '> would post here as: `' + (current?.name || 'no alias') + '`';
 
-		res.embedContent = text;
+		res.sendSimple('', text, {deleteCommand: true, deleteMessage: true});
 	}
 
 	/**

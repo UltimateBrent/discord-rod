@@ -50,7 +50,7 @@ class Call {
 		const self = this;
 
 		const em = new Discord.MessageEmbed();
-		em.setAuthor( self.name, 'https://cdn.discordapp.com/attachments/368510638160347148/369222455673225217/d20.png' );
+		em.setAuthor({name: self.name, url: 'https://cdn.discordapp.com/attachments/368510638160347148/369222455673225217/d20.png'} );
 		em.setDescription( self.text );
 		em.setColor( '#333399' );
 
@@ -72,9 +72,9 @@ class Call {
 		remaining = remaining.concat(_.filter(self.npcs, function(m) { return !keys.includes( 'n' + m.toLowerCase() ); }) );
 
 		if (remaining.length) {
-			em.setFooter( 'Still waiting on: ' + remaining.join(', ') );
+			em.setFooter({text: 'Still waiting on: ' + remaining.join(', ') } );
 		} else {
-			em.setFooter( 'Rolls done! Type `' + req.esc + 'calldone` to end, or `' + req.esc + 'calladd` more participants.' );
+			em.setFooter({text: 'Rolls done! Type `' + req.esc + 'calldone` to end, or `' + req.esc + 'calladd` more participants.'} );
 		}
 
 
@@ -145,6 +145,7 @@ class Call {
 		if (!req.server.rollCalls?.length) return null;
 
 		const c = _.find( req.server.rollCalls, function(c) { return c.channel == req.channel.id; });
+		if (!c) return null;
 		return new Call(c);
 	}
 

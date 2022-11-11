@@ -229,14 +229,7 @@ class SystemHandler extends Handler {
 	 */
 	static async test( req: RodRequest, res: RodResponse): Promise<void> {
 
-		const newhooks = await req.getWebhooks();
-		console.log(newhooks);
-
-		for (let [key, hook] of newhooks) {
-			console.log( key, hook.token );
-		}
-
-		await res.sendSimple('Test complete, check console.');
+		console.log( req.message.interaction );
 
 	}
 }

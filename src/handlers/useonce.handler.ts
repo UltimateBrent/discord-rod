@@ -21,6 +21,7 @@ class UseOnceAlias extends Handler {
 
 		const name = req.parts[0];
 		let image = req.parts[1];
+		console.log('- parts:', req.parts);
 		if (!image || !image.match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/)) {
 			// this wasn't an image
 			image = null;
@@ -32,7 +33,8 @@ class UseOnceAlias extends Handler {
 		};
 
 		// remove the name and image if applicable
-		let newText = req.message.content.replace(/^\S+ \S+/, '');
+		const reg = new RegExp('^\\S+ "?' + name +'"?');
+		let newText = req.message.content.replace(reg, '');
 		if (image) newText = newText.trim().replace(/^\S+ /, '');
 
 		// recreate the message without the params

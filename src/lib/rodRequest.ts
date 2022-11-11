@@ -4,6 +4,7 @@ import Alias from './alias';
 import User, { IUser } from '../models/user.model';
 import Server, { IServer } from '../models/server.model';
 import AliasMiddleware from '../middleware/alias.middleware';
+import SwitchUserMiddleware from '../middleware/su.middleware';
 import _ from 'lodash';
 
 /**
@@ -70,7 +71,7 @@ class RodRequest {
 			self.command = parts.shift().slice( self.esc.length );
 
 			// if this isn't an active command, let's reverse this
-			if (!Rod.handlerExists(self.command) && !AliasMiddleware.sayCommands.includes(self.command)) {
+			if (!Rod.handlerExists(self.command) && !AliasMiddleware.sayCommands.includes(self.command) && !SwitchUserMiddleware.SuCommands.includes(self.command)) {
 				parts.unshift( self.esc + self.command );
 				self.command = null;
 			}
@@ -223,6 +224,32 @@ class RodRequest {
 		const self = this;
 
 		const gu = self.user;
+		const gid = self.channel.guild.id;
+
+		if (!gu.serverSettings[gid]) gu.serverSettings[gid] = {};
+
+		gu.serverSettings[gid][key] = val;
+		gu.settings = {};
+		gu.markModified('serverSettings');
+		gu.markModified('settings');
+		await gu.save();
+
+		// let's apply server settings over defaults
+		if (gu.serverSettings && gu.serverSettings[gid]) gu.settings = _.extend(gu.settings, gu.serverSettings[gid]);
+
+		return gu;
+	};
+
+	/**
+	 * Saves a setting for a particular user, using the current guild as context
+	 * @param key - setting name
+	 * @param val - setting value
+	 * @return resulting user object
+	 */
+	async saveUserSettingFor(user: IUser, key: string, val: any): Promise<IUser> {
+		const self = this;
+
+		const gu = user;
 		const gid = self.channel.guild.id;
 
 		if (!gu.serverSettings[gid]) gu.serverSettings[gid] = {};
