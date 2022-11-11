@@ -4,6 +4,7 @@
 		"module": "commonjs",
 		"rootDir": "src",
 		"outDir": "dist",
+		"skipLibCheck": true,
 		"sourceMap": true,
 		"resolveJsonModule": true,
 		"lib": [
