@@ -94,7 +94,7 @@ class Roll {
 		});
 
 		// is this a multiple roll?
-		const rolls = m.split(/[,;]/);
+		const rolls = m.split(/[;]/);
 		if (rolls.length > 1) {
 			const sep = m.match(/([,;])/)[0];
 			const rs = _.map(rolls, function (r) {
