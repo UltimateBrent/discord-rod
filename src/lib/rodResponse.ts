@@ -21,6 +21,8 @@ class RodResponse {
 	embed?: Discord.MessageEmbed;
 	embeds?: Discord.MessageEmbed[];
 
+	private static MESSAGE_SPLIT_LIMIT = 2000;
+
 	constructor( req: RodRequest ) {
 		this.req = req;
 	}
@@ -193,14 +195,55 @@ class RodResponse {
 		// send it!
 		let m: Discord.Message;
 		try {
-			m = await hook.send( {
-				content: self.escape(content || self.content || ''),
-				username: username,
-				avatarURL: avatar,
-				embeds: embeds,
-				allowedMentions: {parse: ['roles', 'users']},
-				threadId: self.req.channel.isThread() ? self.req.channel.id : null
-			}) as Discord.Message;
+			/**
+			 * We've had a lot of issues with messages going over 2000 chars for nitro people,
+			 * so we're going to split them and send them as different messages
+			 */
+			const text = self.escape(content || self.content || '');
+			const payloads: Array<Array<string>> = [];
+			if (text && text.length >= RodResponse.MESSAGE_SPLIT_LIMIT) {
+				let chunks = text.split(' ');
+				let payloadChunks = [];
+				let payloadLength = 0;
+				while (chunks.length) {
+					const c = chunks.shift();
+					if (c.length + 1 >= RodResponse.MESSAGE_SPLIT_LIMIT) { // this is just a ridiculously long string, truncate it
+						payloadChunks.push(c.substring(0, RodResponse.MESSAGE_SPLIT_LIMIT - (payloadLength + 10) ) );
+						chunks.unshift(c.substring(RodResponse.MESSAGE_SPLIT_LIMIT - (payloadLength + 10)) ); // put the rest of the string back on the chunks and let it go
+						payloads.push( payloadChunks.concat([]) );
+						payloadChunks = [];
+						payloadLength = 0;
+					} else
+					if (payloadLength + c.length + 1 >= RodResponse.MESSAGE_SPLIT_LIMIT) {
+						payloads.push(payloadChunks.concat([])); 
+						payloadChunks = [c];
+						payloadLength = 0;
+						
+					} else {
+						payloadChunks.push( c );
+						payloadLength += c.length + 1;
+					}
+				}
+				// we're done, put anything leftover into the current payload
+				if (payloadChunks.length) {
+					payloads.push(payloadChunks.concat([])); 
+				}
+			} else {
+				payloads.push( [text] );
+			}
+			//console.log('- payloads:', payloads.length);
+			for( let ii = 0; ii < payloads.length; ii++) {
+				const payload = payloads[ii];
+				//console.log('- payload:', payload);
+				m = await hook.send( {
+					content: payload.join(' ') || null,
+					username: username,
+					avatarURL: avatar,
+					embeds: (!payload || ii == payloads.length - 1) ? embeds : [], // just attached embeds to the last message
+					allowedMentions: {parse: ['roles', 'users']},
+					threadId: self.req.channel.isThread() ? self.req.channel.id : null
+				}) as Discord.Message;
+			}
 		} catch(e) {
 			console.log('- hook.send error:', e);
 			self.req.channel.send( 'Got an error trying to post to webhook: ' + e );
