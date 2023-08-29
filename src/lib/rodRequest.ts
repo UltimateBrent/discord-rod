@@ -59,7 +59,7 @@ class RodRequest {
 		self.message.content = self.message.content.replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"');
 
 		// split the message, minding quotes (like a csv)
-		let parts = self.message.content.match(/(?=\S)[^"\s]*(?:"[^\\"]*(?:\\[\s\S][^\\"]*)*"[^"\s]*)*/g);
+		let parts: any = self.message.content.match(/(?=\S)[^"\s]*(?:"[^\\"]*(?:\\[\s\S][^\\"]*)*"[^"\s]*)*/g);
 		if (!parts || !parts.length) return;
 
 		// remove quotes from quoted params
@@ -115,7 +115,7 @@ class RodRequest {
 		if (!self.guser || !self.guser.permissions) return null;
 
 		// guild-level admin, can do everything
-		if (self.guser.permissions.has([Discord.Permissions.FLAGS.ADMINISTRATOR])) return 'admin';
+		if (self.guser?.permissions?.has([Discord.Permissions.FLAGS.ADMINISTRATOR])) return 'admin';
 
 		// channel-level admin, can create/edit only their own npcs
 		if (self.channel.permissionsFor(self.message.member).has([Discord.Permissions.FLAGS.MANAGE_MESSAGES])) return 'channeladmin';
