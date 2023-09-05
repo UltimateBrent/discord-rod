@@ -34,9 +34,9 @@ class Roll {
 		const self = new Roll();
 
 		// is this an ability roll?
-		if (m.indexOf('abilities') != -1) {
+		/*if (m.indexOf('abilities') != -1) {
 			m = '4d6k3;4d6k3;4d6k3;4d6k3;4d6k3;4d6k3';
-		}
+		}*/
 
 		// does this have any iterations? (part 1)
 		m = m.replace(/\[([0-9]+)\](.*?)(;.*)?$/, function (m, i, p1, r) {
