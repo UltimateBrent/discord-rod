@@ -6,7 +6,7 @@
 	"main": "rod.ts",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"start": "ts-node src/shards.ts tokenType=Live",
+		"start": "bun src/shards.ts tokenType=Live",
 		"beta": "tsc && node dist/shards.js tokenType=Beta",
 		"dev": "nodemon --watch 'src/**/*.ts' --exec \"ts-node\" src/rod.ts",
 		"devbeta": "nodemon --watch 'src/**/*.ts' --exec \"ts-node\" src/rod.ts tokenType=Beta",
