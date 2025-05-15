@@ -111,7 +111,7 @@ class TableHandler extends MultiCommandHandler {
 		const table = _.find(req.server.tables, function (t) { return t.name.toLowerCase() == name.toLowerCase(); });
 		if (!table) return await res.sendSimple('No such table: `' + name + '`');
 
-		req.server.tables = req.server.tables.filter((t) => { return t.name != name; });
+		req.server.tables = req.server.tables.filter((t) => { return t.name.toLowerCase() != name.toLowerCase(); });
 		await req.server.save();
 
 		return res.send('Removed **' + name + '** with ' + table.data.length + ' rows.');
