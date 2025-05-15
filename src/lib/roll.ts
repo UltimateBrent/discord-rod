@@ -396,8 +396,8 @@ class Roll {
 	 * @return the evaluation
 	 */
 	static mathString(s: string, noErrors:boolean = false): number|string {
-		s = s.replace(/__\*\*([0-9]+)\*\*__/g, '$1');
-		if (s.match(/[^0-9?:><=+\-*/() ]/)) {
+		s = s.replace(/__\*\*([0-9\.]+)\*\*__/g, '$1');
+		if (s.match(/[^0-9\.?:><=+\-*/() ]/)) {
 			if (noErrors) return 0;
 			return 'Error: non-math `' + s + '`';
 		} else {
