@@ -19,7 +19,7 @@ class Roll {
 		const self = this;
 
 		if (data) {
-			data = _.filter(data, function(m) { return typeof m == 'function'; }); // dont' want to pull in mongoose methods by accident
+			data = _.pickBy(data, function(m) { return typeof m != 'function'; }); // dont' want to pull in mongoose methods by accident
 			Object.assign( self, data );
 		}
 	}
