@@ -5,7 +5,7 @@
 	"private": true,
 	"main": "rod.ts",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"test": "tsc -p tsconfig.test.json && node dist-test/roll.test.js",
 		"start": "npx tsc && ts-node src/shards.ts tokenType=Live",
 		"beta": "tsc && node dist/shards.js tokenType=Beta",
 		"dev": "nodemon --watch 'src/**/*.ts' --exec \"ts-node\" src/rod.ts",
