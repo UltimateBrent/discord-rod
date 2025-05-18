@@ -38,8 +38,9 @@ class RollHandler extends MultiCommandHandler {
 	static async coin(req: RodRequest, res: RodResponse): Promise<void> {
 
 		const flip = Math.random() > 0.5 ? 'heads' : 'tails';
+		const title = req.parts.join(' ').replace(/^#/, '').trim();
 
-		res.embedContent = flip;
+		res.embedContent = flip + (title ? ' **`' + title + '`**' : '');
 	}
 }
 
