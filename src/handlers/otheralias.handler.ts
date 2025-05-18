@@ -39,7 +39,7 @@ class MyAlias extends MultiCommandHandler {
 		if (aliasId != 'off') {
 			alias = Alias.FindAlias(req, aliasId);
 			if (!alias) return await res.sendSimple('No such alias exists: `' + aliasId + '`');
-			if (!alias.checkGrant(req)) return await res.sendSimple('That user desn\'t have permission to use that alias. Please use `' + req.esc + 'grantalias` to grant it first.');
+			if (!alias.checkGrant(req)) return await res.sendSimple('That user doesn\'t have permission to use that alias. Please use `' + req.esc + 'grantalias` to grant it first.');
 		}
 
 		await req.saveUserSettingFor(user, 'autoAlias', alias?.id);
@@ -73,7 +73,7 @@ class MyAlias extends MultiCommandHandler {
 		if (aliasId != 'off' && aliasId != 'auto') {
 			alias = Alias.FindAlias(req, aliasId);
 			if (!alias) return await res.sendSimple('No such alias exists: `' + aliasId + '`');
-			if (!alias.checkGrant(req)) return await res.sendSimple('That user desn\'t have permission to use that alias. Please use `' + req.esc + 'grantalias` to grant it first.');
+			if (!alias.checkGrant(req)) return await res.sendSimple('That user doesn\'t have permission to use that alias. Please use `' + req.esc + 'grantalias` to grant it first.');
 		}
 
 		// put this alias into the current channel aliases
