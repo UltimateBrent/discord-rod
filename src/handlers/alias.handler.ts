@@ -29,7 +29,7 @@ class ManageAlias extends MultiCommandHandler {
 		const perm = req.getPermissions();
 		if (!perm) return await res.sendSimple('You do not have permission to add an alias.');
 
-		if (!req.parts[0]) return await res.sendSimple('Your alias needs at least and id and a name.', '`/addalias id "My Name" http://images.com/myavatar.jpg`');
+		if (!req.parts[0]) return await res.sendSimple('Your alias needs at least an id and a name.', '`/addalias id "My Name" http://images.com/myavatar.jpg`');
 
 		// did they uploaded an image instead of putting it in the message?
 		if (!req.parts[2] && req.message.attachments.size) {
@@ -45,7 +45,7 @@ class ManageAlias extends MultiCommandHandler {
 		};
 
 		// data checks
-		if (!npc.id || !npc.name) return await res.sendSimple('Your alias needs at least and id and a name.', '`/addalias id "My Name" http://images.com/myavatar.jpg`');
+		if (!npc.id || !npc.name) return await res.sendSimple('Your alias needs at least an id and a name.', '`/addalias id "My Name" http://images.com/myavatar.jpg`');
 		if (npc.id == 'false') return await res.sendSimple('Invalid Name', 'Your alias\'s id cannot be `false` because of an old Rod1 bug. Sorry.');
 		if (npc.id.length < 3 || npc.id.length > 32) return await res.sendSimple('Invalid Name', 'Your alias\'s id cannot be less than 3 characters or more than 32.');
 		if (npc.name.length < 3 || npc.name.length > 32) return await res.sendSimple('Invalid Name', 'Your alias\'s name cannot be less than 3 characters or more than 32.');
