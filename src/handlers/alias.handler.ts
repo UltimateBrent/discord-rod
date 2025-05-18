@@ -3,6 +3,7 @@ import RodResponse from '../lib/rodResponse';
 import MultiCommandHandler from './multi.handler';
 import Alias from '../lib/alias';
 import _ from 'lodash';
+import Discord from 'discord.js';
 
 /**
  * Multi-command class handling all alias creation and management
@@ -15,7 +16,8 @@ class ManageAlias extends MultiCommandHandler {
 		['remove', ['removealias', 'remalias', 'remnpc', 'rem', 'remove']],
 		['removeAll', ['remallnpc', 'removeallaliases', 'remallalias']],
 		['editspeech', ['edit', 'editspeech']],
-		['deletespeech', ['delete', 'deletespeech']]
+		['deletespeech', ['delete', 'deletespeech']],
+		['show', ['showalias', 'aliasinfo', 'shownpc']],
 	]);
 
 	/**
@@ -213,6 +215,38 @@ class ManageAlias extends MultiCommandHandler {
 		} else {
 			return await res.sendSimple('You were not the author of the last aliased message, so we cannot edit it.', null, { deleteCommand: true, deleteMessage: true });
 		}
+	}
+
+	/**
+	 * Displays information on a specific alias
+	 * @param req
+	 * @param res
+	 */
+	static async show(req: RodRequest, res: RodResponse): Promise<void> {
+		if (!req.channel.guild) return await res.sendSimple('This command does not work in direct messages.');
+
+		const key = req.parts[0];
+		if (!key) return await res.sendSimple('You must provide the id of the alias you want to show.', '`' + req.esc + 'showalias id`');
+
+		const alias = Alias.FindAlias(req, key);
+		if (!alias) return await res.sendSimple('No such alias: `' + key + '`', 'Check your list: `' + req.esc + 'listaliases`');
+
+		if (!alias.checkGrant(req)) return await res.sendSimple('You do not have permission to view that alias.');
+
+		const em = new Discord.MessageEmbed();
+		em.setTitle(alias.name + ' (' + alias.id + ')');
+		em.setColor('#333399');
+		if (alias.avatar) em.setImage(alias.avatar);
+		em.addField('Key', alias.id, true);
+		em.addField('Name', alias.name, true);
+		em.addField('Created By', '<@' + alias.createdBy + '>', true);
+		if (alias.grant.length || alias.grantRoles.length) {
+			const users = alias.grant.map(id => '<@' + id + '>');
+			const roles = alias.grantRoles.map(id => '<@&' + id + '>');
+			em.addField('Granted To', users.concat(roles).join(', '));
+		}
+
+		await res.sendSimple(' ', [em]);
 	}
 
 }
