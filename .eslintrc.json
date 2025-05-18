@@ -22,6 +22,9 @@
 	],
 	"rules": {
 		"no-undef": "warn",
-		"no-unused-vars": "off"
+		"no-unused-vars": "off",
+		"indent": ["error", "tab"],
+		"quotes": ["error", "single"],
+		"semi": ["error", "always"]
 	}
 }
