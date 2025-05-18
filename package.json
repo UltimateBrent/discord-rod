@@ -11,7 +11,7 @@
 		"dev": "nodemon --watch 'src/**/*.ts' --exec \"ts-node\" src/rod.ts",
 		"devbeta": "nodemon --watch 'src/**/*.ts' --exec \"ts-node\" src/rod.ts tokenType=Beta",
 		"cleanup": "rm -rf .cache dist"
-		},
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/UltimateBrent/discord-rod.git"
