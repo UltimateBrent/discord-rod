@@ -8,14 +8,16 @@
 		"sourceMap": true,
 		"resolveJsonModule": true,
 		"lib": [
-			"es6",
+			"es2016",
 			"dom"
 		],
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		"typeRoots": ["./types"],
 	},
 	"include": [
 		"src/*.ts",
-		"src/**/*.ts"
+		"src/**/*.ts",
+		"types/**/*.d.ts"
 	],
 	"exclude": [
 		"node_modules"

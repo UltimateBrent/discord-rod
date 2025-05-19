@@ -1,4 +1,5 @@
 declare class MersenneTwister {
-	constructor();
+	constructor(...args: any[]);
+	random(): number;
 }
 export default MersenneTwister;
