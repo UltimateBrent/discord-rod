@@ -38,14 +38,14 @@ class CallHandler extends MultiCommandHandler {
 		const text = req.parts.slice(1).join(' ');
 
 		// who was mentioned?
-		let mentions = req.message.mentions.members.size ? _.map(Array.from( req.message.mentions.members.values()), function (m) { return {id: m.id, name: m.displayName}; }) : [];
+		let mentions = req.message.mentions.members.size ? _.map(Array.from( req.message.mentions.members.values()), function (m: any) { return {id: m.id, name: m.displayName}; }) : [];
 
 		// turn role members into members
 		if (req.message.mentions.roles.size) {
 			for (const role of Array.from(req.message.mentions.roles.values()) as any[]) {
 				console.log('- checking role:', (role as any).name);
 	
-				if ((role as any).members.size) mentions = mentions.concat( _.map(Array.from( (role as any).members.values()), function (m) { return { id: m.id, name: m.displayName }; }) );
+				if ((role as any).members.size) mentions = mentions.concat( _.map(Array.from( (role as any).members.values()), function (m: any) { return { id: m.id, name: m.displayName }; }) );
 			}
 
 			// might have double grabbed people from role
@@ -102,14 +102,14 @@ class CallHandler extends MultiCommandHandler {
 		if (!perm) return await res.sendSimple('You do not have permission to add mentions to calls.');
 
 		// who was mentioned?
-		let mentions = req.message.mentions.members.size ? _.map(Array.from( req.message.mentions.members.values() ), function (m) { return { id: m.id, name: m.displayName }; }) : [];
+		let mentions = req.message.mentions.members.size ? _.map(Array.from( req.message.mentions.members.values() ), function (m: any) { return { id: m.id, name: m.displayName }; }) : [];
 
 		// turn role members into members
 		if (req.message.mentions.roles.size) {
 			for (const role of Array.from(req.message.mentions.roles.values()) as any[]) {
 				console.log('- checking role:', (role as any).name);
 	
-				if ((role as any).members.size) mentions = mentions.concat(_.map(Array.from( (role as any).members.values() ), function (m) { return { id: m.id, name: m.displayName }; }));
+				if ((role as any).members.size) mentions = mentions.concat(_.map(Array.from( (role as any).members.values() ), function (m: any) { return { id: m.id, name: m.displayName }; }));
 			}
 
 			// might have double grabbed people from role
