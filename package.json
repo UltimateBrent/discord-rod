@@ -42,7 +42,7 @@
 		"discord.js": "^13.7.0",
 		"lodash": "^4.17.21",
 		"mersenne-twister": "^1.1.0",
-		"mongoose": "^5.11.19",
+		"mongoose": "^5.13.23",
 		"superagent": "^6.1.0"
 	}
 }
