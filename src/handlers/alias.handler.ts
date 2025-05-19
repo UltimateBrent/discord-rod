@@ -17,7 +17,7 @@ class ManageAlias extends MultiCommandHandler {
 		['removeAll', ['remallnpc', 'removeallaliases', 'remallalias']],
 		['editspeech', ['edit', 'editspeech']],
 		['deletespeech', ['delete', 'deletespeech']],
-		['show', ['showalias', 'aliasinfo', 'shownpc']],
+		['show', ['showalias', 'shownpc']],
 	]);
 
 	/**
