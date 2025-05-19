@@ -1,4 +1,4 @@
 declare module 'fs' {
-const fs: any;
-export default fs;
+	const fs: any;
+	export default fs;
 }

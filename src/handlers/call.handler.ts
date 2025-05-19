@@ -9,10 +9,10 @@ import Call from '../lib/call';
 class CallHandler extends MultiCommandHandler {
 
 	static multiCommands = new Map([
-		['callfor', 	['call', 'callfor']],
-		['add', 		['calladd', 'addtocall']],
-		['done', 		['calldone', 'endcall', 'callend']],
-		['refresh', 	['callrefresh', 'refreshcall']],
+		['callfor',	['call', 'callfor']],
+		['add',			['calladd', 'addtocall']],
+		['done',		['calldone', 'endcall', 'callend']],
+		['refresh',	['callrefresh', 'refreshcall']],
 		['log',			['calllog']]
 	]);
 
@@ -41,12 +41,12 @@ class CallHandler extends MultiCommandHandler {
 		let mentions = req.message.mentions.members.size ? _.map(Array.from( req.message.mentions.members.values()), function (m) { return {id: m.id, name: m.displayName}; }) : [];
 
 		// turn role members into members
-            if (req.message.mentions.roles.size) {
-                    for (const role of Array.from(req.message.mentions.roles.values()) as any[]) {
-                            console.log('- checking role:', (role as any).name);
+	if (req.message.mentions.roles.size) {
+		for (const role of Array.from(req.message.mentions.roles.values()) as any[]) {
+			console.log('- checking role:', (role as any).name);
 
-                            if ((role as any).members.size) mentions = mentions.concat( _.map(Array.from( (role as any).members.values()), function (m) { return { id: m.id, name: m.displayName }; }) );
-                    }
+			if ((role as any).members.size) mentions = mentions.concat( _.map(Array.from( (role as any).members.values()), function (m) { return { id: m.id, name: m.displayName }; }) );
+		}
 
 			// might have double grabbed people from role
 			mentions = _.uniq( mentions );
@@ -105,12 +105,12 @@ class CallHandler extends MultiCommandHandler {
 		let mentions = req.message.mentions.members.size ? _.map(Array.from( req.message.mentions.members.values() ), function (m) { return { id: m.id, name: m.displayName }; }) : [];
 
 		// turn role members into members
-            if (req.message.mentions.roles.size) {
-                    for (const role of Array.from(req.message.mentions.roles.values()) as any[]) {
-                            console.log('- checking role:', (role as any).name);
+	if (req.message.mentions.roles.size) {
+		for (const role of Array.from(req.message.mentions.roles.values()) as any[]) {
+			console.log('- checking role:', (role as any).name);
 
-                            if ((role as any).members.size) mentions = mentions.concat(_.map(Array.from( (role as any).members.values() ), function (m) { return { id: m.id, name: m.displayName }; }));
-                    }
+			if ((role as any).members.size) mentions = mentions.concat(_.map(Array.from( (role as any).members.values() ), function (m) { return { id: m.id, name: m.displayName }; }));
+		}
 
 			// might have double grabbed people from role
 			mentions = _.uniq(mentions);

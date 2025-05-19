@@ -12,13 +12,13 @@
 			"dom"
 		],
 		"esModuleInterop": true,
-                "typeRoots": ["./types"],
-        },
-        "include": [
-                "src/*.ts",
-                "src/**/*.ts",
-                "types/**/*.d.ts"
-        ],
+		"typeRoots": ["./types"],
+	},
+	"include": [
+		"src/*.ts",
+		"src/**/*.ts",
+		"types/**/*.d.ts"
+	],
 	"exclude": [
 		"node_modules"
 	]
