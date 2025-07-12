@@ -127,7 +127,7 @@ class TableHandler extends MultiCommandHandler {
 		const self = this;
 
 		// does this have iterations?
-		if (req.parts[0].match(/\[[0-9+)]\]/)) {
+		if (req.parts[0].match(/\[[0-9]+\]/)) {
 			let iterations = parseInt( req.parts.shift().replace(/[\[\]]/g, '') );
 			const name = req.parts.shift();
 			let embeds = [];
